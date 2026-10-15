@@ -155,6 +155,19 @@
     max_follow: 30
   notes: Wix detail pages are ~1.5 MB each; cached for 5 days.
 
+- id: ica-boston
+  adapter: jsonld
+  url: https://www.icaboston.org/calendar/?event_type%5B%5D=music
+  credit: {name: "ICA Boston’s calendar", url: https://www.icaboston.org/calendar/}
+  venue: ica-boston
+  trust_text: true
+  options:
+    follow: h3.teaser-title a[href*="/events/"]
+    max_follow: 20
+  notes: >-
+    The calendar filtered to Music; event pages carry full JSON-LD. A few shows a year, mostly
+    not jazz. The site has no terms of use (checked 2026-10-15); tickets are on my.icaboston.org.
+
 - id: berklee-bpc
   adapter: jsonld
   url: https://www.berklee.edu/events/department/BPC

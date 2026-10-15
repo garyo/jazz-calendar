@@ -182,6 +182,15 @@
   jazz_level: occasional
   aliases: [BPL]
 
+- id: ica-boston
+  name: ICA Boston
+  address: 25 Harbor Shore Dr
+  town: Boston
+  neighborhood: Seaport
+  url: https://www.icaboston.org
+  jazz_level: occasional
+  aliases: [Institute of Contemporary Art, ICA/Boston]
+
 # --- Cambridge ------------------------------------------------------------
 
 - id: regattabar

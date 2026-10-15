@@ -107,6 +107,7 @@ Needs per-event jazz filtering.
 | Spire Center | 25½ Court St, Plymouth | spirecenter.org/event-listings/ | HTML; Etix | |
 | South Shore Conservatory | 1 Conservatory Dr, Hingham | sscmusic.org/events/ | JSON-LD (Modern Events Calendar) | |
 | Norwood Theatre | Norwood | norwoodstage.com/shows-events | RSS (Squarespace) | |
+| ICA Boston | 25 Harbor Shore Dr, Seaport | icaboston.org/calendar/?event_type[]=music | JSON-LD on event pages | A few music shows a year, now and then jazz; BSO co-productions. |
 | Larz Anderson Auto Museum | 15 Newton St, Brookline | larzanderson.org/eventschedule | JSON-LD (Wix Events) | Winter swing dances. |
 | Eustis Estate (Historic New England) | 1424 Canton Ave, Milton | my.historicnewengland.org | HTML (Tessitura) | Concert series; August jazz festival. |
 | House of Blues / Roadrunner / Leader Bank Pavilion / Boch Center | Boston | various | JSON-LD (HoB, Pavilion, Boch); API (Roadrunner AEG JSON) | Rare jazz-adjacent; keyword filter. |
