@@ -51,7 +51,6 @@ def test_publish_uploads_status_last_and_retries(out_dir: Path) -> None:
         },
     )
     assert requests == [
-        "PUT /api/publish/calendar.ics",
         "PUT /api/publish/events.json",
         "PUT /api/publish/events.json",
         "PUT /api/publish/events.json",
@@ -69,10 +68,10 @@ def test_publish_fails_on_client_errors_and_lasting_server_errors(
     out_dir: Path, answers: list[int | Exception], attempts: int
 ) -> None:
     log: list[str] = []
-    transport = site({f"{SITE}/api/publish/calendar.ics": answers}, log)
+    transport = site({f"{SITE}/api/publish/events.json": answers}, log)
     with pytest.raises(httpx.HTTPStatusError):
         export.publish(out_dir, transport=transport)
-    assert log == ["PUT /api/publish/calendar.ics"] * attempts
+    assert log == ["PUT /api/publish/events.json"] * attempts
 
 
 def test_failed_healthcheck_does_not_fail_the_publish(out_dir: Path) -> None:

@@ -3,7 +3,6 @@ from collections.abc import Iterator
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-import icalendar
 import pytest
 import yaml
 from pydantic import ValidationError
@@ -12,10 +11,9 @@ from jazzcal import pipeline
 from jazzcal import store as store_module
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key, night_of
-from jazzcal.export import to_ics
 from jazzcal.http import Http, redact
 from jazzcal.llm import Question, Verdict
-from jazzcal.models import Credit, EventsFile, Regular, ScrapedEvent, Source
+from jazzcal.models import Credit, Regular, ScrapedEvent, Source
 from jazzcal.store import Store
 
 NOW = datetime(2026, 10, 15, 12, tzinfo=TZ)
@@ -404,17 +402,6 @@ def test_regulars_are_published_apart_from_events(store: Store) -> None:
     assert feed.regulars == [regular]
 
 
-def test_ics_uses_named_timezone(store: Store) -> None:
-    source = Source(id="s", adapter="ics", url="https://a", venue="club")
-    registry = Registry({"club": venue("club", "dedicated")}, [source])
-    store.record_success("s", [event("1", "Gig")])
-    feed, _ = pipeline.build(registry, store, NOW)
-    roundtripped = EventsFile.model_validate_json(feed.model_dump_json())
-    ics = to_ics(roundtripped).decode()
-    assert "DTSTART;TZID=America/New_York:20261015T200000" in ics
-    assert "BEGIN:VTIMEZONE" in ics
-
-
 def write_registry(data_dir: Path, sources: list[dict]) -> None:
     venues = [{"id": "club", "name": "Club", "town": "Cambridge", "jazz_level": "dedicated"}]
     for name, items in (("venues", venues), ("sources", sources), ("regulars", [])):
@@ -468,22 +455,6 @@ def test_feed_credits_the_sources_it_lists(store: Store) -> None:
         ("own", "Club calendar", False),
         ("tm", "Ticketmaster", True),
     ]
-
-
-def test_ics_credits_third_party_sources(store: Store) -> None:
-    registry = Registry({"club": venue("club", "dedicated")}, credited_sources())
-    store.record_success("own", [event("1", "Pat Doe Quartet")])
-    store.record_success("tm", [event("2", "Lee Roe Trio", hours=30)])
-    feed, _ = pipeline.build(registry, store, NOW)
-    ics = icalendar.Calendar.from_ical(to_ics(feed))
-    described = {
-        str(v["summary"]): (str(v["uid"]), str(v["description"])) for v in ics.walk("VEVENT")
-    }
-    by_title = {e.title: e for e in feed.events}
-    uid, description = described["Lee Roe Trio @ Club"]
-    assert uid == f"{by_title['Lee Roe Trio'].id}@bostonjazzcalendar.com"
-    assert description.endswith("Listing via Ticketmaster: https://www.ticketmaster.com")
-    assert "via" not in described["Pat Doe Quartet @ Club"][1]
 
 
 def test_secrets_are_redacted_from_errors() -> None:
