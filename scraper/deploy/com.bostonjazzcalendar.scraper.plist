@@ -7,10 +7,10 @@
   <key>Label</key>
   <string>com.bostonjazzcalendar.scraper</string>
   <key>UserName</key>
-  <string>garyoberbrunner</string>
+  <string>USERNAME</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/garyoberbrunner/src/jazz-calendar/scraper/deploy/run.sh</string>
+    <string>/Users/USERNAME/src/jazz-calendar/scraper/deploy/run.sh</string>
   </array>
   <key>StartCalendarInterval</key>
   <dict>
@@ -20,9 +20,9 @@
     <integer>30</integer>
   </dict>
   <key>StandardOutPath</key>
-  <string>/Users/garyoberbrunner/Library/Logs/jazzcal.log</string>
+  <string>/Users/USERNAME/Library/Logs/jazzcal.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/garyoberbrunner/Library/Logs/jazzcal.log</string>
+  <string>/Users/USERNAME/Library/Logs/jazzcal.log</string>
   <key>Nice</key>
   <integer>10</integer>
 </dict>

@@ -97,7 +97,7 @@ sudo cp deploy/com.bostonjazzcalendar.scraper.plist /Library/LaunchDaemons/
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.bostonjazzcalendar.scraper.plist
 ```
 
-The plist names the user and paths. Edit them if the machine differs.
+Replace `USERNAME` in the plist with the account that runs it (`sed -i "" "s/USERNAME/$(whoami)/g" ...`).
 
 Day to day:
 - Run now: `sudo launchctl kickstart system/com.bostonjazzcalendar.scraper`
