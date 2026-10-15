@@ -50,7 +50,9 @@ Page URLs carry the view: `q`, `venue=lilypad,wallys`, `town=Cambridge,Somervill
 (a single old-style `town=` still works), `adjacent=0`, `when`, `view=month`,
 `month=2026-11` and `day=2026-11-12`. A listing matches the selection when it
 is at any selected venue or in any selected town; with neither selected,
-everything matches. Regulars follow the same rule.
+everything matches. Regulars follow the same rule; a view of some days (`when`
+or `day`) also shows only those that usually run on one of them (their `days`
+and `nth`), still in their own section and never in the month grid or feeds.
 
 ## Development
 

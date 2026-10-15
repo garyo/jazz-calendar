@@ -9,6 +9,9 @@ import {
   matchingEvents,
   normalize,
   presetRange,
+  regularsIntro,
+  regularsNotice,
+  runsOn,
   sortName,
   stripDays,
   venueLocation,
@@ -202,10 +205,55 @@ describe("filterEvents", () => {
   });
 });
 
+const regular = (fields: Partial<Regular>): Regular => ({
+  venue: "wallys",
+  title: "Jam",
+  when: "in words",
+  relevance: "jazz",
+  url: "https://example.com/",
+  checked: "2026-10-15",
+  ...fields,
+});
+
+describe("runsOn", () => {
+  test("weekly: any of its weekdays", () => {
+    const jam = regular({ days: ["tue", "wed", "thu", "fri", "sat"] });
+    expect(runsOn(jam, "2026-10-19")).toBe(false); // Mon
+    expect(runsOn(jam, "2026-10-20")).toBe(true); // Tue
+    expect(runsOn(jam, "2026-10-24")).toBe(true); // Sat
+    expect(runsOn(jam, "2026-10-25")).toBe(false); // Sun
+  });
+
+  test("1st and 3rd Fridays", () => {
+    const jam = regular({ days: ["fri"], nth: [1, 3] });
+    const fridays = ["2026-10-02", "2026-10-09", "2026-10-16", "2026-10-23"];
+    expect(fridays.map((day) => runsOn(jam, day))).toEqual([
+      true,
+      false,
+      true,
+      false,
+    ]);
+    expect(runsOn(jam, "2026-10-30")).toBe(false); // the 5th
+    expect(runsOn(jam, "2026-10-01")).toBe(false); // 1st Thursday
+  });
+
+  test("the last of a month's weekdays", () => {
+    const jam = regular({ days: ["sun"], nth: [-1] });
+    expect(runsOn(jam, "2026-11-22")).toBe(false);
+    expect(runsOn(jam, "2026-11-29")).toBe(true);
+    expect(runsOn(jam, "2027-02-28")).toBe(true); // the 4th is the last
+  });
+
+  test("a regular from a feed without days runs on no particular day", () => {
+    expect(runsOn(regular({}), "2026-10-15")).toBe(false);
+  });
+});
+
 describe("filterRegulars", () => {
   const regulars = sample.regulars ?? [];
+  const today = "2026-10-15"; // Thursday
   const titles = (state: Partial<ViewState>) =>
-    filterRegulars(regulars, venues, { ...DEFAULT_STATE, ...state }).map(
+    filterRegulars(regulars, venues, { ...DEFAULT_STATE, ...state }, today).map(
       (r) => r.title,
     );
   const all = ["Jam session", "Saturday band sessions"];
@@ -214,9 +262,18 @@ describe("filterRegulars", () => {
     expect(titles({})).toEqual(all);
   });
 
-  test("date presets don't apply", () => {
-    expect(titles({ when: "tonight" })).toEqual(all);
+  test("a view of some days shows the regulars that usually run on them", () => {
+    expect(titles({ when: "tonight" })).toEqual(["Jam session"]);
     expect(titles({ when: "weekend" })).toEqual(all);
+    expect(titles({ when: "week" })).toEqual(all);
+    expect(titles({ day: "2026-10-17" })).toEqual(all);
+    expect(titles({ day: "2026-10-18" })).toEqual([]);
+  });
+
+  test("a venue's regular shows tonight with the venue selected", () => {
+    expect(titles({ when: "tonight", venues: ["wallys"] })).toEqual([
+      "Jam session",
+    ]);
   });
 
   test("jazz-adjacent toggle", () => {
@@ -240,18 +297,70 @@ describe("filterRegulars", () => {
   });
 
   test("a regular at an unknown venue is dropped only by a selection", () => {
-    const orphan: Regular = {
-      venue: "nowhere",
-      title: "Mystery jam",
-      when: "Mondays",
-      relevance: "jazz",
-      url: "https://example.com/",
-      checked: "2026-10-15",
-    };
-    expect(filterRegulars([orphan], venues, DEFAULT_STATE)).toHaveLength(1);
+    const orphan = regular({ venue: "nowhere", days: ["mon"] });
+    const filter = (state: Partial<ViewState>) =>
+      filterRegulars([orphan], venues, { ...DEFAULT_STATE, ...state }, today);
+    expect(filter({})).toHaveLength(1);
+    expect(filter({ towns: ["Boston"] })).toEqual([]);
+  });
+
+  test("a regular without days shows only when dates don't apply", () => {
+    const filter = (state: Partial<ViewState>) =>
+      filterRegulars(
+        [regular({})],
+        venues,
+        { ...DEFAULT_STATE, ...state },
+        today,
+      );
+    expect(filter({})).toHaveLength(1);
+    expect(filter({ when: "week" })).toEqual([]);
+  });
+});
+
+describe("regulars' wording", () => {
+  const today = "2026-10-15"; // Thursday
+  const view = (state: Partial<ViewState>) => ({ ...DEFAULT_STATE, ...state });
+  const regulars = sample.regulars ?? [];
+
+  test("the introduction names the view's weekdays", () => {
+    expect(regularsIntro(view({}), today)).toStartWith(
+      "Standing series the venues list without specific dates.",
+    );
+    expect(regularsIntro(view({ when: "tonight" }), today)).toStartWith(
+      "Standing series that usually run on Thursdays. ",
+    );
+    expect(regularsIntro(view({ when: "weekend" }), today)).toStartWith(
+      "Standing series that usually run on Fridays, Saturdays, or Sundays. ",
+    );
+    expect(regularsIntro(view({ when: "week" }), today)).toStartWith(
+      "Standing series that usually run in the next 7 days. ",
+    );
+  });
+
+  test("with no dated shows, the notice points to the regulars", () => {
+    const wallys = regulars.filter((r) => r.venue === "wallys");
     expect(
-      filterRegulars([orphan], venues, { ...DEFAULT_STATE, towns: ["Boston"] }),
-    ).toEqual([]);
+      regularsNotice(wallys, venues, view({ when: "tonight" }), today),
+    ).toEqual({
+      title: "No listed shows tonight.",
+      body: "But this weekly series usually runs on Thursdays: Jam session at Wally's Café. Check with the venue before you go.",
+    });
+    expect(
+      regularsNotice(regulars, venues, view({ day: "2026-10-17" }), today),
+    ).toEqual({
+      title: "No listed shows on Saturday, Oct 17.",
+      body: "But these weekly series usually run on Saturdays: Jam session at Wally's Café and Saturday band sessions at The Wellington. Check with the venue before you go.",
+    });
+    expect(
+      regularsNotice(regulars, venues, view({ day: today }), today)?.title,
+    ).toBe("No listed shows tonight.");
+  });
+
+  test("no notice without regulars, or when dates don't apply", () => {
+    expect(regularsNotice([], venues, view({ when: "tonight" }), today)).toBe(
+      null,
+    );
+    expect(regularsNotice(regulars, venues, view({}), today)).toBeNull();
   });
 });
 

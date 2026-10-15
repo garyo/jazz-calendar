@@ -10,10 +10,12 @@ import {
   type DayKey,
   dayKey,
   eventNight,
+  formatDayHeading,
+  monthOf,
   nightOf,
   weekday,
 } from "./time";
-import type { CalendarEvent, Regular, Venue } from "./types";
+import type { CalendarEvent, Regular, Venue, Weekday } from "./types";
 import type { DatePreset, ViewState } from "./url-state";
 
 /** How long an event with no end time is assumed to last. */
@@ -25,7 +27,7 @@ export interface DayGroup {
 }
 
 /** Inclusive range of nights. */
-export interface DayRange {
+interface DayRange {
   from: DayKey;
   to: DayKey;
 }
@@ -101,7 +103,7 @@ function matchesTerms(texts: readonly string[], terms: string[]): boolean {
 }
 
 /** The list view's nights: the chosen day, else the date preset's. */
-export function listRange(state: ViewState, today: DayKey): DayRange | null {
+function listRange(state: ViewState, today: DayKey): DayRange | null {
   return state.day
     ? { from: state.day, to: state.day }
     : presetRange(state.when, today);
@@ -144,20 +146,143 @@ export function filterEvents(
   return matchingEvents(upcoming, venues, state);
 }
 
-/** Regulars matching the selection and search; dates don't apply to them. */
+/** Index 0 is Sunday, as in `weekday`. */
+const WEEKDAYS: readonly Weekday[] = [
+  "sun",
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+];
+
+/**
+ * Whether a regular usually runs on a day: one of its weekdays and, when it
+ * says which of them in a month ("1st and 3rd Fridays"), one of those.
+ */
+export function runsOn(regular: Regular, day: DayKey): boolean {
+  // A feed older than `days` doesn't say, so no day can claim it.
+  if (!regular.days?.includes(WEEKDAYS[weekday(day)])) return false;
+  const nth = regular.nth ?? [];
+  if (nth.length === 0) return true;
+  const isLast = monthOf(addDays(day, 7)) !== monthOf(day);
+  return (
+    nth.includes(Math.ceil(Number(day.slice(8)) / 7)) ||
+    (isLast && nth.includes(-1))
+  );
+}
+
+/** Every day of a range, at most a week of them. */
+function daysOf({ from, to }: DayRange): DayKey[] {
+  const days: DayKey[] = [];
+  for (let day = from; day <= to && days.length < 7; day = addDays(day, 1)) {
+    days.push(day);
+  }
+  return days;
+}
+
+/**
+ * Regulars matching the selection and search. In a view limited to some
+ * days, only those that usually run on one of them.
+ */
 export function filterRegulars(
   regulars: readonly Regular[],
   venues: ReadonlyMap<string, Venue>,
   state: ViewState,
+  today: DayKey,
 ): Regular[] {
   const terms = searchTerms(state.query);
+  const range = listRange(state, today);
+  const days = range && daysOf(range);
   return regulars.filter((regular) => {
     const venue = venues.get(regular.venue);
     return (
       matchesSelection(regular, venue, state) &&
-      matchesTerms([regular.title, venue?.name ?? ""], terms)
+      matchesTerms([regular.title, venue?.name ?? ""], terms) &&
+      (!days || days.some((day) => runsOn(regular, day)))
     );
   });
+}
+
+const PLURAL_WEEKDAYS = [
+  "Sundays",
+  "Mondays",
+  "Tuesdays",
+  "Wednesdays",
+  "Thursdays",
+  "Fridays",
+  "Saturdays",
+];
+const orList = new Intl.ListFormat("en", { type: "disjunction" });
+const andList = new Intl.ListFormat("en", { type: "conjunction" });
+
+/** The list view's days in a sentence: "tonight", "on Saturday, Oct 17"; null for no limit. */
+function datePhrase(state: ViewState, today: DayKey): string | null {
+  if (state.day) {
+    return state.day === today
+      ? "tonight"
+      : `on ${formatDayHeading(state.day)}`;
+  }
+  switch (state.when) {
+    case "tonight":
+      return "tonight";
+    case "weekend":
+      return "this weekend";
+    case "week":
+      return "in the next 7 days";
+    case "all":
+      return null;
+  }
+}
+
+/**
+ * When the view's regulars usually run: "on Thursdays", "on Fridays,
+ * Saturdays or Sundays", or for a whole week the date phrase. Null for no
+ * limit.
+ */
+function regularsWhen(state: ViewState, today: DayKey): string | null {
+  const range = listRange(state, today);
+  if (!range) return null;
+  const days = daysOf(range);
+  if (days.length >= 7) return datePhrase(state, today);
+  return `on ${orList.format(days.map((day) => PLURAL_WEEKDAYS[weekday(day)]))}`;
+}
+
+/** The weekly regulars' introduction, for the view's days. */
+export function regularsIntro(state: ViewState, today: DayKey): string {
+  const when = regularsWhen(state, today);
+  return when
+    ? `Standing series that usually run ${when}. The venues list them without specific dates, so check with the venue before you go.`
+    : "Standing series the venues list without specific dates. Schedules change: check with the venue before you go.";
+}
+
+/**
+ * The notice for a view with no dated shows but some weekly regulars,
+ * pointing to them without presenting them as listings. Null when there are
+ * none, or when the view isn't limited to some days.
+ */
+export function regularsNotice(
+  regulars: readonly Regular[],
+  venues: ReadonlyMap<string, Venue>,
+  state: ViewState,
+  today: DayKey,
+): { title: string; body: string } | null {
+  const dates = datePhrase(state, today);
+  const when = regularsWhen(state, today);
+  if (!dates || !when || regulars.length === 0) return null;
+  const series =
+    regulars.length === 1
+      ? "this weekly series usually runs"
+      : "these weekly series usually run";
+  const names = regulars.map(
+    (regular) =>
+      `${regular.title} at ${venues.get(regular.venue)?.name ?? regular.venue}`,
+  );
+  return {
+    title: `No listed shows ${dates}.`,
+    body: `But ${series} ${when}: ${andList.format(names)}. Check with the venue before you go.`,
+  };
 }
 
 /**
