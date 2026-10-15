@@ -8,6 +8,7 @@ import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
 
+from jazzcal.llm import Verdict
 from jazzcal.models import ScrapedEvent, SourceStatus
 
 MAX_MISSES = 2
@@ -21,6 +22,11 @@ create table if not exists listing (
     last_seen text not null,
     misses integer not null default 0,
     primary key (source, uid)
+);
+create table if not exists verdict (
+    key text primary key,
+    data text not null,
+    created text not null
 );
 create table if not exists run (
     source text primary key,
@@ -92,6 +98,22 @@ class Store:
             last_success=datetime.fromisoformat(last_success) if last_success else None,
             error=error,
         )
+
+    def verdicts(self, keys: list[str]) -> dict[str, Verdict]:
+        """Cached classifier verdicts for these keys (see llm.Question.cache_key)."""
+        found = {}
+        for key in keys:
+            row = self.db.execute("select data from verdict where key = ?", (key,)).fetchone()
+            if row:
+                found[key] = Verdict.model_validate_json(row[0])
+        return found
+
+    def save_verdicts(self, verdicts: dict[str, Verdict]) -> None:
+        with self.db:
+            self.db.executemany(
+                "insert or replace into verdict values (?, ?, ?)",
+                [(key, v.model_dump_json(), _now()) for key, v in verdicts.items()],
+            )
 
 
 def _now() -> str:

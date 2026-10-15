@@ -3,12 +3,14 @@
 import argparse
 import json
 import logging
+import os
 from datetime import datetime, timedelta
 
-from jazzcal import export, pipeline
+from jazzcal import evaluate, export, pipeline
 from jazzcal.adapters import get_adapter
 from jazzcal.config import ROOT, TZ, VAR_DIR, Registry
 from jazzcal.http import Http
+from jazzcal.llm import Classifier, ClaudeClassifier
 from jazzcal.models import EventsFile
 from jazzcal.store import Store
 
@@ -29,7 +31,15 @@ def main() -> None:
         p.add_argument(
             "--max-age", type=float, default=6, help="reuse pages fetched within this many hours"
         )
-    commands.add_parser("build", help="build the published files from the store")
+    build = commands.add_parser("build", help="build the published files from the store")
+    evaluation = commands.add_parser("eval", help="score classification against eval/labels.yaml")
+    for p in (run, build, evaluation):
+        p.add_argument(
+            "--classifier",
+            default=os.environ.get("JAZZCAL_CLASSIFIER"),
+            help="model for listings the rules can't settle, e.g. claude-haiku-5-5 "
+            "(default: $JAZZCAL_CLASSIFIER; none if unset)",
+        )
     commands.add_parser("publish", help="upload the built files")
     show = commands.add_parser("show", help="print what a source yields, without storing it")
     show.add_argument("source")
@@ -50,11 +60,14 @@ def main() -> None:
             with _http(args.offline, args.max_age) as http:
                 pipeline.scrape(registry, store, http, set(args.source or []) or None)
             if args.command == "run":
-                _build(registry, store)
+                _build(registry, store, _classifier(args.classifier))
                 if args.publish:
                     export.publish(OUT_DIR)
         case "build":
-            _build(Registry.load(), Store(VAR_DIR / "jazzcal.db"))
+            _build(Registry.load(), Store(VAR_DIR / "jazzcal.db"), _classifier(args.classifier))
+        case "eval":
+            store = Store(VAR_DIR / "jazzcal.db")
+            print(evaluate.report(Registry.load(), store, _classifier(args.classifier)))
         case "publish":
             export.publish(OUT_DIR)
         case "show":
@@ -74,8 +87,12 @@ def _http(offline: bool, max_age_hours: float) -> Http:
     return Http(VAR_DIR / "cache", offline=offline, max_age=timedelta(hours=max_age_hours))
 
 
-def _build(registry: Registry, store: Store) -> None:
-    feed, status = pipeline.build(registry, store, datetime.now(TZ))
+def _classifier(model: str | None) -> Classifier | None:
+    return ClaudeClassifier(model) if model and model != "none" else None
+
+
+def _build(registry: Registry, store: Store, classifier: Classifier | None) -> None:
+    feed, status = pipeline.build(registry, store, datetime.now(TZ), classifier)
     export.write(OUT_DIR, feed, status)
     by_relevance = {r: sum(e.relevance == r for e in feed.events) for r in ("jazz", "adjacent")}
     logging.info("built %d events %s into %s", len(feed.events), by_relevance, OUT_DIR)

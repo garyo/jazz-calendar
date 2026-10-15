@@ -49,7 +49,7 @@ we either parse the HTML or ask the venue for permission to use the JSON feed.
 | Phoenix Landing | 512 Mass Ave, Cambridge | JazzBoston jam 1st & 3rd Fri 5–7 | jazzboston.org/jazzjams/ | Recurring | phoenixlandingbar.com is not the bar's site. |
 | Sally O'Brien's | 335 Somerville Ave, Union Sq, Somerville | Dub Apocalypse Sundays; Boston Modern Big Band | sallyobriensbar.com/music/ | HTML (free text) | |
 | The Burren (Backroom) | 247 Elm St, Davis Sq, Somerville | Gypsy jazz (The Django Cadre), jazz brunch shows | burren.com/music.html | HTML (static) | Tickets via 24 Hour Music, which also books McCarthy's & Toad. |
-| The Wellington | 75 Leonard St, Belmont | Weekend jazz brunch, Fri nights, Sat bands | thewellingtonbelmont.com/live-music/ | Recurring (lineups on social media) | |
+| The Wellington | 75 Leonard St, Belmont | Jazz brunch series; Saturday band sessions 7:30–9:30 (Morningside Music, mixed styles) | thewellingtonbelmont.com/live-music/ | Recurring (Saturdays); brunch dates on social media only | Friday nights are pop-rock covers. |
 | The Bluebird Bar | 1293 Washington St, West Newton | Mondays 7–9; Sunday jazz brunch 11–2 | thebluebirdbar.com | Recurring | Website mentions Mondays; the Sunday brunch is reported by musicians but unconfirmed. |
 | Tryst | 689 Mass Ave, Arlington | Thursdays 6–9 | trystrestaurant.com/late-night-jazz-arlington | HTML (Wix; JS-rendered) | |
 | Morningside Music Studio / Annex | 108 Summer St, Arlington | Jams, "Jazz on the Edge" | morningsidemusic.org | Ticketing (Eventbrite organizer; ID not yet found) | Co-runs the Arlington Jazz Festival. |

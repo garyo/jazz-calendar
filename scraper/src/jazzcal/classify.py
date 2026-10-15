@@ -5,9 +5,15 @@ on the title and the source's categories; then the venue's default (everything a
 dedicated jazz room is jazz). Descriptions count only at rooms with regular jazz, or for sources
 with `trust_text` (e.g. presenters whose blurbs are about the act), since bios elsewhere
 mention jazz in passing. At regular-jazz rooms a trio, quartet, etc. or a jam is jazz too.
+
+A ruling is *certain* when it rests on something decisive: the source's word, an include or
+exclude pattern, an explicit genre in the title or tags, or a dedicated jazz room. The rest are
+best guesses that a language model may overrule (see llm.py). A source's `unknown` option sets
+the guess for listings nothing else settles, for rooms where unfamiliar acts are usually jazz.
 """
 
 import re
+from dataclasses import dataclass
 
 from jazzcal.config import VenueConfig
 from jazzcal.models import Relevance, ScrapedEvent, Source
@@ -50,32 +56,39 @@ TAGS = {
 }
 
 
-def classify(event: ScrapedEvent, source: Source, venue: VenueConfig) -> Relevance:
+@dataclass(frozen=True)
+class Ruling:
+    relevance: Relevance
+    certain: bool
+
+
+def classify(event: ScrapedEvent, source: Source, venue: VenueConfig) -> Ruling:
     labels = " ".join([event.title, *event.categories])
     if source.relevance:
-        return source.relevance
+        return Ruling(source.relevance, True)
     options = source.options
     if (pattern := options.get("include")) and not re.search(pattern, labels, re.IGNORECASE):
-        return "other"
+        return Ruling("other", True)
     if (pattern := options.get("exclude")) and re.search(pattern, labels, re.IGNORECASE):
-        return "other"
+        return Ruling("other", True)
     if NOT_MUSIC.search(labels):
-        return "other"
+        return Ruling("other", True)
     if JAZZ.search(labels):
-        return "jazz"
+        return Ruling("jazz", True)
     if ADJACENT.search(labels):
-        return "adjacent"
+        return Ruling("adjacent", False)
     if options.get("include") or venue.jazz_level == "dedicated":
-        return "jazz"
+        return Ruling("jazz", True)
     text = event.text or ""
     # Descriptions count at rooms with regular jazz, or where a source vouches for them.
     if (venue.jazz_level == "regular" or options.get("trust_text")) and JAZZ.search(text):
-        return "jazz"
+        return Ruling("jazz", False)
     if venue.jazz_level == "regular" and ADJACENT.search(text):
-        return "adjacent"
+        return Ruling("adjacent", False)
     if venue.jazz_level == "regular" and (COMBO.search(event.title) or JAM.search(event.title)):
-        return "jazz"
-    return "other"
+        return Ruling("jazz", False)
+    # Rooms whose unfamiliar acts are nearly always jazz or kin say so with `unknown`.
+    return Ruling(options.get("unknown", "other"), False)
 
 
 def tags(event: ScrapedEvent) -> list[str]:

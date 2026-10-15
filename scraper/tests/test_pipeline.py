@@ -4,8 +4,9 @@ from pathlib import Path
 import pytest
 
 from jazzcal import pipeline
-from jazzcal.classify import classify, tags
+from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key
+from jazzcal.llm import Question, Verdict
 from jazzcal.models import ScrapedEvent, Source
 from jazzcal.store import Store
 
@@ -62,28 +63,48 @@ def test_resolve_venue() -> None:
 )
 def test_classify(title: str, level: str, expected: str) -> None:
     source = Source(id="s", adapter="ics", url="https://x")
-    assert classify(event("1", title), source, venue("v", level)) == expected
+    assert classify(event("1", title), source, venue("v", level)).relevance == expected
 
 
 def test_classify_include_pattern() -> None:
     source = Source(id="s", adapter="ics", url="https://x", options={"include": "Jazz"})
     v = venue("v")
-    assert classify(event("1", "Recital", categories=["Piano"]), source, v) == "other"
-    assert classify(event("2", "Recital", categories=["Jazz"]), source, v) == "jazz"
+    assert classify(event("1", "Recital", categories=["Piano"]), source, v).relevance == "other"
+    assert classify(event("2", "Recital", categories=["Jazz"]), source, v).relevance == "jazz"
 
 
 def test_classify_descriptions() -> None:
     source = Source(id="s", adapter="ics", url="https://x")
     trusting = Source(id="t", adapter="ics", url="https://x", options={"trust_text": True})
     gig = event("1", "Kurt Elling", text="The jazz vocalist returns")
-    assert classify(gig, source, venue("v")) == "other"
-    assert classify(gig, trusting, venue("v")) == "jazz"
-    assert classify(gig, source, venue("v", "regular")) == "jazz"
+    assert classify(gig, source, venue("v")).relevance == "other"
+    assert classify(gig, trusting, venue("v")).relevance == "jazz"
+    assert classify(gig, source, venue("v", "regular")).relevance == "jazz"
     late = event("2", "Late Night Set", text="Funk and soul till close")
-    assert classify(late, source, venue("v", "regular")) == "adjacent"
-    assert classify(event("3", "Brunch & Jam"), source, venue("v", "regular")) == "jazz"
-    assert classify(event("4", "Elan Mehler Trio"), source, venue("v", "regular")) == "jazz"
-    assert classify(event("5", "Brentano String Quartet"), source, venue("v", "regular")) == "other"
+    assert classify(late, source, venue("v", "regular")).relevance == "adjacent"
+    assert classify(event("3", "Brunch & Jam"), source, venue("v", "regular")).relevance == "jazz"
+    assert (
+        classify(event("4", "Elan Mehler Trio"), source, venue("v", "regular")).relevance == "jazz"
+    )
+    assert (
+        classify(event("5", "Brentano String Quartet"), source, venue("v", "regular")).relevance
+        == "other"
+    )
+
+
+def test_unknown_option() -> None:
+    source = Source(id="s", adapter="ics", url="https://x", options={"unknown": "adjacent"})
+    ruling = classify(event("1", "Dana Moe"), source, venue("v", "regular"))
+    assert ruling == Ruling("adjacent", False)
+
+
+def test_classify_certainty() -> None:
+    source = Source(id="s", adapter="ics", url="https://x")
+    assert classify(event("1", "Big Band Monday"), source, venue("v")).certain
+    assert classify(event("2", "Trivia"), source, venue("v")).certain
+    assert classify(event("3", "Anyone"), source, venue("v", "dedicated")).certain
+    assert not classify(event("4", "Jean-Luc Ponty"), source, venue("v")).certain
+    assert not classify(event("5", "Funk Night"), source, venue("v")).certain
 
 
 def test_tags() -> None:
@@ -139,3 +160,54 @@ def test_failed_source_keeps_last_listings(store: Store) -> None:
     feed, status = pipeline.build(registry, store, NOW)
     assert len(feed.events) == 1
     assert status.sources[0].error == "HTTP 504"
+
+
+class FakeClassifier:
+    name = "fake"
+
+    def __init__(self, answers: dict[str, Verdict]) -> None:
+        self.answers = answers
+        self.asked: list[str] = []
+
+    def classify(self, questions: list[Question]) -> dict[str, Verdict]:
+        self.asked += [q.title for q in questions]
+        return {q.id: self.answers[q.title] for q in questions if q.title in self.answers}
+
+
+def test_classifier_leans_toward_keeping_listings(store: Store) -> None:
+    source = Source(id="s", adapter="ics", url="https://a", venue="room")
+    registry = Registry({"room": venue("room", "regular")}, [source])
+    store.record_success(
+        "s",
+        [
+            event("1", "Pat Doe Trio", hours=1),
+            event("2", "Riley Roe Trio", hours=2),
+            event("3", "Film Night Trio", hours=3),
+            event("4", "Sam Poe", hours=4),
+            event("5", "Big Band Monday", hours=5),
+        ],
+    )
+    classifier = FakeClassifier(
+        {
+            "Pat Doe Trio": Verdict(relevance="unknown", confidence=0.5, reason="local act"),
+            "Riley Roe Trio": Verdict(relevance="other", confidence=0.6, reason="unsure"),
+            "Film Night Trio": Verdict(relevance="other", confidence=0.95, reason="a film"),
+            "Sam Poe": Verdict(relevance="jazz", confidence=0.7, reason="jazz saxophonist"),
+        }
+    )
+    feed, _ = pipeline.build(registry, store, NOW, classifier)
+    assert {e.title for e in feed.events} == {
+        "Pat Doe Trio",
+        "Riley Roe Trio",
+        "Sam Poe",
+        "Big Band Monday",
+    }
+    # Certain rulings aren't sent, and verdicts are cached.
+    assert sorted(classifier.asked) == [
+        "Film Night Trio",
+        "Pat Doe Trio",
+        "Riley Roe Trio",
+        "Sam Poe",
+    ]
+    pipeline.build(registry, store, NOW, classifier)
+    assert len(classifier.asked) == 4

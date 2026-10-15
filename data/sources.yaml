@@ -2,11 +2,12 @@
 # so venues' own feeds come before aggregators.
 #
 # adapter:   ics | tribe | jsonld | localist | spektrix | bibliocommons | squarespace |
-#            musicidb | ploughandstars | burren | recurring   (see scraper/src/jazzcal/adapters/)
+#            musicidb | ploughandstars | burren | bentobox | textschedule | recurring   (see scraper/src/jazzcal/adapters/)
 # venue:     venue id, for single-venue sources
 # relevance: jazz | adjacent, to skip classification
 # options:   include / exclude — regexes matched against title + source categories;
 #            trust_text — let a description mentioning jazz count at any venue;
+#            unknown — jazz | adjacent for listings nothing else settles (default: other);
 #            plus adapter-specific options
 
 - id: nec
@@ -86,6 +87,7 @@
   url: https://www.hobgoblinbar.com/events/
   venue: hobgoblin
   options:
+    unknown: jazz
     follow: a[href*="/event/"]
     max_follow: 30
     # JSON-LD gives only the date; the time is in the heading's paragraph.
@@ -97,6 +99,7 @@
   url: https://www.beehiveboston.com/musiccalendar
   venue: beehive
   options:
+    unknown: adjacent
     follow: a[href*="/event-details/"]
     max_follow: 30
     exclude: \bTBA\b
@@ -169,6 +172,15 @@
   venue: the-burren
   notes: Static page; one-line genre blurbs ("Gypsy jazz") feed the classifier.
 
+- id: postunderground
+  adapter: textschedule
+  url: https://www.postunderground.com/
+  venue: postunderground
+  relevance: jazz
+  notes: >-
+    Open Fridays in odd months; the month's sets are posted as plain text on the home page
+    a week or two ahead.
+
 # --- Residencies: weekly series venues don't list by date ------------------
 
 - id: wallys-jam
@@ -194,6 +206,16 @@
   relevance: jazz
   options: {title: Sunday jazz brunch, days: [sun], start: "11:00", end: "14:00"}
   notes: Reported by musicians; not on the Bluebird's site. Confirm with the venue.
+
+- id: wellington-band-sessions
+  adapter: recurring
+  url: https://www.thewellingtonbelmont.com/live-music/
+  venue: wellington-belmont
+  relevance: adjacent
+  options: {title: "Saturday band session: Morningside Music", days: [sat], start: "19:30", end: "21:30"}
+  notes: >-
+    Morningside Music ensembles in mixed styles (jazz, Brazilian, country, rock), per the
+    Wellington's site, 2026-10-15. Its jazz brunch dates are only on social media, so not listed.
 
 - id: phoenix-landing-jam
   adapter: recurring

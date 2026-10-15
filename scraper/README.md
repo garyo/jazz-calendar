@@ -40,6 +40,25 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
      title).
   4. Drops past events.
 
+### Classification
+
+`classify.py` decides jazz, adjacent or other with keyword rules. A ruling is *certain* when
+it rests on something decisive: the source's word, an explicit genre in the title or tags, or
+a dedicated jazz room. The rest are guesses.
+
+With `--classifier claude-haiku-5-5` (or `JAZZCAL_CLASSIFIER`), those guesses go to a language
+model (`llm.py`), 25 listings per request. Its verdicts are cached by content in the store, so
+only new or changed listings cost anything.
+- It may answer "unknown", which changes nothing.
+- It can drop a listing the rules kept only when at least 85% sure. Missing a local gig is
+  worse than listing a stray show.
+- A source's `unknown:` option sets the fallback for rooms where unfamiliar acts are usually
+  jazz.
+
+`uv run jazzcal eval [--classifier MODEL]` scores rules alone and rules plus the model against
+the hand labels in `eval/labels.yaml`. It leads with missed shows. Any classifier that has a
+`name` and `classify(questions) -> {id: Verdict}` can be compared this way.
+
 We publish facts and links only, never venue descriptions or images. Every event links back to
 its venue or source.
 

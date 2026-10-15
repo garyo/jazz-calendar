@@ -1,0 +1,501 @@
+# Hand-labeled listings for `jazzcal eval`, sampled from the listings the keyword rules
+# are unsure about (2026-10-15). label: jazz | adjacent | other | unsure (left out of scoring).
+# Drafted from general knowledge of the acts; review and correct freely.
+- source: the-cabot
+  title: The Temptations
+  label: adjacent
+- source: the-cabot
+  title: Darlene Love
+  label: adjacent
+- source: the-cabot
+  title: John Brown's Body + Soul Rebel Project
+  label: other
+- source: the-cabot
+  title: 'Off Cabot: The Mercy Brothers'
+  label: unsure
+- source: the-cabot
+  title: 'Off Cabot: Barrence Whitfield'
+  label: adjacent
+- source: the-cabot
+  title: 'Off Cabot: The Tarbox Ramblers'
+  label: adjacent
+- source: hobgoblin
+  title: Sonny Barbato Duo
+  label: jazz
+- source: hobgoblin
+  title: Yoko Miwa (solo piano)
+  label: jazz
+- source: hobgoblin
+  title: Siha Han (solo piano & vocals)
+  label: unsure
+- source: hobgoblin
+  title: Teddy Horangic Duo with Jake Walters
+  label: unsure
+- source: hobgoblin
+  title: Camila Quintero duo with Lucas Labeau
+  label: jazz
+- source: hobgoblin
+  title: Jake Walters (solo piano)
+  label: unsure
+- source: hobgoblin
+  title: Doug Johnson (solo piano)
+  label: jazz
+- source: beehive
+  title: BRUNCH & JAM
+  label: jazz
+- source: beehive
+  title: Jeff Galindo Trio
+  label: jazz
+- source: beehive
+  title: Sunday Blues with Bruce Bears & Friends
+  label: adjacent
+- source: beehive
+  title: The A-Beez
+  label: unsure
+- source: berklee-bpc
+  title: Christian McBride and Ursa Major
+  label: jazz
+- source: berklee-bpc
+  title: 'Italian Songbook with Scanzonati: Voices of the Mediterranean'
+  label: other
+- source: global-arts-live
+  title: JOHN SCOFIELD’S “ELECTROSPECTIVE” featuring OTEIL BURBRIDGE, LARRY GOLDINGS & ADAM DEITCH
+  label: jazz
+- source: global-arts-live
+  title: MARYNA KRUT
+  label: unsure
+- source: global-arts-live
+  title: BRIA SKONBERG
+  label: jazz
+- source: global-arts-live
+  title: ZOHAR & ADAM
+  label: unsure
+- source: global-arts-live
+  title: KEYON HARROLD
+  label: jazz
+- source: global-arts-live
+  title: SUBJECT:MATTER "Outside"
+  label: unsure
+- source: global-arts-live
+  title: KANDACE SPRINGS
+  label: jazz
+- source: global-arts-live
+  title: MANAS
+  label: unsure
+- source: global-arts-live
+  title: TAMARA JOKIĆ
+  label: unsure
+- source: global-arts-live
+  title: GRETCHEN PARLATO
+  label: jazz
+- source: global-arts-live
+  title: THE DIRTY DOZEN BRASS BAND
+  label: jazz
+- source: global-arts-live
+  title: JOSHUA REDMAN QUARTET
+  label: jazz
+- source: global-arts-live
+  title: 'CIRQUE KABALANTE: AFRIQUE EN CIRQUE'
+  label: other
+- source: global-arts-live
+  title: 'WILDFLOWERS: KURT ELLING'
+  label: jazz
+- source: global-arts-live
+  title: SAHA GNAWA
+  label: other
+- source: global-arts-live
+  title: THE HOT SARDINES
+  label: jazz
+- source: global-arts-live
+  title: 'JUANITO PASCUAL: FLAMENCO CELEBRATION OF JIMI HENDRIX'
+  label: other
+- source: global-arts-live
+  title: MARQUIS HILL
+  label: jazz
+- source: global-arts-live
+  title: FLAMENKORA
+  label: other
+- source: global-arts-live
+  title: 'RED BARAAT: FESTIVAL OF COLORS'
+  label: unsure
+- source: global-arts-live
+  title: LAURA ANGLADE
+  label: jazz
+- source: lilypad
+  title: Nondualism Trio presents Nosferatu Funk
+  label: unsure
+- source: lilypad
+  title: Tailwind Has Layers
+  label: other
+- source: lilypad
+  title: 'Emissary Quartet: [moment]um'
+  label: jazz
+- source: lilypad
+  title: Meg Gehman
+  label: other
+- source: lilypad
+  title: Elan Mehler Trio
+  label: jazz
+- source: scullers
+  title: A Motown Christmas
+  label: adjacent
+- source: plough-and-stars
+  title: Fat n’ Gristle Blues Band
+  label: adjacent
+- source: plough-and-stars
+  title: Johnny Trama and The B3 Kings
+  label: adjacent
+- source: the-burren
+  title: TIGER MOAN First Sunday Blues ft. WILLIE J. LAWS
+  label: adjacent
+- source: the-burren
+  title: JGB Tribute, THE DIAMOND BLUES
+  label: other
+- source: longy
+  title: MAIN STAGE | inn.wien | Gessner-Schocken Concert Series
+  label: other
+- source: longy
+  title: MAIN STAGE | New Gallery Concert Series | Charmed and Strange Crossings
+  label: other
+- source: longy
+  title: 'MAIN STAGE: Dana Maiben and Vivian Montgomery | An Outburst of Improvisors | Faculty Artist Recital'
+  label: other
+- source: longy
+  title: MAIN STAGE | Ralph Farris and Divergent Trio | The Glass Age | Faculty Artist Recital
+  label: other
+- source: longy
+  title: MAIN STAGE | Longy at Regattabar | Point of Contact
+  label: unsure
+- source: longy
+  title: MAIN STAGE | Alash | Master Throat Singers from Tuva
+  label: other
+- source: longy
+  title: MAIN STAGE | Niloufar Nourbakhsh in collaboration with Ensemble Decipher | Tactile Transmissions | Faculty Artist Recital
+  label: other
+- source: longy
+  title: 'MAIN STAGE | Castle of our Skins | FIRE!!: A Celebration of Radical Black Expression'
+  label: other
+- source: longy
+  title: 'MAIN STAGE: Wayman Chin | Sweet Land | Faculty Artist Recital'
+  label: other
+- source: longy
+  title: 'MAIN STAGE: Vanessa Mulvey & Na’ama Lion | Faculty Artist Recital'
+  label: other
+- source: longy
+  title: MAIN STAGE | New Gallery Concert Series | In Honor
+  label: other
+- source: longy
+  title: MAIN STAGE | Matt Savage | Ray of Light | Faculty Artist Recital
+  label: jazz
+- source: tufts
+  title: Tufts Third Day Gospel Choir
+  label: other
+- source: tufts
+  title: 'One Down Left Once, Two Up Right Twice: John McDonald’s Music Shows Up and Goes'
+  label: other
+- source: tufts
+  title: 'Granoff Music Center Colloquium: The “Making Of” the Perry and Marty Granoff Music Center'
+  label: other
+- source: tufts
+  title: 'Student Recital: Joseph Peterson, voice'
+  label: other
+- source: tufts
+  title: Community Music Adult Chamber Music and Voice Class Concert
+  label: other
+- source: tufts
+  title: Tufts Youth Philharmonic
+  label: other
+- source: tufts
+  title: 'Tufts Composers: New at Noon #1'
+  label: other
+- source: tufts
+  title: 'Sunday Concert Series: Tufts Flute Ensemble'
+  label: other
+- source: tufts
+  title: 'Tufts Composers: New at Noon #3'
+  label: other
+- source: tufts
+  title: Tufts Arab Music Ensemble
+  label: other
+- source: tufts
+  title: Community Music Showcase Day
+  label: other
+- source: tufts
+  title: Private Lessons Recital I
+  label: other
+- source: arts-at-the-armory
+  title: Arts at the Armory Spotlight Series Presents Tito Puente Jr.
+  label: adjacent
+- source: arts-at-the-armory
+  title: Smut Slam
+  label: other
+- source: arts-at-the-armory
+  title: Circus Up 2026 Benefit Show
+  label: other
+- source: arts-at-the-armory
+  title: Arts at the Armory Spotlight Series Presents Boston Dance Theater
+  label: other
+- source: arts-at-the-armory
+  title: An Evening with Kate Nash
+  label: other
+- source: arts-at-the-armory
+  title: 'A Night To Be Heard: B.Heard World Gala'
+  label: other
+- source: arts-at-the-armory
+  title: 'The Moth: Boston StorySLAM: KEEPING THE FAITH'
+  label: other
+- source: arts-at-the-armory
+  title: Strummerville Ukulele Club
+  label: other
+- source: arts-at-the-armory
+  title: West Coast Swing Training
+  label: other
+- source: arts-at-the-armory
+  title: Arts at the Armory Spotlight Series Presents Blind Boys of Alabama
+  label: unsure
+- source: arts-at-the-armory
+  title: 'The Bowery Presents: Bedouine with Other Delights'
+  label: other
+- source: arts-at-the-armory
+  title: The Bowery Presents Liana Flores
+  label: other
+- source: northeastern
+  title: Concert Band and Wind Ensemble Outdoor Concert
+  label: other
+- source: the-cabot
+  title: The Craft
+  label: other
+- source: the-cabot
+  title: Cowboy Junkies
+  label: other
+- source: the-cabot
+  title: North Shore Last Waltz
+  label: other
+- source: the-cabot
+  title: More Than Motion - BoSoma Nov.
+  label: other
+- source: the-cabot
+  title: Tusk
+  label: other
+- source: the-cabot
+  title: 'Off Cabot: World Wise & Big ''Ol Dirty Bucket'
+  label: adjacent
+- source: the-cabot
+  title: 'Symphony by the Sea: Brahms Violin Concerto'
+  label: other
+- source: the-cabot
+  title: Marty Stuart
+  label: other
+- source: the-cabot
+  title: Micky Dolenz
+  label: other
+- source: the-cabot
+  title: Puss N Boots
+  label: other
+- source: the-cabot
+  title: Psycho
+  label: other
+- source: the-cabot
+  title: 'Off Cabot: Vibrato Bar (Oct. ''26)'
+  label: unsure
+- source: bpl
+  title: Just Guitar with Chris Lee-Rodriguez (South Boston branch)
+  label: unsure
+- source: bpl
+  title: Grooving With the Pat Loomis Trio (Uphams Corner branch)
+  label: unsure
+- source: beehive
+  title: Blake Newman
+  label: unsure
+- source: beehive
+  title: Monday Night Hoedowns
+  label: other
+- source: beehive
+  title: Ricky “King” Russell
+  label: adjacent
+- source: beehive
+  title: Pop to the Chemist
+  label: unsure
+- source: beehive
+  title: Dwayne Haggins
+  label: unsure
+- source: beehive
+  title: Kayla Erhardt
+  label: unsure
+- source: beehive
+  title: Deleny Pickering
+  label: unsure
+- source: berklee-bpc
+  title: 'Marcus Gilmore: Journey to the New'
+  label: jazz
+- source: berklee-bpc
+  title: Make Them Hear You with Adam Blackstone
+  label: unsure
+- source: berklee-bpc
+  title: LaChanze
+  label: other
+- source: berklee-bpc
+  title: 'Guitar Night: Rock and Pop'
+  label: other
+- source: berklee-bpc
+  title: 'Berklee Asia Rising: Celebrating Asian and Asian American Voices in Contemporary Music'
+  label: other
+- source: berklee-bpc
+  title: Warren Miller's Days Off
+  label: other
+- source: berklee-bpc
+  title: 'B-Girls: Global K-Pop Idol'
+  label: other
+- source: berklee-red-room
+  title: June McDoom / Lutalo
+  label: other
+- source: berklee-red-room
+  title: Brennan Wedl / Sub*T
+  label: other
+- source: berklee-red-room
+  title: Margo Cilker and Lilly Hiatt
+  label: other
+- source: global-arts-live
+  title: 'BALLA KOUYATE & MATCHUME ZANGO: BALA-BILA'
+  label: other
+- source: global-arts-live
+  title: BALLETX
+  label: other
+- source: global-arts-live
+  title: DAKHABRAKHA
+  label: other
+- source: global-arts-live
+  title: 'SOLE DEFINED: ZAZ'
+  label: other
+- source: global-arts-live
+  title: MAYRIG
+  label: unsure
+- source: global-arts-live
+  title: CELLOGAYAGUEM
+  label: other
+- source: global-arts-live
+  title: LADYSMITH BLACK MAMBAZO
+  label: other
+- source: global-arts-live
+  title: THE PLATFORM OPENING DAY
+  label: other
+- source: global-arts-live
+  title: NICOLÁS EMDEN
+  label: unsure
+- source: global-arts-live
+  title: LE VENT DU NORD
+  label: other
+- source: global-arts-live
+  title: 'NILADRI KUMAAR: THE SPACE BETWEEN THE NOTES'
+  label: other
+- source: global-arts-live
+  title: AMYTHYST KIAH
+  label: other
+- source: lilypad
+  title: 'Bog Fancy Magazine Presents: the HAG ATTACK COMMENCEMENT'
+  label: other
+- source: lilypad
+  title: Elanor Moss
+  label: other
+- source: lilypad
+  title: Telehealth
+  label: other
+- source: lilypad
+  title: The Talking Hearts Album Release Show!
+  label: other
+- source: lilypad
+  title: 'FYI: Halloween'
+  label: other
+- source: lilypad
+  title: Jesse Gallagher + Steve Fell
+  label: other
+- source: lilypad
+  title: Phoenix Davis Album Release Show / Mads Jupiter
+  label: other
+- source: lilypad
+  title: Sneaky Miles
+  label: unsure
+- source: lilypad
+  title: Weird Frenz EP release party w/ First in Maths
+  label: other
+- source: lilypad
+  title: Music from the Dark Side
+  label: other
+- source: lilypad
+  title: Fall Writer’s Round
+  label: other
+- source: lilypad
+  title: Eliza Edens & Nora Meier
+  label: other
+- source: plough-and-stars
+  title: Randy Black and the Heathcroppers
+  label: other
+- source: plough-and-stars
+  title: Sarah Levecque Band
+  label: other
+- source: plough-and-stars
+  title: Carboy
+  label: other
+- source: plough-and-stars
+  title: Frank Morey
+  label: other
+- source: plough-and-stars
+  title: Mean Black Spider
+  label: other
+- source: plough-and-stars
+  title: Western Faults
+  label: other
+- source: plough-and-stars
+  title: Dub Apocalypse
+  label: adjacent
+- source: plough-and-stars
+  title: The Starlings with
+  label: other
+- source: plough-and-stars
+  title: Double Down with Tom Baker
+  label: other
+- source: plough-and-stars
+  title: KaBeatles
+  label: other
+- source: plough-and-stars
+  title: Philosophy Night @ the Plough
+  label: other
+- source: plough-and-stars
+  title: Samantha Farrell
+  label: other
+- source: the-burren
+  title: Alice Howe & Freebo
+  label: other
+- source: the-burren
+  title: REESE FULMER & THE CARRIAGE HOUSE BAND w/JESSE JAMES DECONTO (The Pinkerton Raid)
+  label: other
+- source: the-burren
+  title: 'Brian O''Donovan Legacy Series: REVELS CHANTEY SING with DAVID COFFIN'
+  label: other
+- source: the-burren
+  title: Chick Singer Night
+  label: other
+- source: the-burren
+  title: Torn And Frayed
+  label: other
+- source: the-burren
+  title: The Mockingbirds
+  label: other
+- source: the-burren
+  title: Third Man In
+  label: other
+- source: the-burren
+  title: The Barlow Studio'S Singer'S Showcase
+  label: other
+- source: the-burren
+  title: Collective Measures
+  label: unsure
+- source: the-burren
+  title: PORCH PARTY MAMAS with LIZ COOK
+  label: other
+- source: the-burren
+  title: RECKONING CREW Acoustic Grateful Dead
+  label: other
+- source: the-burren
+  title: DAVE HERLIHY Record Release Party
+  label: other
