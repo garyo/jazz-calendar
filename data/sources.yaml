@@ -147,6 +147,17 @@
     no_price: true  # every event's offer says $20
   notes: All genres (much world music); Crawl-delay 10, so a cold run takes ~10 minutes.
 
+- id: regattabar
+  adapter: jsonld
+  url: https://www.ticketweb.com/venue/regattabar-cambridge-ma/748814?pl=regatta
+  venue: regattabar
+  options:
+    unknown: jazz
+  notes: >-
+    Regattabar's own site has no schedule; it links to this TicketWeb venue page, whose
+    MusicEvent JSON-LD lists the shows. robots.txt allows /venue/ and asks for visits
+    09:00-13:00 UTC, which the daily 05:30 Eastern run meets.
+
 - id: lilypad
   adapter: squarespace
   url: https://www.lilypadinman.com/home
