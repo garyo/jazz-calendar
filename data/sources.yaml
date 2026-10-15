@@ -23,6 +23,8 @@
   adapter: tribe
   url: https://longy.edu
   venue: longy
+  options:
+    title_strip: ^(MAIN|STUDIO|BACK) STAGE\s*[|:]\s*
 
 - id: tufts
   adapter: ics

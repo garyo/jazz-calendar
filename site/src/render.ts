@@ -26,7 +26,7 @@ import {
 import type { CalendarEvent, Regular, Relevance, Venue } from "./types";
 
 /** Entries listed in a month-grid cell before "+N more". */
-export const MONTH_CELL_ENTRIES = 3;
+export const MONTH_CELL_ENTRIES = 8;
 
 type Child = Node | string | null | undefined | false;
 
@@ -58,6 +58,19 @@ function srOnly(text: string): HTMLSpanElement {
   return h("span", { class: "sr-only" }, text);
 }
 
+/** Links that leave the site open in a new tab, and say so to screen readers. */
+function external(
+  attrs: Record<string, string | null>,
+  ...children: Child[]
+): HTMLAnchorElement {
+  return h(
+    "a",
+    { ...attrs, target: "_blank", rel: "noopener" },
+    ...children,
+    srOnly(" (opens in a new tab)"),
+  );
+}
+
 /** Venue, neighborhood and town; themes may leave out the neighborhood. */
 function renderVenue(venueId: string, venue: Venue | undefined): Node {
   if (!venue) return h("p", { class: "event-venue" }, venueId);
@@ -67,7 +80,7 @@ function renderVenue(venueId: string, venue: Venue | undefined): Node {
   return h(
     "p",
     { class: "event-venue" },
-    href ? h("a", { href }, venue.name) : venue.name,
+    href ? external({ href }, venue.name) : venue.name,
     h(
       "span",
       { class: "event-place" },
@@ -119,7 +132,7 @@ function renderTitle(
     "h3",
     { class: "event-title", id },
     href
-      ? h("a", { class: "event-link", href }, title)
+      ? external({ class: "event-link", href }, title)
       : h("span", { class: "event-link" }, title),
     ...rest,
   );
@@ -139,8 +152,7 @@ function renderExtra(event: CalendarEvent, about: string): Child {
     { class: "event-extra" },
     event.price && h("span", { class: "event-price" }, event.price),
     tickets &&
-      h(
-        "a",
+      external(
         { class: "event-tickets", href: tickets },
         "Tickets",
         srOnly(about),
