@@ -17,6 +17,7 @@ import re
 from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
+from functools import cache
 from typing import Annotated, Any, overload
 from urllib.parse import urljoin
 
@@ -94,15 +95,21 @@ def adapter(name: str, *, options: type[Options] | None = None) -> Callable[[Any
 
 def adapters() -> dict[str, type[Options]]:
     """Every adapter's name, with the model of its options."""
-    if not _registry:
-        for module in pkgutil.iter_modules(__path__):
-            importlib.import_module(f"{__name__}.{module.name}")
+    _import_all()
     return {name: r.options for name, r in sorted(_registry.items())}
 
 
+@cache
+def _import_all() -> None:
+    """Import every adapter module, so each registers itself."""
+    for module in pkgutil.iter_modules(__path__):
+        importlib.import_module(f"{__name__}.{module.name}")
+
+
 def _registered(name: str) -> _Registered:
-    if name not in adapters():
-        raise KeyError(f"no adapter {name!r}; known: {', '.join(adapters())}")
+    _import_all()
+    if name not in _registry:
+        raise KeyError(f"no adapter {name!r}; known: {', '.join(sorted(_registry))}")
     return _registry[name]
 
 
