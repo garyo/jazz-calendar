@@ -30,8 +30,9 @@ import {
   methodNotAllowed,
   unauthorized,
 } from "./worker-http";
+import { type NotifyEnv, notify } from "./worker-notify";
 
-export interface SubmissionsEnv {
+export interface SubmissionsEnv extends NotifyEnv {
   DATA: R2Bucket;
   DB: D1Database;
   /** The scraper's token; also reads the approved feed. */
@@ -40,11 +41,6 @@ export interface SubmissionsEnv {
   ADMIN_TOKEN?: string;
   /** Turnstile secret key for the submission form's widget. */
   TURNSTILE_SECRET?: string;
-  /** ntfy server root and topic for new-submission notices; unset skips them. */
-  NTFY_URL?: string;
-  NTFY_TOPIC?: string;
-  /** base64 "user:password" for the ntfy server. */
-  NTFY_TOKEN?: string;
 }
 
 const SUBMIT_PATH = "/api/submissions";
@@ -177,32 +173,18 @@ function notifyNewSubmission(
   gig: NoticeGig,
   adminUrl: string,
 ): void {
-  if (!env.NTFY_URL || !env.NTFY_TOPIC || !env.NTFY_TOKEN) return;
   const when = gig.start_time
     ? `${gig.date} ${gig.start_time}`
     : `${gig.date}, time TBA`;
   const where = gig.venue ?? `${gig.venue_name ?? "?"} (not listed)`;
-  // ntfy's JSON form, so non-ASCII titles survive (headers can't carry them).
-  const notice = fetch(env.NTFY_URL, {
-    method: "POST",
-    headers: {
-      authorization: `Basic ${env.NTFY_TOKEN}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      topic: env.NTFY_TOPIC,
+  ctx.waitUntil(
+    notify(env, {
       title: "Boston Jazz Calendar: new gig to review",
       message: `${gig.title}\n${when} · ${where}`,
       tags: ["musical_note"],
       click: adminUrl,
     }),
-  })
-    .then(async (res) => {
-      if (!res.ok)
-        console.error(`ntfy: HTTP ${res.status} ${await res.text()}`);
-    })
-    .catch((error) => console.error("ntfy:", error));
-  ctx.waitUntil(notice);
+  );
 }
 
 async function approvedFeed(

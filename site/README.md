@@ -24,6 +24,7 @@ src/types.ts     TS mirror of ../schema/events.schema.json
 src/worker.ts    the Worker: R2-backed data routes, filtered feeds, the publish API
 src/worker-submissions.ts  the Worker's gig submission and review API (D1)
 src/worker-http.ts         response and bearer-token helpers for the Worker
+src/worker-notify.ts       ntfy notices to the owner (submissions, stale data)
 src/submission.ts  submission records, limits and validation (shared)
 src/submit.ts    the "Submit a gig" dialog; src/admin.ts: the review page
 src/theme.ts     the review-period theme switcher
