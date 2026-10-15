@@ -121,7 +121,16 @@ Other scripts:
 | `bun run lint` / `lint:fix` | Biome |
 | `bun run test` | `bun test`: time, filtering, URL-state, rendering and controls (happy-dom), build and worker tests |
 | `bun run check` | typecheck + lint + test |
-| `bun run deploy` | Build, then `wrangler deploy` |
+| `bun run deploy` | Build, then `wrangler deploy` (by hand; see Deploys) |
+
+## Deploys
+
+Cloudflare Workers Builds deploys the Worker from GitHub: every push to
+`main` builds the site and deploys it, with no step on the owner's Mac.
+`bun run deploy` does the same by hand from a checkout. In the Worker's
+build settings the root directory should be `site` and the build command
+`bun run build`, so `dist/` has the hashed asset names that `_headers`
+expects.
 
 ## One-time Cloudflare setup (owner)
 
@@ -134,10 +143,10 @@ Other scripts:
    `openssl rand -base64 32`):
    `bunx wrangler secret put PUBLISH_TOKEN`
    Give the same token to the scraper's upload step.
-3. Set up gig submissions (see [Gig submissions](#gig-submissions)); the
-   deploy fails until `wrangler.toml` has a real D1 `database_id`:
-   1. `bunx wrangler d1 create bostonjazzcalendar`, and put the printed
-      `database_id` in `wrangler.toml`.
+3. Set up gig submissions (see [Gig submissions](#gig-submissions)):
+   1. The D1 database exists and its `database_id` is in `wrangler.toml`.
+      For a fresh account, `bunx wrangler d1 create bostonjazzcalendar`
+      and put the printed id there instead.
    2. `bunx wrangler d1 migrations apply bostonjazzcalendar --remote`. Run
       it again whenever `migrations/` gains a file.
    3. In the dashboard, Turnstile → Add widget, Managed mode, with the
@@ -148,14 +157,19 @@ Other scripts:
    4. `bunx wrangler secret put ADMIN_TOKEN` with another long random token
       (`openssl rand -base64 32`). Paste it into `/admin` when it asks; the
       tab keeps it (in `sessionStorage`) until you close it or sign out.
-4. Deploy with `bun run deploy`.
-5. Add the custom domain: in the dashboard, Workers & Pages →
+4. Set up notices to the owner (new submissions, stale data). `NTFY_URL`
+   and `NTFY_TOPIC` are plain `[vars]` in `wrangler.toml`; the credentials
+   are a secret: `bunx wrangler secret put NTFY_TOKEN`, the base64 of
+   `user:password`. Without them no notice is sent. For `wrangler dev`, put
+   `NTFY_TOKEN` in `.dev.vars` to test them.
+5. Deploy: push to `main` (see [Deploys](#deploys)) or `bun run deploy`.
+6. Add the custom domain: in the dashboard, Workers & Pages →
    `jazz-calendar` → Settings → Domains & Routes → Add →
    Custom domain → `bostonjazzcalendar.com` (and `www.` if wanted). The zone
    must be on the same Cloudflare account. Alternatively, add
    `routes = [{ pattern = "bostonjazzcalendar.com", custom_domain = true }]` to
    `wrangler.toml`.
-6. Optional: set up Cloudflare Email Routing so
+7. Optional: set up Cloudflare Email Routing so
    `listings@bostonjazzcalendar.com` (shown on the page) reaches a real inbox.
 
 ## Routes
@@ -297,6 +311,12 @@ the two rules' headers with a comma, which browsers enforce as two policies,
 so the page can run only its own bundle and talk only to this site.
 `admin.html` loads no script but `/admin.js` (hashed at build), whose imports never reach
 `analytics.ts`; `src/csp.test.ts` checks both.
+
+`_headers` also sends `X-Robots-Tag: noindex` with every response. That's
+deliberate during the quiet launch: search engines leave the site out of
+their results. `robots.txt` still allows everything on purpose, since a
+crawler has to fetch a page to see its noindex. To launch, delete the
+`X-Robots-Tag` line.
 
 ## Operations / hardening (dashboard)
 
