@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import httpx
 
 from jazzcal import evaluate, export, pipeline
-from jazzcal.adapters import adapters, get_adapter
+from jazzcal.adapters import adapters
 from jazzcal.config import ROOT, TZ, VAR_DIR, Registry
 from jazzcal.http import Http
 from jazzcal.llm import Classifier, ClaudeClassifier
@@ -84,7 +84,7 @@ def main() -> None:
         case "show":
             source = Registry.load().source(args.source)
             with _http(args.offline, MAX_AGE_HOURS) as http:
-                for e in get_adapter(source.adapter)(source, http):
+                for e in pipeline.scrape_source(source, http):
                     print(e.model_dump_json(exclude={"text"}, exclude_none=True))
         case "schema":
             schema = json.dumps(feed_schema(), indent=2)

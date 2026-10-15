@@ -41,7 +41,8 @@ events turn up the same day; details rarely change once posted."""
 
 
 class Options(BaseModel):
-    """An adapter's settings, from its sources' `options`. This one has none."""
+    """An adapter's settings, from its sources' `options`. Adapters that take some subclass
+    this; as it stands, it allows none."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 

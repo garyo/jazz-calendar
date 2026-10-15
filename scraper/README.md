@@ -53,8 +53,9 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
   - An event a source stops listing is dropped after two runs without it.
   - After each scrape, the store forgets listings a source has dropped whose events ended over
     30 days ago, and the cache deletes pages unused for 30 days (except on `--offline` runs).
-- **`pipeline.scrape`** applies each source's `title_strip` and `title_replace` to the titles
-  its adapter returns (`Source.retitle`, ignoring case).
+- **`pipeline.scrape_source`** runs a source's adapter and applies its `title_strip` and
+  `title_replace` to the titles (`Source.retitle`, ignoring case). `jazzcal show` prints
+  what it returns.
 - **`pipeline.build`**:
   1. Resolves venues (by id, name, alias or street address).
   2. Classifies each event as jazz, adjacent or other (`classify.py`).

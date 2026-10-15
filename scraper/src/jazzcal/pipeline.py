@@ -60,13 +60,12 @@ def scrape(
         if not source.enabled or (only and source.id not in only):
             continue
         try:
-            events = get_adapter(source.adapter)(source, http)
+            events = scrape_source(source, http)
         except Exception as e:
             # One broken source must not stop the others; its last good listings stand.
             log.exception("source %s failed", source.id)
             store.record_failure(source.id, redact(f"{type(e).__name__}: {e}"))
             continue
-        events = _retitle(source, events)
         log.info("source %s: %d events", source.id, len(events))
         # Nothing at all, where the last run found shows still to come, more likely means a
         # broken page than an empty calendar: keep the last good listings.
@@ -82,8 +81,10 @@ def scrape(
     log.info("pruned %d old listings and %d cached pages", listings, pages)
 
 
-def _retitle(source: Source, events: list[ScrapedEvent]) -> list[ScrapedEvent]:
-    """The events with the source's title rewrites applied, less any left without a title."""
+def scrape_source(source: Source, http: Http) -> list[ScrapedEvent]:
+    """What a source lists: its adapter's events, with the source's title rewrites applied,
+    less any they leave without a title."""
+    events = get_adapter(source.adapter)(source, http)
     if not (source.title_strip or source.title_replace):
         return events
     return [
