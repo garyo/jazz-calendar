@@ -1,6 +1,7 @@
 """Scrape sources into the store, then build the published feed from it."""
 
 import hashlib
+import itertools
 import logging
 import re
 from collections import Counter
@@ -115,7 +116,13 @@ class Candidate:
     scraped: ScrapedEvent
     venue: str
     ruling: Ruling
+    first_seen: str = ""
+    """When the source first listed it, as stored (ISO 8601, UTC)."""
+    published_id: str | None = None
+    """The id it was last published under."""
     merged: list["Candidate"] = field(default_factory=list)
+    id: str = ""
+    """The id to publish it under, once _assign_ids has run."""
 
     @property
     def sources(self) -> list[str]:
@@ -137,6 +144,7 @@ def build(
         if now - status.last_success > STALE_AFTER:
             log.warning("source %s stale since %s; skipping it", source.id, status.last_success)
             continue
+        published_ids = store.published_ids(source.id)
         for scraped in store.current(source.id):
             if _past(scraped, now):
                 continue
@@ -149,14 +157,27 @@ def build(
             ruling = classify(scraped, source, registry.venues[venue_id])
             if ruling.certain and ruling.relevance == "other":
                 continue
-            candidates.append(Candidate(priority, source, scraped, venue_id, ruling))
+            first_seen, published_id = published_ids[scraped.uid]
+            candidates.append(
+                Candidate(priority, source, scraped, venue_id, ruling, first_seen, published_id)
+            )
     for name, count in unresolved.most_common():
         log.info("unknown venue (%d events) %s", count, name)
     if classifier:
         overrule(classifier, store, registry, [c for c in candidates if not c.ruling.certain])
 
     listed = [c for c in candidates if c.ruling.relevance != "other"]
-    events = sorted((_publish(c, registry) for c in _dedup(listed)), key=lambda e: e.start)
+    deduped = _dedup(listed)
+    _assign_ids(deduped)
+    store.save_event_ids(
+        [
+            (c.source.id, c.scraped.uid, group.id)
+            for group in deduped
+            for c in (group, *group.merged)
+            if c.published_id != group.id
+        ]
+    )
+    events = sorted((_publish(c, registry) for c in deduped), key=lambda e: e.start)
     used = {source_id for e in events for source_id in e.sources}
     return (
         EventsFile(
@@ -244,6 +265,31 @@ def _norm(title: str) -> str:
     return re.sub(r"[^a-z0-9 ]+", " ", title.lower())
 
 
+def _assign_ids(events: list[Candidate]) -> None:
+    """Give each event an id that holds as sources start and stop listing it, since calendar
+    apps take a new id for a new event. Each listing remembers the id it was last published
+    under; an event takes the one its longest-standing listing has, or if none has one, an
+    id derived from its leading listing. Should a merged event split up, the part with the
+    oldest listing keeps the id and the others get new ones."""
+    taken: set[str] = set()
+
+    def age(event: Candidate) -> tuple[str, int, str]:
+        oldest = min(c.first_seen for c in (event, *event.merged))
+        return oldest, event.priority, event.scraped.uid
+
+    for event in sorted(events, key=age):
+        listings = sorted((event, *event.merged), key=lambda c: c.first_seen)
+        published = (c.published_id for c in listings if c.published_id)
+        key = f"{event.source.id}|{event.scraped.uid}"
+        derived = (_hash(key if n == 0 else f"{key}|{n}") for n in itertools.count())
+        event.id = next(i for i in itertools.chain(published, derived) if i not in taken)
+        taken.add(event.id)
+
+
+def _hash(text: str) -> str:
+    return hashlib.sha1(text.encode()).hexdigest()[:12]
+
+
 def _publish(c: Candidate, registry: Registry) -> Event:
     s = c.scraped
     others = [m.scraped for m in c.merged]
@@ -253,7 +299,7 @@ def _publish(c: Candidate, registry: Registry) -> Event:
 
     venue = registry.venues[c.venue]
     return Event(
-        id=hashlib.sha1(f"{c.source.id}|{s.uid}".encode()).hexdigest()[:12],
+        id=c.id,
         title=s.title,
         start=s.start,
         end=s.end,

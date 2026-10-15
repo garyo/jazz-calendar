@@ -22,6 +22,7 @@ create table if not exists listing (
     first_seen text not null,
     last_seen text not null,
     misses integer not null default 0,
+    event_id text,  -- the id the event was last published under
     primary key (source, uid)
 );
 create table if not exists verdict (
@@ -41,6 +42,7 @@ create table if not exists run (
 );
 """
 ADDED_COLUMNS = {
+    "listing": {"event_id": "text"},
     "run": {"failures": "integer not null default 0", "notified": "text"},
 }
 """Columns added to SCHEMA since its first release, to add to older databases."""
@@ -134,6 +136,22 @@ class Store:
             "select data from listing where source = ? and misses < ?", (source, max_misses)
         )
         return [ScrapedEvent.model_validate_json(data) for (data,) in rows]
+
+    def published_ids(self, source: str) -> dict[str, tuple[str, str | None]]:
+        """For each of the source's listings by uid: when the source first listed it, and the
+        id its event was last published under."""
+        rows = self.db.execute(
+            "select uid, first_seen, event_id from listing where source = ?", (source,)
+        )
+        return {uid: (first_seen, event_id) for uid, first_seen, event_id in rows}
+
+    def save_event_ids(self, ids: list[tuple[str, str, str]]) -> None:
+        """Record (source, uid, event id) for listings just published."""
+        with self.db:
+            self.db.executemany(
+                "update listing set event_id = ? where source = ? and uid = ?",
+                [(event_id, source, uid) for source, uid, event_id in ids],
+            )
 
     def prune(self, before: datetime) -> int:
         """Forget listings that their source has dropped, of events over before `before`.

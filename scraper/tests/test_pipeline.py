@@ -1,3 +1,4 @@
+import hashlib
 from collections.abc import Iterator
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -8,6 +9,7 @@ import yaml
 from pydantic import ValidationError
 
 from jazzcal import pipeline
+from jazzcal import store as store_module
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key
 from jazzcal.export import to_ics
@@ -167,6 +169,64 @@ def test_build_dedups_and_prefers_earlier_source(store: Store) -> None:
     assert merged.sources == ["venue-site", "aggregator"]
     assert merged.ticket_url == "https://tix"
     assert [s.id for s in status.sources] == ["venue-site", "aggregator"]
+
+
+@pytest.fixture
+def ticking_store(store: Store, monkeypatch: pytest.MonkeyPatch) -> Store:
+    """A store whose clock moves a minute with each reading, so first_seen orders listings."""
+    minutes = iter(range(10_000))
+    monkeypatch.setattr(
+        store_module, "_now", lambda: (NOW + timedelta(minutes=next(minutes))).isoformat()
+    )
+    return store
+
+
+def ids(registry: Registry, store: Store) -> dict[tuple[str, ...], str]:
+    """Published event ids by the sources listing each event."""
+    feed, _ = pipeline.build(registry, store, NOW)
+    return {tuple(e.sources): e.id for e in feed.events}
+
+
+def derived_id(source: str, uid: str) -> str:
+    return hashlib.sha1(f"{source}|{uid}".encode()).hexdigest()[:12]
+
+
+def club_registry() -> Registry:
+    sources = [
+        Source(id="venue-site", adapter="ics", url="https://a", venue="club"),
+        Source(id="aggregator", adapter="ics", url="https://b", venue="club"),
+    ]
+    return Registry({"club": venue("club", "dedicated")}, sources)
+
+
+def test_event_ids_hold_as_sources_come_and_go(ticking_store: Store) -> None:
+    store, registry = ticking_store, club_registry()
+    store.record_success("aggregator", [event("b1", "Pat Doe Quartet")])
+    first_id = derived_id("aggregator", "b1")
+    assert ids(registry, store) == {("aggregator",): first_id}
+    # The venue's own listing now leads, but the event keeps its id...
+    store.record_success("venue-site", [event("a1", "Pat Doe Quartet")])
+    assert ids(registry, store) == {("venue-site", "aggregator"): first_id}
+    # ...and keeps it when the aggregator drops it.
+    for _ in range(2):
+        store.record_success("aggregator", [])
+    assert ids(registry, store) == {("venue-site",): first_id}
+
+
+def test_split_events_get_distinct_ids(ticking_store: Store) -> None:
+    store, registry = ticking_store, club_registry()
+    store.record_success("aggregator", [event("b1", "Pat Doe Quartet")])
+    ids(registry, store)
+    store.record_success("venue-site", [event("a1", "Pat Doe Quartet")])
+    assert ids(registry, store) == {("venue-site", "aggregator"): derived_id("aggregator", "b1")}
+    # The listings no longer match: the older keeps the id, the other gets its own.
+    store.record_success("venue-site", [event("a1", "Pat Doe Quartet", hours=10)])
+    split = {
+        ("venue-site",): derived_id("venue-site", "a1"),
+        ("aggregator",): derived_id("aggregator", "b1"),
+    }
+    assert ids(registry, store) == split
+    assert ids(registry, store) == split
 
 
 def test_missing_listings_drop_after_two_runs(store: Store) -> None:
