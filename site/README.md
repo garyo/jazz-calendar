@@ -243,3 +243,23 @@ feed:
 
 Submitters' names, emails and notes never leave D1 except through the admin
 API. Admin and submission responses are `Cache-Control: no-store`.
+
+## Security headers and analytics
+
+`public/_headers` sets a Content-Security-Policy on every page. Third-party
+code is limited to the Turnstile widget and the analytics tracker, and the
+tracker is allowed by exact URL: `script-src` names only
+`https://analytics.oberbrunner.com/tracker.js` and `connect-src` only its
+`/api/collect`, so nothing else on that host can run here or receive data.
+`src/analytics.ts` exports both URLs and `src/csp.test.ts` checks they match.
+The tracker loads with a dynamic `import()` only on the production hosts,
+with `autoPageviews: false` and a single `page()` call. It has no
+Subresource Integrity hash: its URL is unversioned and served with
+`max-age=86400`, so a hash would break on every featherstat update.
+
+The review page gets a second, stricter policy (`/admin*`:
+`script-src 'self'; connect-src 'self'; frame-src 'none'`). Cloudflare joins
+the two rules' headers with a comma, which browsers enforce as two policies,
+so the page can run only its own bundle and talk only to this site.
+`admin.html` loads nothing but `/admin.js`, whose imports never reach
+`analytics.ts`; `src/csp.test.ts` checks both.

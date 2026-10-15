@@ -1,5 +1,10 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://analytics.oberbrunner.com https://challenges.cloudflare.com 'sha256-OaJZ8Xc3rzV8MBsyML1So+XrZnJge+a+O4sXZVOO2tw='; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://analytics.oberbrunner.com; frame-src https://challenges.cloudflare.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://analytics.oberbrunner.com/tracker.js https://challenges.cloudflare.com 'sha256-OaJZ8Xc3rzV8MBsyML1So+XrZnJge+a+O4sXZVOO2tw='; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://analytics.oberbrunner.com/api/collect; frame-src https://challenges.cloudflare.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
   Referrer-Policy: strict-origin-when-cross-origin
   X-Content-Type-Options: nosniff
   X-Robots-Tag: noindex
+
+# A second policy for the review page. Both apply, so it runs only its own
+# scripts and talks only to this site: no analytics, no Turnstile.
+/admin*
+  Content-Security-Policy: script-src 'self'; connect-src 'self'; frame-src 'none'

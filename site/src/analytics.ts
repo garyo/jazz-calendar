@@ -7,6 +7,12 @@
  */
 
 const ORIGIN = "https://analytics.oberbrunner.com";
+/**
+ * The tracker module and where it reports. _headers allows exactly these two
+ * URLs from ORIGIN, so nothing else there can run or receive data.
+ */
+export const TRACKER_URL = `${ORIGIN}/tracker.js`;
+export const COLLECT_URL = `${ORIGIN}/api/collect`;
 const PRODUCTION_HOSTS = [
   "bostonjazzcalendar.com",
   "www.bostonjazzcalendar.com",
@@ -25,13 +31,12 @@ interface Tracker {
 
 export async function startAnalytics(): Promise<void> {
   if (SITE_ID === null || !PRODUCTION_HOSTS.includes(location.hostname)) return;
-  // A variable, not a literal, so the bundler leaves the import to the browser.
-  const trackerUrl = `${ORIGIN}/tracker.js`;
   try {
-    const tracker: Tracker = await import(trackerUrl);
+    // A variable, not a literal, so the bundler leaves the import to the browser.
+    const tracker: Tracker = await import(TRACKER_URL);
     tracker.init({
       site: SITE_ID,
-      endpoint: `${ORIGIN}/api/collect`,
+      endpoint: COLLECT_URL,
       autoPageviews: false,
     });
     tracker.page();
