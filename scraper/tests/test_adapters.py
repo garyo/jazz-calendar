@@ -22,6 +22,17 @@ def test_ics_trumba_fields() -> None:
     assert all(not c.endswith("\\") for e in events for c in e.categories)
 
 
+def test_ics_trumba_links_and_locations() -> None:
+    events = ics.parse((FIXTURES / "harvard-gazette.ics").read_text(), now=NOW)
+    assert {e.venue_name for e in events} == {"Sanders Theatre"}
+    concert = next(e for e in events if e.title.startswith("Boston Youth Symphony"))
+    assert concert.ticket_url == (
+        "https://boxoffice.harvard.edu/Online/default.asp"
+        "?BOparam::WScontent::loadArticle::permalink=byso-opening-concert"
+    )
+    assert concert.price and concert.price.startswith("Full Price: $30, $25.")
+
+
 def test_ics_window_and_categories() -> None:
     events = ics.parse((FIXTURES / "armory.ics").read_text(), now=NOW)
     assert events

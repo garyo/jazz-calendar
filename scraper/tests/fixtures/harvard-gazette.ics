@@ -1,0 +1,320 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Trumba Corporation//Trumba Calendar Services 0.11.26214//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Harvard University Gazette
+X-WR-TIMEZONE:America/New_York
+BEGIN:VTIMEZONE
+TZID:America/New_York
+BEGIN:STANDARD
+DTSTART:20071104T020000
+RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=11
+TZNAME:EST
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20070311T020000
+RRULE:FREQ=YEARLY;BYDAY=2SU;BYMONTH=3
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+SUMMARY:Dean&#8217\;s Distinguished Lecture
+DTSTART;TZID=America/New_York:20261001T183000
+DTEND;TZID=America/New_York:20261001T201500
+DTSTAMP:20260924T130334Z
+UID:http://uid.trumba.com/event/207809737
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre <br>45 Quincy St. <br>Cambridge\; <a href="https:
+ //harvard.az1.qualtrics.com/jfe/form/SV_1zizJ6HpwqSUimG" target="_blank" r
+ el="noopener" title="https://harvard.az1.qualtrics.com/jfe/form/SV_1zizJ6H
+ pwqSUimG">harvard.az1.qualtrics.com&#8230\;</a>
+URL:https://dce.harvard.edu/events/deans-distinguished-lecture-2026/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:$10
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loa
+ dArticle::permalink=dce" target="_blank" rel="noopener" title="https://box
+ office.harvard.edu/Online/default.asp?BOparam::WScontent::loadArticle::per
+ malink=dce">boxoffice.harvard.edu&#8230\;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D207809737
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Hutchins Center Honors presents The W. E. B. Du Bois Medal Ceremon
+ y 2026
+DTSTART;TZID=America/New_York:20261008T170000
+DTEND;TZID=America/New_York:20261008T170000
+DTSTAMP:20261006T072040Z
+UID:http://uid.trumba.com/event/209226522
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:Free. Handling fee
+ s apply for online and phone reservations. Limit of 2 tickets per person. 
+ Tickets are valid until 4:45pm. If tickets are sold out in advance\, a sta
+ ndby line will begin at 4:45pm. Patrons are encouraged to arrive early to 
+ guarantee admission.
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loa
+ dArticle::permalink=hutchins-center" target="_blank" rel="noopener" title=
+ "https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::load
+ Article::permalink=hutchins-center">boxoffice.harvard.edu&#8230\;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D209226522
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Kendall Square Orchestra presents Voices of Freedom
+DTSTART;TZID=America/New_York:20261009T193000
+DTEND;TZID=America/New_York:20261009T193000
+DTSTAMP:20261001T123913Z
+UID:http://uid.trumba.com/event/209226551
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:ADVANCE Full Price
+ : $50\, $30\;  Students: $15 (in $30 section)\, Seniors: 20% off   AT DOOR
+   Full Price: $55\, $35\;  Students: $15 (in $35 section)\, Seniors: 20% o
+ ff
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loa
+ dArticle::permalink=kendall-square-orchestra-voices-freedom" target="_blan
+ k" rel="noopener" title="https://boxoffice.harvard.edu/Online/default.asp?
+ BOparam::WScontent::loadArticle::permalink=kendall-square-orchestra-voices
+ -freedom">boxoffice.harvard.edu&#8230\;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D209226551
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Chamber Music Society / Mozart\, Mendelssohn\, Vaughan Will
+ iams
+DTSTART;TZID=America/New_York:20261011T150000
+DTEND;TZID=America/New_York:20261011T150000
+DTSTAMP:20261006T072300Z
+UID:http://uid.trumba.com/event/207834036
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:Full Price:  $73\,
+  $60\, $46\, $33\;  Students: $9\;  Seniors (65+)\, WGBH\, and MTA (Mass T
+ eachers Assoc): $4 off\; Harvard Staff/Faculty (Outings &amp\; Innings): $
+ 7 off\; Student Rush: $6 (starting 90 minutes prior to concert)
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://www.boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent:
+ :loadArticle::permalink=bcms2" target="_blank" rel="noopener" title="https
+ ://www.boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loadAr
+ ticle::permalink=bcms2">www.boxoffice.harvard.edu&#8230\;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D207834036
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:E.O. Wilson Biodiversity Foundation &amp\; Museum of Comparative Z
+ oology present HALF-EARTH DAY 2026 | Half-Earth at Ten: Honoring a Legacy 
+ of Hope
+DTSTART;TZID=America/New_York:20261012T120000
+DTEND;TZID=America/New_York:20261012T120000
+DTSTAMP:20260928T153457Z
+UID:http://uid.trumba.com/event/209223456
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:General Admission:
+  $20 Students / Seniors: $10
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loa
+ dArticle::permalink=half-earth-day" target="_blank" rel="noopener" title="
+ https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loadA
+ rticle::permalink=half-earth-day">boxoffice.harvard.edu&#8230\;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D209223456
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Youth Symphony Orchestras present 69th Season Opening Conce
+ rt
+DTSTART;TZID=America/New_York:20261018T150000
+DTEND;TZID=America/New_York:20261018T150000
+DTSTAMP:20261013T123501Z
+UID:http://uid.trumba.com/event/210845090
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:Full Price: $30\, 
+ $25.  Students\, Seniors\, BYSO Alumni: $5 OFF.
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loa
+ dArticle::permalink=byso-opening-concert" target="_blank" rel="noopener" t
+ itle="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent:
+ :loadArticle::permalink=byso-opening-concert">boxoffice.harvard.edu&#8230
+ \;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D210845090
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Author Talk - Adam Grant presents VIBE: The Secrets of Strong Conn
+ ections in a Lonely World
+DTSTART;TZID=America/New_York:20261029T180000
+DTEND;TZID=America/New_York:20261029T180000
+DTSTAMP:20260928T124606Z
+UID:http://uid.trumba.com/event/207833431
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St.<br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:General Admission:
+  $20 General Admisson PLUS BOOK: $48 Student: $5* Student PLUS BOOK: $35 A
+  valid student ID is required.
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://www.boxoffice.harvard.edu/Online" target="_blank" rel="noopener"
+  title="https://www.boxoffice.harvard.edu/Online">www.boxoffice.harvard.ed
+ u&#8230\;</a> /default.asp?BOparam::WScontent::loadArticle::permalink=harv
+ ard-coop
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D207833431
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Office for the Arts at Harvard presents Arts for Life&#39\;s Sake:
+  A Conversation with Yo-Yo Ma &#39\;76 and Stephen Colbert
+DTSTART;TZID=America/New_York:20261105T190000
+DTEND;TZID=America/New_York:20261105T190000
+DTSTAMP:20261013T132100Z
+UID:http://uid.trumba.com/event/210845143
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:Free. Handling fee
+ s apply for online and phone reservations. Limit of 2 tickets per person. 
+ Tickets are valid until 6:45pm. Patrons are encouraged to arrive early to 
+ guarantee admission.
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loa
+ dArticle::permalink=learning-from-performers" target="_blank" rel="noopene
+ r" title="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScont
+ ent::loadArticle::permalink=learning-from-performers">boxoffice.harvard.ed
+ u&#8230\;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D210845143
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Global Arts Live presents Niladri Kumaar: The Space Between the No
+ tes
+DTSTART;TZID=America/New_York:20261108T193000
+DTEND;TZID=America/New_York:20261108T193000
+DTSTAMP:20260924T131534Z
+UID:http://uid.trumba.com/event/207833425
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:Full Price: $79\, 
+ $69\, $58\, $37
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://www.boxoffice.harvard.edu/Online" target="_blank" rel="noopener"
+  title="https://www.boxoffice.harvard.edu/Online">www.boxoffice.harvard.ed
+ u&#8230\;</a> /default.asp?BOparam::WScontent::loadArticle::permalink=glob
+ alartslive-niladrikumaar
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D207833425
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Chamber Music Society / Beethoven\, Dvorak\, Brahms
+DTSTART;TZID=America/New_York:20261115T150000
+DTEND;TZID=America/New_York:20261115T150000
+DTSTAMP:20260924T131427Z
+UID:http://uid.trumba.com/event/207834039
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:Full Price:  $73\,
+  $60\, $46\, $33\;  Students: $9\;  Seniors (65+)\, WGBH\, and MTA (Mass T
+ eachers Assoc): $4 off\; Harvard Staff/Faculty (Outings &amp\; Innings): $
+ 7 off\; Student Rush: $6 (starting 90 minutes prior to concert)
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://www.boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent:
+ :loadArticle::permalink=bcms3" target="_blank" rel="noopener" title="https
+ ://www.boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loadAr
+ ticle::permalink=bcms3">www.boxoffice.harvard.edu&#8230\;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D207834039
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Kendall Square Orchestra presents Worlds Within and Without
+DTSTART;TZID=America/New_York:20270108T193000
+DTEND;TZID=America/New_York:20270108T193000
+DTSTAMP:20260924T125948Z
+UID:http://uid.trumba.com/event/209226557
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:ADVANCE Full Price
+ : $50\, $30\;  Students: $15 (in $30 section)\, Seniors: 20% off   AT DOOR
+   Full Price: $55\, $35\;  Students: $15 (in $35 section)\, Seniors: 20% o
+ ff
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loa
+ dArticle::permalink=kendall-square-orchestra-Worlds-Within-and-Without" ta
+ rget="_blank" rel="noopener" title="https://boxoffice.harvard.edu/Online/d
+ efault.asp?BOparam::WScontent::loadArticle::permalink=kendall-square-orche
+ stra-Worlds-Within-and-Without">boxoffice.harvard.edu&#8230\;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D209226557
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Kendall Square Orchestra presents Burst\, Body\, Becoming
+DTSTART;TZID=America/New_York:20270320T193000
+DTEND;TZID=America/New_York:20270320T193000
+DTSTAMP:20260924T124423Z
+UID:http://uid.trumba.com/event/209226574
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:ADVANCE Full Price
+ : $50\, $30\;  Students: $15 (in $30 section)\, Seniors: 20% off   AT DOOR
+   Full Price: $55\, $35\;  Students: $15 (in $35 section)\, Seniors: 20% o
+ ff
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loa
+ dArticle::permalink=kendall-square-orchestra-burst-body-becoming" target="
+ _blank" rel="noopener" title="https://boxoffice.harvard.edu/Online/default
+ .asp?BOparam::WScontent::loadArticle::permalink=kendall-square-orchestra-b
+ urst-body-becoming">boxoffice.harvard.edu&#8230\;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D209226574
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Kendall Square Orchestra presents Alone Together
+DTSTART;TZID=America/New_York:20270522T193000
+DTEND;TZID=America/New_York:20270522T193000
+DTSTAMP:20260924T123949Z
+UID:http://uid.trumba.com/event/209226585
+CATEGORIES:Harvard University Gazette
+LOCATION:Sanders Theatre<br>45 Quincy St. <br>Cambridge
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:Harvard Gazette Eve
+ nt
+X-TRUMBA-CUSTOMFIELD;ID=15228;NAME=Cost;TYPE=SingleLine:ADVANCE Full Price
+ : $50\, $30\;  Students: $15 (in $30 section)\, Seniors: 20% off   AT DOOR
+   Full Price: $55\, $35\;  Students: $15 (in $35 section)\, Seniors: 20% o
+ ff
+X-TRUMBA-CUSTOMFIELD;ID=15221;NAME=Ticket Web Link;TYPE=SingleLine:<a href
+ ="https://boxoffice.harvard.edu/Online/default.asp?BOparam::WScontent::loa
+ dArticle::permalink=kendall-square-orchestra-alone-together" target="_blan
+ k" rel="noopener" title="https://boxoffice.harvard.edu/Online/default.asp?
+ BOparam::WScontent::loadArticle::permalink=kendall-square-orchestra-alone-
+ together">boxoffice.harvard.edu&#8230\;</a>
+X-TRUMBA-LINK:https://news.harvard.edu/gazette/harvard-events/events-calen
+ dar/?trumbaEmbed=view%3Devent%26eventid%3D209226585
+END:VEVENT
+END:VCALENDAR

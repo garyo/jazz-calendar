@@ -1,9 +1,11 @@
 """iCalendar feeds: Trumba, Google Calendar, Events Manager, The Events Calendar's ?ical=1..."""
 
+import re
 from datetime import datetime, timedelta
 
 import icalendar
 import recurring_ical_events
+from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from jazzcal.adapters import HORIZON, adapter, clean, html_to_text, to_local
 from jazzcal.config import TZ
@@ -36,10 +38,10 @@ def parse(text: str, *, now: datetime) -> list[ScrapedEvent]:
                 start=start,
                 end=end,
                 all_day=all_day,
-                # Some feeds append links or an address after a semicolon.
-                venue_name=clean(str(vevent.get("LOCATION", "")).split(";")[0]),
+                # Some feeds append links or an address after a semicolon or <br>.
+                venue_name=clean(re.split(r";|<br", str(vevent.get("LOCATION", "")))[0]),
                 url=clean(str(vevent.get("URL") or vevent.get("X-TRUMBA-LINK") or "")),
-                ticket_url=clean(fields.get("Tickets")),
+                ticket_url=_link(fields.get("Tickets") or fields.get("Ticket Web Link")),
                 price=clean(fields.get("Cost")),
                 categories=_categories(vevent) + _split(fields, "Event Type", "Category"),
                 text=html_to_text(description) if "<" in description else clean(description),
@@ -69,6 +71,14 @@ def _trumba_fields(vevent: icalendar.Event) -> dict[str, str]:
         if name and value:
             fields[name] = f"{fields[name]},{value}" if name in fields else value
     return fields
+
+
+def _link(value: str | None) -> str | None:
+    """A URL, or the first link's in an HTML fragment (Trumba's link fields hold <a> tags)."""
+    if value and "<" in value:
+        anchor = HTMLParser(value).css_first("a[href]")
+        value = anchor.attributes.get("href") if anchor else None
+    return clean(value)
 
 
 def _split(fields: dict[str, str], *names: str) -> list[str]:

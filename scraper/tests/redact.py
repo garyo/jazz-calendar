@@ -29,7 +29,7 @@ ICS_KEEP = {
     "UID", "SUMMARY", "DTSTART", "DTEND", "DURATION", "LOCATION", "URL", "CATEGORIES",
     "STATUS", "RRULE", "RDATE", "EXDATE", "RECURRENCE-ID", "DTSTAMP", "X-TRUMBA-LINK",
 }  # fmt: skip
-TRUMBA_KEEP = {"Event Type", "Category", "Cost", "Tickets"}
+TRUMBA_KEEP = {"Event Type", "Category", "Cost", "Tickets", "Ticket Web Link"}
 # Page elements that are never event data.
 HTML_DROP = (
     "style, noscript, svg, img, picture, source, video, audio, iframe, link, header, footer, "
