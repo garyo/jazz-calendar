@@ -12,7 +12,7 @@ from rapidfuzz import fuzz
 from jazzcal.adapters import get_adapter
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry
-from jazzcal.http import Http
+from jazzcal.http import Http, redact
 from jazzcal.llm import Classifier, Question
 from jazzcal.models import Event, EventsFile, ScrapedEvent, Source, SourceCredit, StatusFile
 from jazzcal.store import Store
@@ -47,7 +47,7 @@ def scrape(registry: Registry, store: Store, http: Http, only: set[str] | None =
         except Exception as e:
             # One broken source must not stop the others; its last good listings stand.
             log.exception("source %s failed", source.id)
-            store.record_failure(source.id, f"{type(e).__name__}: {e}")
+            store.record_failure(source.id, redact(f"{type(e).__name__}: {e}"))
             continue
         if pattern := source.options.get("title_strip"):
             events = [

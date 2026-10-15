@@ -10,6 +10,7 @@ from jazzcal import pipeline
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key
 from jazzcal.export import to_ics
+from jazzcal.http import redact
 from jazzcal.llm import Question, Verdict
 from jazzcal.models import Credit, EventsFile, Regular, ScrapedEvent, Source
 from jazzcal.store import Store
@@ -332,3 +333,12 @@ def test_ics_credits_third_party_sources(store: Store) -> None:
     assert uid == f"{by_title['Lee Roe Trio'].id}@bostonjazzcalendar.com"
     assert description.endswith("Listing via Ticketmaster: https://www.ticketmaster.com")
     assert "via" not in described["Pat Doe Quartet @ Club"][1]
+
+
+def test_secrets_are_redacted_from_errors() -> None:
+    url = "https://api.example.com/events.json?venueId=1&apikey=s3cret&size=100&token=t0k"
+    assert redact(f"HTTP 504 for {url}") == (
+        "HTTP 504 for https://api.example.com/events.json?venueId=1&apikey=REDACTED"
+        "&size=100&token=REDACTED"
+    )
+    assert redact("nothing to hide?page=2") == "nothing to hide?page=2"

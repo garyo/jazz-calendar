@@ -8,6 +8,7 @@ a conditional GET. Offline mode serves only from the cache, for working on parse
 import hashlib
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -23,6 +24,17 @@ BOT_NAME = "BostonJazzCalendarBot"
 USER_AGENT = f"Mozilla/5.0 (compatible; {BOT_NAME}/0.1; +https://bostonjazzcalendar.com/#about)"
 MIN_INTERVAL = 3.0
 ROBOTS_MAX_AGE = timedelta(hours=24)
+
+
+SECRET_PARAM = re.compile(
+    r"(?i)\b(api[_-]?key|apikey|key|token|secret|password|sig|signature)=[^&\s#\"']+"
+)
+
+
+def redact(text: str) -> str:
+    """Text with the values of secret-looking URL parameters (apikey=, token=...) hidden, for
+    anything logged or published: errors land in the public status.json."""
+    return SECRET_PARAM.sub(r"\1=REDACTED", text)
 
 
 class FetchError(Exception):
@@ -84,10 +96,10 @@ class Http:
         if cached and (self.offline or _now() - cached.fetched_at < max_age):
             return Response(url, cached.body, from_cache=True)
         if self.offline:
-            raise FetchError(f"not cached (offline): {url}")
+            raise FetchError(f"not cached (offline): {redact(url)}")
         robots = self._robots_for(url)
         if robots and not robots.can_fetch(url, BOT_NAME):
-            raise Disallowed(f"robots.txt disallows {url}")
+            raise Disallowed(f"robots.txt disallows {redact(url)}")
 
         headers = dict(headers or {})
         if cached:
@@ -100,7 +112,7 @@ class Http:
             self._write_cache(url, cached.meta | {"fetched_at": _now().isoformat()}, cached.body)
             return Response(url, cached.body, from_cache=True)
         if resp.status_code >= 400:
-            raise FetchError(f"HTTP {resp.status_code} for {url}")
+            raise FetchError(f"HTTP {resp.status_code} for {redact(url)}")
         meta = {"url": url, "fetched_at": _now().isoformat()}
         if etag := resp.headers.get("etag"):
             meta["etag"] = etag
@@ -115,11 +127,11 @@ class Http:
         wait = self._last_request.get(host, 0) + delay - time.monotonic()
         if wait > 0:
             time.sleep(wait)
-        log.info("GET %s", url)
+        log.info("GET %s", redact(url))
         try:
             return self._client.get(url, headers=headers)
         except httpx.HTTPError as e:
-            raise FetchError(f"{type(e).__name__} fetching {url}: {e}") from e
+            raise FetchError(redact(f"{type(e).__name__} fetching {url}: {e}")) from e
         finally:
             self._last_request[host] = time.monotonic()
 
