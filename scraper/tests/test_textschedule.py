@@ -11,7 +11,7 @@ Friday 9/4
 8:30 PM The Jazz Situation: Pat Doe trumpet, Sam Roe tenor sax, Lee Poe piano
 9:30 PM House Band: Kim Moe vibes,  Ray Low bass
 Friday 10/2 Wildcard Night
-7:30 PM Sharp Nines
+7:30 PM The Flat Fives
 Saturday, October 3rd is Student Night!
 Schedule TBA
 """
@@ -23,7 +23,7 @@ def test_sets_and_lineups() -> None:
         "The Openers",
         "The Jazz Situation",
         "House Band",
-        "Sharp Nines",
+        "The Flat Fives",
     ]
     openers, situation, house, nines = events
     assert openers.start == datetime(2026, 9, 4, 19, 30, tzinfo=TZ)

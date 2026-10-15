@@ -64,9 +64,9 @@ def test_resolve_venue() -> None:
     ("title", "level", "expected"),
     [
         ("Trivia Night", "dedicated", "other"),
-        ("The Fringe", "dedicated", "jazz"),
+        ("The Outskirts", "dedicated", "jazz"),
         ("Big Band Monday", "occasional", "jazz"),
-        ("Dub Apocalypse: funk night", "occasional", "adjacent"),
+        ("Dub Collective: funk night", "occasional", "adjacent"),
         ("Indie Rock Showcase", "occasional", "other"),
     ],
 )
@@ -85,18 +85,16 @@ def test_classify_include_pattern() -> None:
 def test_classify_descriptions() -> None:
     source = Source(id="s", adapter="ics", url="https://x")
     trusting = Source(id="t", adapter="ics", url="https://x", trust_text=True)
-    gig = event("1", "Kurt Elling", text="The jazz vocalist returns")
+    gig = event("1", "Kim Doe", text="The jazz vocalist returns")
     assert classify(gig, source, venue("v")).relevance == "other"
     assert classify(gig, trusting, venue("v")).relevance == "jazz"
     assert classify(gig, source, venue("v", "regular")).relevance == "jazz"
     late = event("2", "Late Night Set", text="Funk and soul till close")
     assert classify(late, source, venue("v", "regular")).relevance == "adjacent"
     assert classify(event("3", "Brunch & Jam"), source, venue("v", "regular")).relevance == "jazz"
+    assert classify(event("4", "Lee Poe Trio"), source, venue("v", "regular")).relevance == "jazz"
     assert (
-        classify(event("4", "Elan Mehler Trio"), source, venue("v", "regular")).relevance == "jazz"
-    )
-    assert (
-        classify(event("5", "Brentano String Quartet"), source, venue("v", "regular")).relevance
+        classify(event("5", "Fictional String Quartet"), source, venue("v", "regular")).relevance
         == "other"
     )
 
@@ -112,7 +110,7 @@ def test_classify_certainty() -> None:
     assert classify(event("1", "Big Band Monday"), source, venue("v")).certain
     assert classify(event("2", "Trivia"), source, venue("v")).certain
     assert classify(event("3", "Anyone"), source, venue("v", "dedicated")).certain
-    assert not classify(event("4", "Jean-Luc Ponty"), source, venue("v")).certain
+    assert not classify(event("4", "Jean-Luc Poe"), source, venue("v")).certain
     assert not classify(event("5", "Funk Night"), source, venue("v")).certain
 
 
