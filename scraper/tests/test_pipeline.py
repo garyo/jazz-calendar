@@ -287,6 +287,7 @@ def test_regulars_are_published_apart_from_events(store: Store) -> None:
         venue="club",
         title="Jam session",
         when="Tuesdays, 7-9 pm",
+        days=["tue"],
         relevance="jazz",
         url="https://club.example/",
         checked=date(2026, 10, 15),

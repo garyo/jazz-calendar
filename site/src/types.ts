@@ -7,6 +7,7 @@
 
 export type Relevance = "jazz" | "adjacent";
 export type JazzLevel = "dedicated" | "regular" | "occasional";
+export type Weekday = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
 
 export interface Venue {
   /** Stable slug, e.g. "lilypad". */
@@ -59,6 +60,13 @@ export interface Regular {
   title: string;
   /** The schedule as the venue states it, e.g. "Tuesday–Saturday, 7–9 pm". */
   when: string;
+  /** The weekdays it runs. Missing from feeds older than the field. */
+  days?: Weekday[];
+  /**
+   * Which of those weekdays in a month it runs, e.g. [1, 3] for 1st and
+   * 3rd; -1 for the last. Empty for every week.
+   */
+  nth?: number[];
   relevance: Relevance;
   /** Where the venue or organizer publishes the schedule. */
   url: string;

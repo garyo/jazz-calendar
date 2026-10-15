@@ -47,6 +47,8 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
 as Wally's jam. The feed carries them in a separate `regulars` list, and the site shows them in
 their own section. They never become calendar events: a standing schedule doesn't promise any
 particular night. Only list what a venue or organizer publishes, and recheck it now and then.
+`when` is the schedule in the venue's words; `days` (plus `nth`, for e.g. 1st and 3rd Fridays)
+lets the site show a series in views of the days it usually runs.
 
 ### Submitted gigs
 
