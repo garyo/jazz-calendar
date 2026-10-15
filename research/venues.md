@@ -27,7 +27,7 @@ we either parse the HTML or ask the venue for permission to use the JSON feed.
 |---|---|---|---|---|---|
 | Wally's Café | 427 Mass Ave, South End | Nightly | wallyscafe.com/one-night/ | Recurring | Jam Tue–Sat 7–9, night set 10–12. Lineups only on Instagram. Cloudflare blocks curl. |
 | Scullers Jazz Club | 400 Soldiers Field Rd, Allston | Dedicated | scullersjazz.com/calendar/ | HTML (MusicIDB widget, venueId 715) | TicketWeb. robots allows all. |
-| Regattabar | Charles Hotel, 1 Bennett St, Cambridge | Mostly jazz, some blues/soul | ticketweb.com/venue/regattabar-cambridge-ma/748814 | JSON-LD on the TicketWeb venue page | Its own site has no schedule. TicketWeb robots.txt allows /venue/ and asks for visits 09:00–13:00 UTC. |
+| Regattabar | Charles Hotel, 1 Bennett St, Cambridge | Mostly jazz, some blues/soul | ticketweb.com/venue/regattabar-cambridge-ma/748814 | Blocked by terms: TicketWeb's Terms of Use forbid scraping; try the Ticketmaster API, ArtsBoston, or ask the venue | Its own site has no schedule. |
 | The Lilypad | 1353 Cambridge St, Inman Sq, Cambridge | Mostly jazz/avant | lilypadinman.com/home | HTML (Squarespace) | 64 of 121 upcoming events tagged "Jazz". JSON feed works but is robots-disallowed → ask permission. Also sends a Mailchimp "Wednesday Weekly". |
 | The Mad Monkfish (Jazz Baroness Room) | 524 Mass Ave, Central Sq, Cambridge | Wed–Sun + jams | themadmonkfish.com/jazz-schedule/ | JSON-LD (27 events) | Use themadmonkfish.com; madmonkfish.com is not their site. |
 | POSTunderground | 386 Washington St (VFW basement), Brookline | Dedicated | postunderground.com | HTML (plain text schedule) | Fri/some Sat 7:30–11, alternating months. House band Hard Bop Cafe. Back Nov 6. |

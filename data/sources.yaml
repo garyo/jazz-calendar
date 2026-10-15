@@ -151,12 +151,16 @@
   adapter: jsonld
   url: https://www.ticketweb.com/venue/regattabar-cambridge-ma/748814?pl=regatta
   venue: regattabar
+  enabled: false
   options:
     unknown: jazz
   notes: >-
-    Regattabar's own site has no schedule; it links to this TicketWeb venue page, whose
-    MusicEvent JSON-LD lists the shows. robots.txt allows /venue/ and asks for visits
-    09:00-13:00 UTC, which the daily 05:30 Eastern run meets.
+    Do not enable. TicketWeb's Terms of Use (info.ticketweb.com/terms-of-use, updated
+    2017-03-13) forbid robots and spiders that retrieve or data-mine the site, except public
+    search engines, even though its robots.txt allows /venue/. Regattabar's own site has no
+    schedule. Routes to try: the Ticketmaster Discovery API (its docs don't list TicketWeb as
+    a source; test with a key), the ArtsBoston feed once permitted (it lists some Regattabar
+    shows), or asking Regattabar / the Charles Hotel directly.
 
 - id: lilypad
   adapter: squarespace
