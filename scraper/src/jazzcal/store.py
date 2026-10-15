@@ -135,6 +135,21 @@ class Store:
         )
         return [ScrapedEvent.model_validate_json(data) for (data,) in rows]
 
+    def prune(self, before: datetime) -> int:
+        """Forget listings that their source has dropped, of events over before `before`.
+        Returns how many."""
+        dropped = self.db.execute(
+            "select source, uid, data from listing where misses >= ?", (MAX_MISSES,)
+        ).fetchall()
+        old = []
+        for source, uid, data in dropped:
+            event = ScrapedEvent.model_validate_json(data)
+            if (event.end or event.start) < before:
+                old.append((source, uid))
+        with self.db:
+            self.db.executemany("delete from listing where source = ? and uid = ?", old)
+        return len(old)
+
     def status(self, source: str) -> SourceStatus | None:
         row = self.db.execute(
             "select ok, events, last_success, error from run where source = ?", (source,)

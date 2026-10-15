@@ -266,6 +266,15 @@ class Http:
         path.with_suffix(".body").write_text(body)
         path.with_suffix(".json").write_text(json.dumps(meta, indent=1))
 
+    def prune_cache(self, older_than: timedelta) -> int:
+        """Delete pages not fetched or revalidated within `older_than`. Returns how many."""
+        cutoff = (_now() - older_than).timestamp()
+        old = [m for m in self.cache_dir.glob("*.json") if m.stat().st_mtime < cutoff]
+        for meta in old:
+            meta.with_suffix(".body").unlink(missing_ok=True)
+            meta.unlink()
+        return len(old)
+
 
 Address = ipaddress.IPv4Address | ipaddress.IPv6Address
 

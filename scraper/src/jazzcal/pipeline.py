@@ -43,6 +43,8 @@ ALERT_AFTER = 2
 """Consecutive failed runs after which a source is worth a notification..."""
 ALERT_EVERY = timedelta(days=7)
 """...and how often to repeat it while the source keeps failing."""
+KEEP_FOR = timedelta(days=30)
+"""How long to remember past events their sources have dropped, and cached pages unused."""
 
 
 def scrape(
@@ -77,6 +79,10 @@ def scrape(
             store.record_failure(source.id, error)
             continue
         store.record_success(source.id, events)
+
+    listings = store.prune(now - KEEP_FOR)
+    pages = 0 if http.offline else http.prune_cache(KEEP_FOR)  # offline runs need the cache
+    log.info("pruned %d old listings and %d cached pages", listings, pages)
 
 
 def _past(event: ScrapedEvent, now: datetime) -> bool:

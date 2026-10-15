@@ -1,4 +1,5 @@
 import ipaddress
+import os
 from collections.abc import Callable, Collection
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -181,6 +182,23 @@ def test_offline_serves_only_the_cache(
         with pytest.raises(FetchError, match="not cached"):
             http.get("https://club.example/other")
     assert len(server.requests) == fetched
+
+
+def test_prune_cache_drops_pages_unused_for_a_while(
+    server: Server, tmp_path: Path, today: list[datetime]
+) -> None:
+    for name in ("old", "new"):
+        server.routes[f"https://club.example/{name}"] = httpx.Response(200, text=name)
+    with client(server, tmp_path) as http:
+        http.get("https://club.example/old")
+        http.get("https://club.example/new")
+        long_ago = (today[0] - timedelta(days=31)).timestamp()
+        for path in http.cache_dir.glob(f"{http._cache_path('https://club.example/old').name}.*"):
+            os.utime(path, (long_ago, long_ago))
+        assert http.prune_cache(timedelta(days=30)) == 1
+        today[0] += timedelta(hours=1)
+        assert http.get("https://club.example/new").from_cache
+        assert not http.get("https://club.example/old").from_cache
 
 
 def test_errors_hide_secrets(server: Server, tmp_path: Path, today: object) -> None:
