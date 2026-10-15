@@ -34,11 +34,11 @@ src/theme.ts     the review-period theme switcher
 properties. Each `public/theme-*.css` (`guide`, `program`, `lateset`, `club`)
 defines its colors and fonts, light and dark, plus its own layouts, all scoped
 to `:root[data-theme="…"]`. Program's layout is shared by four variants
-(`liner`, `bluenote`, `evening`, `broadsheet`): `theme-program.css` scopes it
+(`liner`, `hardbop`, `evening`, `broadsheet`): `theme-program.css` scopes it
 to the whole family, and each variant's file, loaded after it, adds only
 colors, fonts and a few flourishes. A new variant goes in that selector list. A small inline script in `index.html` sets
 `data-theme` before first paint from `?theme=…`, then the choice saved in
-`localStorage`, then the default (`program`); `_headers` allows that script
+`localStorage`, then the default (`liner`); `_headers` allows that script
 by its sha256, which `theme.test.ts` checks. The footer switcher changes it in
 place. To settle on one theme, delete the other theme files and their
 `<link>`s, the switcher (`#theme-switcher` and `themeSwitcher()` in

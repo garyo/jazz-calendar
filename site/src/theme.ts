@@ -10,13 +10,13 @@ export const THEMES = [
   "lateset",
   "club",
   "liner",
-  "bluenote",
+  "hardbop",
   "evening",
   "broadsheet",
 ] as const;
 export type Theme = (typeof THEMES)[number];
 
-export const DEFAULT_THEME: Theme = "program";
+export const DEFAULT_THEME: Theme = "liner";
 const STORAGE_KEY = "theme";
 
 export function isTheme(value: unknown): value is Theme {

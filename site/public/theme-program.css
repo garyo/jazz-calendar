@@ -4,7 +4,7 @@
  * Also the default when no theme is set.
  *
  * The layout below the colors is shared with Program's variants (Liner
- * Notes, Blue Note, Evening, Broadsheet); each of their theme-*.css files
+ * Notes, Hard Bop, Evening, Broadsheet); each of their theme-*.css files
  * loads after this one and adds only colors, fonts and a few flourishes.
  */
 
@@ -50,7 +50,7 @@
   :not([data-theme]),
   [data-theme="program"],
   [data-theme="liner"],
-  [data-theme="bluenote"],
+  [data-theme="hardbop"],
   [data-theme="evening"],
   [data-theme="broadsheet"]
 ) {

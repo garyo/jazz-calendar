@@ -1,10 +1,10 @@
 /*
- * Blue Note: Program's grid with the confidence of a 1950s jazz sleeve.
+ * Hard Bop: Program's grid with the confidence of a 1950s hard-bop LP sleeve.
  * One grotesk throughout, day heads as solid blue bands with knocked-out
  * caps, a single tangerine accent on cream.
  */
 
-:root[data-theme="bluenote"] {
+:root[data-theme="hardbop"] {
   --bg: #f6efdf;
   --surface: #ede2c9;
   --ink: #131b2b;
