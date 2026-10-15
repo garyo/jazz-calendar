@@ -1,29 +1,36 @@
 """Localist calendars (MIT, Northeastern, many universities), via /api/2/events.
 
-`url` is the calendar root. Options:
-  params: extra query parameters, e.g. {"type[]": [103224]} for an event type, or
-          {"keyword": "jazz"}. Without a filter the whole calendar comes back, so set one.
+`url` is the calendar root.
 """
 
 from datetime import datetime
 from typing import Any
 from urllib.parse import urlencode
 
-from jazzcal.adapters import HORIZON, adapter, clean, html_to_text, to_local
+from pydantic import Field
+
+from jazzcal.adapters import HORIZON, Options, adapter, clean, html_to_text, to_local
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
 
 MAX_PAGES = 10
 
 
-@adapter("localist")
-def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
-    params: dict[str, Any] = {"days": HORIZON.days, "pp": 100, **source.options.get("params", {})}
+class LocalistOptions(Options):
+    params: dict[str, Any] = Field(
+        default_factory=dict,
+        description='Extra query parameters, e.g. {"type[]": [103224]} for an event type, or '
+        '{"keyword": "jazz"}. Without a filter the whole calendar comes back, so set one.',
+    )
+
+
+@adapter("localist", options=LocalistOptions)
+def scrape(source: Source, http: Http, options: LocalistOptions) -> list[ScrapedEvent]:
+    params: dict[str, Any] = {"days": HORIZON.days, "pp": 100, **options.params}
     events = []
     for page in range(1, MAX_PAGES + 1):
         query = urlencode({**params, "page": page}, doseq=True)
-        data = http.get(f"{source.url.rstrip('/')}/api/2/events?{query}").json()
-        assert isinstance(data, dict)
+        data = http.get(f"{source.url.rstrip('/')}/api/2/events?{query}").json_dict()
         events += parse_page(data)
         if not data.get("page", {}).get("next_page"):
             break
@@ -60,16 +67,12 @@ def _parse_event(event: dict) -> list[ScrapedEvent]:
         all_day = bool(instance.get("all_day"))
         start = datetime.fromisoformat(instance["start"])
         start = to_local(start.date() if all_day else start)[0]
-        end = (
-            to_local(datetime.fromisoformat(instance["end"]))[0]
-            if instance.get("end") and not all_day
-            else None
-        )
+        end = to_local(datetime.fromisoformat(instance["end"]))[0] if instance.get("end") else None
         events.append(
             ScrapedEvent(
                 uid=str(instance["id"]),
                 start=start,
-                end=end if end and end > start else None,
+                end=end,
                 all_day=all_day,
                 **common,
             )

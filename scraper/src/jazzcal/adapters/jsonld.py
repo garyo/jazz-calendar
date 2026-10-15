@@ -1,24 +1,10 @@
-"""schema.org Event JSON-LD embedded in pages.
-
-Options:
-  follow: CSS selector for links to event detail pages, for sites whose list page lacks
-          JSON-LD but whose detail pages have it. Detail pages are cached for 5 days.
-  max_follow: cap on detail pages fetched per run (default 60).
-
-Some sites' JSON-LD is incomplete; these fill the gaps from the page itself:
-  time_selector: CSS selector for an element giving the time ("7:00 PM until 11:00 PM"), used
-          when startDate is a bare date. The first time is the start, a second the end.
-  venue_selector: CSS selector for the venue, used when the location has no name. Reads a
-          meta tag's content, or else the element's text.
-  venue_pattern: regex applied to that, whose first group is the venue name.
-  title_strip: regex removed from titles, e.g. a leading date "10/15 ".
-  no_price: true when the site's offers carry a placeholder price.
+"""schema.org Event JSON-LD embedded in pages, on the source's page or the event pages it
+links to. Some sites' JSON-LD is incomplete; options can fill the gaps from the page itself.
 """
 
-import json
 import logging
 import re
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import datetime, time
 from typing import Any
@@ -26,9 +12,21 @@ from urllib.parse import urljoin
 
 from dateutil.parser import ParserError, isoparse
 from dateutil.parser import parse as parse_date
+from pydantic import Field
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
-from jazzcal.adapters import DETAIL_MAX_AGE, adapter, clean, html_to_text, to_local
+from jazzcal.adapters import (
+    DETAIL_MAX_AGE,
+    Options,
+    Selector,
+    adapter,
+    clean,
+    html_to_text,
+    json_ld,
+    to_local,
+    unique_urls,
+)
+from jazzcal.adapters.times import parse_times
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
 
@@ -45,27 +43,44 @@ EVENT_TYPES = {
     "LiteraryEvent",
     "PublicationEvent",
 }
-TIME = re.compile(r"\b(\d{1,2})(?::(\d\d))?\s*([ap])\.?m\b", re.IGNORECASE)
 
 log = logging.getLogger(__name__)
 
 
-@adapter("jsonld")
-def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
+class JsonLdOptions(Options):
+    follow: Selector | None = Field(
+        None,
+        description="CSS selector for links to event pages, for sites whose list page lacks "
+        "JSON-LD but whose event pages have it. Event pages are cached for 5 days.",
+    )
+    max_follow: int = Field(60, description="Most event pages fetched per run")
+    time_selector: Selector | None = Field(
+        None,
+        description="CSS selector for an element giving the time ('7:00 PM until 11:00 PM'), "
+        "used when startDate is a bare date: the first time is the start, a second the end",
+    )
+    venue_selector: Selector | None = Field(
+        None,
+        description="CSS selector for the venue, used when the location has no name: a meta "
+        "tag's content, or else the element's text",
+    )
+    venue_pattern: re.Pattern[str] | None = Field(
+        None, description="A regex applied to that, whose first group is the venue name"
+    )
+    no_price: bool = Field(False, description="True when offers carry a placeholder price")
+
+
+@adapter("jsonld", options=JsonLdOptions)
+def scrape(source: Source, http: Http, options: JsonLdOptions) -> list[ScrapedEvent]:
     page = http.get(source.url).text
-    selector = source.options.get("follow")
-    if not selector:
-        return parse(page, base_url=source.url, options=source.options)
-    # Keyed without the trailing slash, which some sites use for the same page both ways.
-    links: dict[str, str] = {}
-    for node in HTMLParser(page).css(selector):
-        if href := node.attributes.get("href"):
-            url = urljoin(source.url, href)
-            links.setdefault(url.rstrip("/"), url)
+    if not options.follow:
+        return parse(page, base_url=source.url, options=options)
+    tree = HTMLParser(page)
+    hrefs = [href for a in tree.css(options.follow) if (href := a.attributes.get("href"))]
     events = []
-    for link in list(links.values())[: source.options.get("max_follow", 60)]:
+    for link in unique_urls(hrefs, base_url=source.url)[: options.max_follow]:
         detail = http.get(link, max_age=DETAIL_MAX_AGE).text
-        events += parse(detail, base_url=link, options=source.options)
+        events += parse(detail, base_url=link, options=options)
     return events
 
 
@@ -75,21 +90,14 @@ class _PageHints:
 
     times: list[time] = field(default_factory=list)
     venue: str | None = None
-    title_strip: str | None = None
     no_price: bool = False
 
 
-def parse(
-    page: str, *, base_url: str, options: Mapping[str, Any] | None = None
-) -> list[ScrapedEvent]:
+def parse(page: str, *, base_url: str, options: JsonLdOptions | None = None) -> list[ScrapedEvent]:
     tree = HTMLParser(page)
-    hints = _hints(tree, options or {})
+    hints = _hints(tree, options or JsonLdOptions())
     events = {}
-    for node in tree.css('script[type="application/ld+json"]'):
-        try:
-            data = json.loads(node.text(strip=False))
-        except json.JSONDecodeError:
-            continue
+    for data in json_ld(tree):
         for item in _event_items(data):
             try:
                 event = _parse_event(item, base_url, hints)
@@ -101,19 +109,14 @@ def parse(
     return list(events.values())
 
 
-def _hints(tree: HTMLParser, options: Mapping[str, Any]) -> _PageHints:
-    hints = _PageHints(
-        title_strip=options.get("title_strip"), no_price=bool(options.get("no_price"))
-    )
-    if (selector := options.get("time_selector")) and (node := tree.css_first(selector)):
-        hints.times = [
-            time((int(h) % 12) + (12 if ampm.lower() == "p" else 0), int(m or 0))
-            for h, m, ampm in TIME.findall(node.text())
-        ]
-    if (selector := options.get("venue_selector")) and (node := tree.css_first(selector)):
+def _hints(tree: HTMLParser, options: JsonLdOptions) -> _PageHints:
+    hints = _PageHints(no_price=options.no_price)
+    if options.time_selector and (node := tree.css_first(options.time_selector)):
+        hints.times = parse_times(node.text(), require_meridiem=True)
+    if options.venue_selector and (node := tree.css_first(options.venue_selector)):
         venue = node.attributes.get("content") or node.text()
-        if venue and (pattern := options.get("venue_pattern")):
-            match = re.search(pattern, venue)
+        if venue and options.venue_pattern:
+            match = options.venue_pattern.search(venue)
             venue = match.group(1) if match else None
         hints.venue = clean(venue)
     return hints
@@ -134,10 +137,8 @@ def _event_items(data: Any) -> Iterator[dict]:
 
 
 def _parse_event(item: dict, base_url: str, hints: _PageHints) -> ScrapedEvent | None:
-    title = _text(item.get("name"))
+    title = _string(item.get("name"))
     title = html_to_text(title) if title and "<" in title else clean(title)
-    if title and hints.title_strip:
-        title = clean(re.sub(hints.title_strip, "", title))
     if not title or not item.get("startDate"):
         return None
     start, all_day = _when(item["startDate"])
@@ -154,18 +155,18 @@ def _parse_event(item: dict, base_url: str, hints: _PageHints) -> ScrapedEvent |
         uid=f"{url}#{start.isoformat()}",
         title=title,
         start=start,
-        end=end if end and end > start and not all_day else None,
+        end=end,
         all_day=all_day,
-        venue_name=clean(_text(_first(item.get("location"), "name"))) or hints.venue,
+        venue_name=clean(_string(_first(item.get("location"), "name"))) or hints.venue,
         url=url,
         ticket_url=offers.get("url") if isinstance(offers, dict) else None,
         price=_price(offers) if isinstance(offers, dict) and not hints.no_price else None,
         artists=[
             name
             for p in (performers if isinstance(performers, list) else [performers])
-            if (name := clean(_text(p.get("name") if isinstance(p, dict) else p)))
+            if (name := clean(_string(p.get("name") if isinstance(p, dict) else p)))
         ],
-        text=html_to_text(_text(item.get("description")) or ""),
+        text=html_to_text(_string(item.get("description")) or ""),
         cancelled=status.endswith("EventCancelled"),
     )
 
@@ -190,7 +191,7 @@ def _first(value: Any, key: str | None = None) -> Any:
     return value
 
 
-def _text(value: Any) -> str | None:
+def _string(value: Any) -> str | None:
     return value if isinstance(value, str) else None
 
 

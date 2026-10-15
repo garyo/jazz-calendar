@@ -12,6 +12,7 @@ uv run jazzcal show lilypad        # print what a source yields, without storing
 uv run jazzcal run --offline       # rebuild from cached pages only, no network
 uv run jazzcal publish             # upload var/out/ to the site
 uv run jazzcal schema              # regenerate ../schema/events.schema.json
+uv run jazzcal adapters            # list the adapters and the options each takes
 ```
 
 Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run pytest -q`
@@ -21,9 +22,15 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
 - **`../data/venues.yaml`** is the venue registry. **`../data/sources.yaml`** lists the
   sources, each handled by an *adapter* for its platform (`ics`, `tribe`, `jsonld`,
   `squarespace`, ...). Their order sets priority when two sources list the same event.
+  Loading checks every source, enabled or not: its settings (`models.Source`) and its
+  adapter's `options`. A misspelled or ill-typed setting, a regex that doesn't compile or an
+  unknown adapter stops the run with the source's id.
 - **Adapters** (`src/jazzcal/adapters/`) fetch through `http.Http` and return
   `ScrapedEvent`s. Parsing is a pure function tested against saved pages in
-  `tests/fixtures/`.
+  `tests/fixtures/`. An adapter that takes options declares them as a pydantic model,
+  `@adapter("jsonld", options=JsonLdOptions)`, and receives them parsed. Shared helpers for
+  clock times, all-caps titles, cancellations and JSON-LD live in `adapters/__init__.py`
+  and `adapters/times.py`. A `ScrapedEvent` drops an end that isn't after its start.
 - **`http.Http`** is polite and careful by construction:
   - It sends an identifying User-Agent.
   - It honors robots.txt (RFC 9309, wildcards included) and Crawl-delay. A robots.txt that
@@ -47,6 +54,9 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
   - An event a source stops listing is dropped after two runs without it.
   - After each scrape, the store forgets listings a source has dropped whose events ended over
     30 days ago, and the cache deletes pages unused for 30 days (except on `--offline` runs).
+- **`pipeline.scrape_source`** runs a source's adapter and applies its `title_strip` and
+  `title_replace` to the titles (`Source.retitle`, ignoring case). `jazzcal show` prints
+  what it returns.
 - **`pipeline.build`**:
   1. Resolves venues (by id, name, alias or street address).
   2. Classifies each event as jazz, adjacent or other (`classify.py`).
@@ -92,8 +102,8 @@ a local `wrangler dev`: `JAZZCAL_SITE=http://127.0.0.1:8787 uv run jazzcal show 
 ### Classification
 
 `classify.py` decides jazz, adjacent or other with keyword rules. A ruling is *certain* when
-it rests on something decisive: the source's word, an explicit genre in the title or tags, or
-a dedicated jazz room. The rest are guesses.
+it rests on something decisive: the source's word, an explicit jazz genre in the title or tags,
+or a dedicated jazz room. The rest are guesses.
 
 With `--classifier claude-haiku-5-5` (or `JAZZCAL_CLASSIFIER`), those guesses go to a language
 model (`llm.py`), 25 listings per request. Its verdicts are cached by content in the store, so
@@ -101,8 +111,8 @@ only new or changed listings cost anything.
 - It may answer "unknown", which changes nothing.
 - It can drop a listing the rules kept only when at least 85% sure. Missing a local gig is
   worse than listing a stray show.
-- A source's `unknown:` option sets the fallback for rooms where unfamiliar acts are usually
-  jazz.
+- A source's `unknown:` setting gives the fallback for rooms where unfamiliar acts are
+  usually jazz.
 
 `uv run jazzcal eval [--classifier MODEL]` scores rules alone and rules plus the model against
 the hand labels in `eval/labels.yaml`. It leads with missed shows. Any classifier that has a
@@ -121,6 +131,10 @@ and in calendar descriptions ("Listing via Ticketmaster").
 3. Add the venue to `venues.yaml` if it's new, then the source to `sources.yaml`, with a
    `credit`: a name and public page for people, plus `via: true` when it's a third party to
    the venue (a ticket seller or aggregator). The site and calendar feeds credit it from there.
+   The file's header describes the settings any source can have (`include`, `exclude`,
+   `unknown`, `title_strip`, ...); `uv run jazzcal adapters` lists each adapter's `options`.
+   Both are checked when the registry loads, so a typo fails at once rather than being
+   ignored.
 4. Check what comes out with `uv run jazzcal show <id>` and `uv run jazzcal run --source <id>`.
 5. Save a test fixture, then redact it before committing:
    `uv run python tests/redact.py [--keep SELECTOR] tests/fixtures/<file>`. Fixtures keep

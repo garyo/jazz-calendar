@@ -9,14 +9,17 @@ from datetime import datetime, timedelta
 import httpx
 
 from jazzcal import evaluate, export, pipeline
-from jazzcal.adapters import get_adapter
+from jazzcal.adapters import adapters
 from jazzcal.config import ROOT, TZ, VAR_DIR, Registry
 from jazzcal.http import Http
 from jazzcal.llm import Classifier, ClaudeClassifier
-from jazzcal.models import EventsFile
+from jazzcal.models import feed_schema
 from jazzcal.store import Store
 
 OUT_DIR = VAR_DIR / "out"
+DB = VAR_DIR / "jazzcal.db"
+MAX_AGE_HOURS = 6.0
+"""Reuse pages fetched within this many hours."""
 
 
 def main() -> None:
@@ -31,7 +34,10 @@ def main() -> None:
         p.add_argument("--source", action="append", help="only this source (repeatable)")
         p.add_argument("--offline", action="store_true", help="use only cached pages")
         p.add_argument(
-            "--max-age", type=float, default=6, help="reuse pages fetched within this many hours"
+            "--max-age",
+            type=float,
+            default=MAX_AGE_HOURS,
+            help="reuse pages fetched within this many hours",
         )
     build = commands.add_parser("build", help="build the published files from the store")
     evaluation = commands.add_parser("eval", help="score classification against eval/labels.yaml")
@@ -47,6 +53,7 @@ def main() -> None:
     show.add_argument("source")
     show.add_argument("--offline", action="store_true")
     commands.add_parser("schema", help="write schema/events.schema.json")
+    commands.add_parser("adapters", help="list the adapters and the options each takes")
 
     args = parser.parse_args()
     logging.basicConfig(
@@ -58,7 +65,7 @@ def main() -> None:
     match args.command:
         case "run" | "scrape":
             registry = Registry.load()
-            store = Store(VAR_DIR / "jazzcal.db")
+            store = Store(DB)
             with _http(args.offline, args.max_age) as http:
                 pipeline.scrape(registry, store, http, set(args.source or []) or None)
             if not args.offline:
@@ -68,23 +75,22 @@ def main() -> None:
                 if args.publish:
                     export.publish(OUT_DIR)
         case "build":
-            _build(Registry.load(), Store(VAR_DIR / "jazzcal.db"), _classifier(args.classifier))
+            _build(Registry.load(), Store(DB), _classifier(args.classifier))
         case "eval":
-            store = Store(VAR_DIR / "jazzcal.db")
+            store = Store(DB)
             print(evaluate.report(Registry.load(), store, _classifier(args.classifier)))
         case "publish":
             export.publish(OUT_DIR)
         case "show":
             source = Registry.load().source(args.source)
-            with _http(args.offline, 6) as http:
-                for e in get_adapter(source.adapter)(source, http):
+            with _http(args.offline, MAX_AGE_HOURS) as http:
+                for e in pipeline.scrape_source(source, http):
                     print(e.model_dump_json(exclude={"text"}, exclude_none=True))
         case "schema":
-            schema = {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                **EventsFile.model_json_schema(mode="serialization"),
-            }
-            (ROOT / "schema" / "events.schema.json").write_text(json.dumps(schema, indent=2) + "\n")
+            schema = json.dumps(feed_schema(), indent=2)
+            (ROOT / "schema" / "events.schema.json").write_text(schema + "\n")
+        case "adapters":
+            print(_describe_adapters())
 
 
 def _http(offline: bool, max_age_hours: float) -> Http:
@@ -95,6 +101,18 @@ def _http(offline: bool, max_age_hours: float) -> Http:
         max_age=timedelta(hours=max_age_hours),
         trusted_hosts={httpx.URL(export.site_url()).host},
     )
+
+
+def _describe_adapters() -> str:
+    lines = []
+    for name, options in adapters().items():
+        lines.append(name if options.model_fields else f"{name}: no options")
+        for field, info in options.model_fields.items():
+            default = (
+                "" if info.is_required() else f" = {info.get_default(call_default_factory=True)!r}"
+            )
+            lines.append(f"  {field}{default}: {info.description}")
+    return "\n".join(lines)
 
 
 def _classifier(model: str | None) -> Classifier | None:

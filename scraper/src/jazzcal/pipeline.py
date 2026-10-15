@@ -60,17 +60,12 @@ def scrape(
         if not source.enabled or (only and source.id not in only):
             continue
         try:
-            events = get_adapter(source.adapter)(source, http)
+            events = scrape_source(source, http)
         except Exception as e:
             # One broken source must not stop the others; its last good listings stand.
             log.exception("source %s failed", source.id)
             store.record_failure(source.id, redact(f"{type(e).__name__}: {e}"))
             continue
-        if pattern := source.options.get("title_strip"):
-            events = [
-                e.model_copy(update={"title": re.sub(pattern, "", e.title, flags=re.I).strip()})
-                for e in events
-            ]
         log.info("source %s: %d events", source.id, len(events))
         # Nothing at all, where the last run found shows still to come, more likely means a
         # broken page than an empty calendar: keep the last good listings.
@@ -84,6 +79,17 @@ def scrape(
     listings = store.prune(now - KEEP_FOR)
     pages = 0 if http.offline else http.prune_cache(KEEP_FOR)  # offline runs need the cache
     log.info("pruned %d old listings and %d cached pages", listings, pages)
+
+
+def scrape_source(source: Source, http: Http) -> list[ScrapedEvent]:
+    """What a source lists: its adapter's events, with the source's title rewrites applied,
+    less any they leave without a title."""
+    events = get_adapter(source.adapter)(source, http)
+    if not (source.title_strip or source.title_replace):
+        return events
+    return [
+        e.model_copy(update={"title": title}) for e in events if (title := source.retitle(e.title))
+    ]
 
 
 def _past(event: ScrapedEvent, now: datetime) -> bool:
@@ -148,11 +154,9 @@ def build(
         for scraped in store.current(source.id):
             if _past(scraped, now):
                 continue
-            venue_id = (
-                source.venue or scraped.venue or registry.resolve_venue(scraped.venue_name or "")
-            )
-            if not venue_id or venue_id not in registry.venues:
-                unresolved[f"{source.id}: {scraped.venue_name or venue_id}"] += 1
+            venue_id = registry.venue_for(source, scraped)
+            if not venue_id:
+                unresolved[f"{source.id}: {scraped.venue_name or scraped.venue}"] += 1
                 continue
             ruling = classify(scraped, source, registry.venues[venue_id])
             if ruling.certain and ruling.relevance == "other":

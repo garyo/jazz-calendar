@@ -23,8 +23,6 @@ def parse(text: str, *, now: datetime) -> list[ScrapedEvent]:
     for vevent in occurrences:
         start, all_day = to_local(vevent.decoded("DTSTART"))
         end = to_local(vevent.decoded("DTEND"))[0] if "DTEND" in vevent else None
-        if end is not None and (end <= start or all_day):
-            end = None
         title = clean(str(vevent.get("SUMMARY", "")))
         if not title:
             continue

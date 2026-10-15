@@ -1,4 +1,5 @@
 import hashlib
+import re
 from collections.abc import Iterator
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -55,15 +56,20 @@ def test_resolve_venue() -> None:
     assert registry.resolve_venue("1353 Cambridge Street, Cambridge, MA 02139") == "lilypad"
     assert registry.resolve_venue("Jordan Hall at NEC") == "nec"
     assert registry.resolve_venue("Somewhere Else") is None
+    aggregator = Source(id="s", adapter="ics", url="https://x")
+    own = Source(id="t", adapter="ics", url="https://x", venue="nec")
+    assert registry.venue_for(aggregator, event("1", "Gig", venue_name="The Lily Pad")) == "lilypad"
+    assert registry.venue_for(aggregator, event("2", "Gig", venue="gone")) is None
+    assert registry.venue_for(own, event("3", "Gig", venue_name="Somewhere Else")) == "nec"
 
 
 @pytest.mark.parametrize(
     ("title", "level", "expected"),
     [
         ("Trivia Night", "dedicated", "other"),
-        ("The Fringe", "dedicated", "jazz"),
+        ("The Outskirts", "dedicated", "jazz"),
         ("Big Band Monday", "occasional", "jazz"),
-        ("Dub Apocalypse: funk night", "occasional", "adjacent"),
+        ("Dub Collective: funk night", "occasional", "adjacent"),
         ("Indie Rock Showcase", "occasional", "other"),
     ],
 )
@@ -73,7 +79,7 @@ def test_classify(title: str, level: str, expected: str) -> None:
 
 
 def test_classify_include_pattern() -> None:
-    source = Source(id="s", adapter="ics", url="https://x", options={"include": "Jazz"})
+    source = Source(id="s", adapter="ics", url="https://x", include="Jazz")
     v = venue("v")
     assert classify(event("1", "Recital", categories=["Piano"]), source, v).relevance == "other"
     assert classify(event("2", "Recital", categories=["Jazz"]), source, v).relevance == "jazz"
@@ -81,25 +87,23 @@ def test_classify_include_pattern() -> None:
 
 def test_classify_descriptions() -> None:
     source = Source(id="s", adapter="ics", url="https://x")
-    trusting = Source(id="t", adapter="ics", url="https://x", options={"trust_text": True})
-    gig = event("1", "Kurt Elling", text="The jazz vocalist returns")
+    trusting = Source(id="t", adapter="ics", url="https://x", trust_text=True)
+    gig = event("1", "Kim Doe", text="The jazz vocalist returns")
     assert classify(gig, source, venue("v")).relevance == "other"
     assert classify(gig, trusting, venue("v")).relevance == "jazz"
     assert classify(gig, source, venue("v", "regular")).relevance == "jazz"
     late = event("2", "Late Night Set", text="Funk and soul till close")
     assert classify(late, source, venue("v", "regular")).relevance == "adjacent"
     assert classify(event("3", "Brunch & Jam"), source, venue("v", "regular")).relevance == "jazz"
+    assert classify(event("4", "Lee Poe Trio"), source, venue("v", "regular")).relevance == "jazz"
     assert (
-        classify(event("4", "Elan Mehler Trio"), source, venue("v", "regular")).relevance == "jazz"
-    )
-    assert (
-        classify(event("5", "Brentano String Quartet"), source, venue("v", "regular")).relevance
+        classify(event("5", "Fictional String Quartet"), source, venue("v", "regular")).relevance
         == "other"
     )
 
 
 def test_unknown_option() -> None:
-    source = Source(id="s", adapter="ics", url="https://x", options={"unknown": "adjacent"})
+    source = Source(id="s", adapter="ics", url="https://x", unknown="adjacent")
     ruling = classify(event("1", "Dana Moe"), source, venue("v", "regular"))
     assert ruling == Ruling("adjacent", False)
 
@@ -109,7 +113,7 @@ def test_classify_certainty() -> None:
     assert classify(event("1", "Big Band Monday"), source, venue("v")).certain
     assert classify(event("2", "Trivia"), source, venue("v")).certain
     assert classify(event("3", "Anyone"), source, venue("v", "dedicated")).certain
-    assert not classify(event("4", "Jean-Luc Ponty"), source, venue("v")).certain
+    assert not classify(event("4", "Jean-Luc Poe"), source, venue("v")).certain
     assert not classify(event("5", "Funk Night"), source, venue("v")).certain
 
 
@@ -318,6 +322,14 @@ def test_empty_run_after_a_full_one_is_a_failure(scrape: Scraper, store: Store) 
         assert by_id["t"].ok
 
 
+def test_scrape_rewrites_titles(scrape: Scraper, store: Store) -> None:
+    scrape.registry.sources[0] = Source(
+        id="s", adapter="fake", url="https://a", venue="club", title_strip="^10/16 |^Doors$"
+    )
+    scrape(s=[event("1", "10/16 Pat Doe Trio"), event("2", "Doors")], t=[])
+    assert [e.title for e in store.current("s")] == ["Pat Doe Trio"]
+
+
 def test_empty_run_after_past_events_is_a_success(scrape: Scraper, store: Store) -> None:
     scrape(s=[event("1", "Gig")], t=[])
     scrape(now=NOW + timedelta(days=1), s=[], t=[])
@@ -419,6 +431,25 @@ def test_enabled_sources_need_a_credit(tmp_path: Path) -> None:
     assert Registry.load(tmp_path).source("on").credit == Credit(name="B", url="https://b")
     write_registry(tmp_path, [{"id": "on", "adapter": "ics", "url": "https://b"}])
     with pytest.raises(ValueError, match="needs a credit"):
+        Registry.load(tmp_path)
+
+
+@pytest.mark.parametrize(
+    ("settings", "error"),
+    [
+        ({"adapter": "nope"}, "no adapter 'nope'; known: bentobox, "),
+        ({"adapter": "jsonld", "options": {"folow": "a"}}, "folow\n  Extra inputs"),
+        ({"adapter": "jsonld", "options": {"follow": "a[["}}, "bad CSS selector"),
+        ({"adapter": "jsonld", "options": {"max_follow": "many"}}, "max_follow\n"),
+        ({"adapter": "ticketmaster"}, "venue_id\n  Field required"),
+        ({"adapter": "ics", "options": {"include": "Jazz"}}, "include\n  Extra inputs"),
+        ({"adapter": "ics", "exclude": "(Jazz"}, "bad regular expression '(Jazz'"),
+        ({"adapter": "ics", "unknown": "maybe"}, "unknown\n"),
+    ],
+)
+def test_bad_sources_fail_to_load(tmp_path: Path, settings: dict, error: str) -> None:
+    write_registry(tmp_path, [{"id": "s", "url": "https://a", "enabled": False, **settings}])
+    with pytest.raises(ValueError, match=f"^source 's'(?s:.*){re.escape(error)}"):
         Registry.load(tmp_path)
 
 

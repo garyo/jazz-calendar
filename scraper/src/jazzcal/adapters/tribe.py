@@ -6,7 +6,7 @@
 from datetime import UTC, datetime
 from urllib.parse import urlencode
 
-from jazzcal.adapters import HORIZON, adapter, clean, html_to_text, to_local
+from jazzcal.adapters import HORIZON, adapter, clean, html_to_text, is_cancelled, to_local
 from jazzcal.config import TZ
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
@@ -29,8 +29,7 @@ def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
     for _ in range(MAX_PAGES):
         if not url:
             break
-        page = http.get(url).json()
-        assert isinstance(page, dict)
+        page = http.get(url).json_dict()
         events += parse_page(page)
         url = page.get("next_rest_url")
     return events
@@ -49,14 +48,13 @@ def _parse_event(item: dict) -> ScrapedEvent | None:
     end = _utc(item["utc_end_date"]) if item.get("utc_end_date") else None
     if all_day:
         start = to_local(start.date())[0]
-        end = None
     venue = item.get("venue")
     terms = [t["name"] for key in ("categories", "tags") for t in item.get(key) or []]
     return ScrapedEvent(
         uid=str(item["id"]),
         title=title,
         start=start,
-        end=end if end and end > start else None,
+        end=end,
         all_day=all_day,
         venue_name=clean(venue.get("venue")) if isinstance(venue, dict) else None,
         url=item.get("url"),
@@ -64,7 +62,7 @@ def _parse_event(item: dict) -> ScrapedEvent | None:
         price=clean(item.get("cost")),
         categories=[c for t in terms if (c := clean(t))],
         text=html_to_text(item.get("description") or ""),
-        cancelled="cancel" in title.lower(),
+        cancelled=is_cancelled(title),
     )
 
 
