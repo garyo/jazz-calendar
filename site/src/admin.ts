@@ -1,6 +1,7 @@
 /**
  * The owner's review page for gig submissions (public/admin.html). The admin
- * token is kept in localStorage when allowed; every API call sends it.
+ * token is kept in sessionStorage when allowed, so it lasts until the tab
+ * closes; every API call sends it.
  */
 
 import { h } from "./render";
@@ -36,7 +37,7 @@ let status: Status = "pending";
 
 function readToken(): string {
   try {
-    return localStorage.getItem(TOKEN_KEY) ?? "";
+    return sessionStorage.getItem(TOKEN_KEY) ?? "";
   } catch {
     return "";
   }
@@ -45,8 +46,8 @@ function readToken(): string {
 function saveToken(value: string): void {
   token = value;
   try {
-    if (value) localStorage.setItem(TOKEN_KEY, value);
-    else localStorage.removeItem(TOKEN_KEY);
+    if (value) sessionStorage.setItem(TOKEN_KEY, value);
+    else sessionStorage.removeItem(TOKEN_KEY);
   } catch {
     // Without storage the token lasts until the page closes.
   }
@@ -185,7 +186,11 @@ function renderCard(s: Submission): HTMLLIElement {
       "p",
       {},
       `Sent ${stamp(s.created_at)} by ${s.submitter_name} `,
-      h("a", { href: `mailto:${s.submitter_email}` }, `<${s.submitter_email}>`),
+      h(
+        "a",
+        { href: `mailto:${encodeURIComponent(s.submitter_email)}` },
+        `<${s.submitter_email}>`,
+      ),
     ),
     h("p", {}, "Confirms it: ", confirmation),
     s.venue_name &&

@@ -112,8 +112,8 @@ Other scripts:
       `src/submit.ts` (it's public), and its secret key in the Worker:
       `bunx wrangler secret put TURNSTILE_SECRET`.
    4. `bunx wrangler secret put ADMIN_TOKEN` with another long random token
-      (`openssl rand -base64 32`). Paste it into `/admin` once; that browser
-      remembers it.
+      (`openssl rand -base64 32`). Paste it into `/admin` when it asks; the
+      tab keeps it (in `sessionStorage`) until you close it or sign out.
 4. Deploy with `bun run deploy`.
 5. Add the custom domain: in the dashboard, Workers & Pages →
    `jazz-calendar` → Settings → Domains & Routes → Add →
