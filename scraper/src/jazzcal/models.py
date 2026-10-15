@@ -5,11 +5,20 @@ schema/events.schema.json. Change it compatibly, or bump `FEED_VERSION`.
 """
 
 import logging
+import re
 from datetime import date
 from typing import Annotated, Any, Literal, Self
 from urllib.parse import urlsplit
 
-from pydantic import AfterValidator, AwareDatetime, BaseModel, ConfigDict, Field, model_validator
+from pydantic import (
+    AfterValidator,
+    AwareDatetime,
+    BaseModel,
+    ConfigDict,
+    Field,
+    PlainValidator,
+    model_validator,
+)
 
 log = logging.getLogger(__name__)
 
@@ -55,8 +64,33 @@ class Credit(Model):
     )
 
 
+def _compile(pattern: object) -> re.Pattern[str]:
+    if isinstance(pattern, re.Pattern):
+        return pattern
+    if not isinstance(pattern, str):
+        raise ValueError(f"expected a regular expression, not {pattern!r}")
+    try:
+        return re.compile(pattern, re.IGNORECASE)
+    except re.error as e:
+        raise ValueError(f"bad regular expression {pattern!r}: {e}") from e
+
+
+Regex = Annotated[re.Pattern[str], PlainValidator(_compile)]
+"""A regular expression, written as a string and matched ignoring case."""
+
+
+class TitleReplace(Model):
+    pattern: Regex
+    with_: str = Field(alias="with", description=r"The replacement; \1 for the first group")
+
+
 class Source(Model):
-    """One place we harvest events from, handled by a named adapter."""
+    """One place we harvest events from, handled by a named adapter.
+
+    Besides the adapter's own `options`, these settings apply to any source: `relevance` and
+    the patterns and fallbacks that steer classification (see classify.py), and the rewrites
+    applied to every title it lists.
+    """
 
     id: str
     adapter: str = Field(description="Adapter name, see jazzcal.adapters")
@@ -67,8 +101,28 @@ class Source(Model):
     relevance: Relevance | None = Field(
         None, description="Relevance of every event from this source; None means classify each"
     )
-    options: dict[str, Any] = Field(default_factory=dict)
+    include: Regex | None = Field(
+        None, description="Keep only listings whose title or categories match"
+    )
+    exclude: Regex | None = Field(None, description="Drop listings whose title or categories match")
+    trust_text: bool = Field(False, description="A description mentioning jazz counts anywhere")
+    unknown: Relevance = Field("other", description="The ruling when nothing else settles one")
+    title_strip: Regex | None = Field(None, description="Removed from every title")
+    title_replace: list[TitleReplace] = Field(
+        default_factory=list, description="Substitutions on every title, after title_strip"
+    )
+    options: dict[str, Any] = Field(
+        default_factory=dict, description="The adapter's own options, checked against its model"
+    )
     notes: str | None = None
+
+    def retitle(self, title: str) -> str:
+        """The title after title_strip and title_replace, with whitespace collapsed."""
+        if self.title_strip:
+            title = self.title_strip.sub("", title)
+        for r in self.title_replace:
+            title = r.pattern.sub(r.with_, title)
+        return re.sub(r"\s+", " ", title).strip()
 
 
 def _is_web_url(url: str) -> bool:

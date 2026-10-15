@@ -28,7 +28,6 @@ MIDNIGHT_PAGE = """<html><body><h1>10/16 The Midnight Hour</h1>
 <p>October 17, 2026 12:00 AM until October 17, 2026 01:00 AM</p></body></html>"""
 
 OPTIONS = {
-    "title_strip": r"^\d{1,2}/\d{1,2}\s+",
     "ticket_link": 'a[href*="exploretock.com"][href*="/experience/"]',
 }
 
@@ -45,7 +44,7 @@ def test_parse_event_page() -> None:
     url = "https://club.example/event/1016-pat-doe-trio/"
     event = bentobox.parse_event_page(EVENT_PAGE, url=url, options=OPTIONS)
     assert event is not None
-    assert event.title == "Pat Doe Trio"
+    assert event.title == "10/16 Pat Doe Trio"  # the source's title_strip takes the date
     assert event.start == datetime(2026, 10, 16, 19, 0, tzinfo=TZ)
     assert event.end == datetime(2026, 10, 16, 22, 0, tzinfo=TZ)
     assert event.ticket_url == "https://www.exploretock.com/club/experience/1/jazz-room"

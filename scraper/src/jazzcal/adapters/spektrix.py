@@ -4,11 +4,8 @@
 attributes become categories for the classifier. Options:
   page_url: where to link events, since Spektrix events usually have no web page of their
             own (default: the venue's site)
-  title_replace: [[pattern, replacement], ...] regex substitutions on event names, for
-            house conventions like a season suffix ("The Temptations '26")
 """
 
-import re
 from datetime import datetime
 
 from jazzcal.adapters import adapter, clean, to_local
@@ -38,7 +35,6 @@ def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
         events,
         instances,
         page_url=source.options.get("page_url"),
-        title_replace=source.options.get("title_replace", []),
         today=today,
     )
 
@@ -48,15 +44,11 @@ def parse(
     instances: dict[str, list[dict]],
     *,
     page_url: str | None,
-    title_replace: list[list[str]],
     today: str,
 ) -> list[ScrapedEvent]:
     scraped = []
     for event in events:
-        title = event.get("name") or ""
-        for pattern, replacement in title_replace:
-            title = re.sub(pattern, replacement, title)
-        title = clean(title)
+        title = clean(event.get("name"))
         if not title:
             continue
         runs = instances.get(event["id"]) or [

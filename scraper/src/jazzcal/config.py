@@ -89,8 +89,6 @@ class Registry:
                 raise ValueError(f"source {s.id!r} needs a credit: a name and an https url")
             if s.venue and s.venue not in registry.venues:
                 raise ValueError(f"source {s.id!r} refers to unknown venue {s.venue!r}")
-            if s.options.get("unknown", "other") not in ("jazz", "adjacent", "other"):
-                raise ValueError(f"source {s.id!r}: unknown must be jazz, adjacent or other")
         return registry
 
     @cached_property

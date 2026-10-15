@@ -10,20 +10,25 @@
 #            or feed; via: true when the source is a third party to the venue (a ticket
 #            seller, an aggregator, submissions), so each listing says "via <name>"
 # relevance: jazz | adjacent, to skip classification
-# options:   include / exclude — regexes matched against title + source categories;
-#            trust_text — let a description mentioning jazz count at any venue;
-#            unknown — jazz | adjacent for listings nothing else settles (default: other);
-#            title_strip — regex removed from every title (dates, ticket blurbs);
-#            plus adapter-specific options
+#
+# Classification and titles, for any adapter (regexes match ignoring case):
+# include:       a regex; only listings whose title or categories match are kept
+# exclude:       a regex; listings whose title or categories match are dropped
+# trust_text:    true to let a description mentioning jazz count at any venue
+# unknown:       jazz | adjacent for listings nothing else settles (default: other)
+# title_strip:   a regex removed from every title (dates, ticket blurbs)
+# title_replace: [{pattern: ..., with: ...}, ...] substitutions on every title, after the strip
+#
+# options:   the adapter's own settings. They're checked when the registry loads, so a
+#            misspelled one is an error; `uv run jazzcal adapters` lists each adapter's.
 
 - id: nec
   adapter: ics
   url: https://www.trumba.com/calendars/nec.ics
   credit: {name: "New England Conservatory’s calendar", url: https://necmusic.edu}
   venue: nec
-  options:
-    include: \b(Jazz|Contemporary Musical Arts)\b
-    exclude: \b(Master class|Workshop|Prep)\b
+  include: \b(Jazz|Contemporary Musical Arts)\b
+  exclude: \b(Master class|Workshop|Prep)\b
   enabled: false
   notes: >-
     Disabled 2026-10-15 for terms of use: NEC's site terms say use of its Content on any other website is prohibited. The Trumba feed's own terms allow republishing, but we hold to the stricter reading until NEC agrees. Ask NEC communications or the box office.
@@ -33,8 +38,7 @@
   url: https://longy.edu
   credit: {name: "Longy’s calendar", url: https://longy.edu/calendar/}
   venue: longy
-  options:
-    title_strip: ^(MAIN|STUDIO|BACK) STAGE\s*[|:]\s*
+  title_strip: ^(MAIN|STUDIO|BACK) STAGE\s*[|:]\s*
 
 - id: tufts
   adapter: ics
@@ -63,8 +67,8 @@
   credit: {name: "The Mad Monkfish’s jazz schedule", url: https://www.themadmonkfish.com/jazz-schedule/}
   venue: mad-monkfish
   relevance: jazz
+  title_strip: ^\d{1,2}/\d{1,2}\s+|\s*\(?\b\d{1,2}(:\d{2})?\s*([ap]m)?\s*-\s*\d{1,2}(:\d{2})?\s*[ap]m\)?|\s+\d{1,2}(:\d{2})?\s*[ap]m\b|\s*\(Mad Monkfish Concert Series\)
   options:
-    title_strip: ^\d{1,2}/\d{1,2}\s+|\s*\(?\b\d{1,2}(:\d{2})?\s*([ap]m)?\s*-\s*\d{1,2}(:\d{2})?\s*[ap]m\)?|\s+\d{1,2}(:\d{2})?\s*[ap]m\b|\s*\(Mad Monkfish Concert Series\)
     ticket_link: a[href*="exploretock.com/themadmonkfish/experience/"]
   notes: Only the www host serves pages; themadmonkfish.com/<path> returns 404.
 
@@ -73,9 +77,9 @@
   url: https://calendar.mit.edu
   credit: {name: "MIT Events Calendar", url: https://calendar.mit.edu}
   venue: mit
+  include: \bjazz\b
   options:
     params: {"type[]": [103224]}
-    include: \bjazz\b
   notes: Event type 103224 is "Performing Arts". robots.txt disallows ?types URLs on /calendar.
 
 - id: northeastern
@@ -92,10 +96,11 @@
   url: https://tickets.thecabot.org/thecabot/api/v3
   credit: {name: "The Cabot’s calendar", url: https://thecabot.org/whats-on/}
   venue: the-cabot
+  exclude: \bSinger-Songwriter\b
+  title_strip: \s+'\d\d\s*$
+  title_replace: [{pattern: "^OC: ", with: "Off Cabot: "}]
   options:
     page_url: https://thecabot.org/whats-on/
-    title_replace: [["^OC: ", "Off Cabot: "], ["\\s+'\\d\\d\\s*$", ""]]
-    exclude: \bSinger-Songwriter\b
   notes: Genre attributes are generous (Blues/Soul on rock acts); "OC:" marks the Off Cabot room.
 
 - id: bpl
@@ -111,24 +116,24 @@
   url: https://www.hobgoblinbar.com/events/
   credit: {name: "HobGoblin’s calendar", url: https://www.hobgoblinbar.com/events/}
   venue: hobgoblin
+  unknown: jazz
+  title_strip: ^\d{1,2}/\d{1,2}\s+
   options:
-    unknown: jazz
     follow: a[href*="/event/"]
     max_follow: 30
     # JSON-LD gives only the date; the time is in the heading's paragraph.
     time_selector: article h1 + p
-    title_strip: ^\d{1,2}/\d{1,2}\s+
 
 - id: beehive
   adapter: jsonld
   url: https://www.beehiveboston.com/musiccalendar
   credit: {name: "The Beehive’s music calendar", url: https://www.beehiveboston.com/musiccalendar}
   venue: beehive
+  unknown: adjacent
+  exclude: \bTBA\b
   options:
-    unknown: adjacent
     follow: a[href*="/event-details/"]
     max_follow: 30
-    exclude: \bTBA\b
   notes: Wix detail pages are ~1.5 MB each; cached for 24 h.
 
 - id: berklee-bpc
@@ -136,10 +141,10 @@
   url: https://www.berklee.edu/events/department/BPC
   credit: {name: "Berklee Performance Center’s calendar", url: https://www.berklee.edu/events/department/BPC}
   venue: berklee-performance-center
+  trust_text: true
   options:
     follow: a[href*="/BPC/events/"]
     max_follow: 40
-    trust_text: true
   enabled: false
   notes: >-
     Disabled 2026-10-15 for terms of use: Berklee's terms require express written consent to use its content on another website. Ask via berklee.edu/contact.
@@ -172,10 +177,10 @@
   adapter: jsonld
   url: https://www.globalartslive.org/events/list-events
   credit: {name: "Global Arts Live", url: https://www.globalartslive.org/events/list-events}
+  trust_text: true
   options:
     follow: a[href^="/content/event_page/"]
     max_follow: 60
-    trust_text: true
     # JSON-LD has M-D-Y dates and a blank location; take the time and venue from the page.
     time_selector: .date-display-single
     venue_selector: meta[property="og:title"]
@@ -188,9 +193,9 @@
   url: https://app.ticketmaster.com/discovery/v2/events.json
   credit: {name: "Ticketmaster", url: https://www.ticketmaster.com, via: true}
   venue: regattabar
+  unknown: jazz
   options:
     venue_id: KovZ917AYuX
-    unknown: jazz
   notes: >-
     Via the Ticketmaster Discovery API, which carries Regattabar's TicketWeb listings.
     TicketWeb's own pages forbid robots, so never scrape them.
@@ -218,8 +223,7 @@
   url: https://musicidb.com/venue/getVenueEvents.htm?listType=upcoming&frameType=listWidget&descrip=1&venueId=715
   credit: {name: "Scullers’ calendar", url: https://www.scullersjazz.com}
   venue: scullers
-  options:
-    title_strip: \s*[-–]\s*tickets? on sale.*$
+  title_strip: \s*[-–]\s*tickets? on sale.*$
   enabled: false
   notes: >-
     Disabled 2026-10-15 for terms of use: MusicIDB's terms forbid scraping or crawling without written consent of MusicIDB or its Members (Scullers). Ask Info@ScullersJazz.com and People@MusicIDB.com, or use the Ticketmaster API.

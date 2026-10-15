@@ -75,7 +75,7 @@ def test_classify(title: str, level: str, expected: str) -> None:
 
 
 def test_classify_include_pattern() -> None:
-    source = Source(id="s", adapter="ics", url="https://x", options={"include": "Jazz"})
+    source = Source(id="s", adapter="ics", url="https://x", include="Jazz")
     v = venue("v")
     assert classify(event("1", "Recital", categories=["Piano"]), source, v).relevance == "other"
     assert classify(event("2", "Recital", categories=["Jazz"]), source, v).relevance == "jazz"
@@ -83,7 +83,7 @@ def test_classify_include_pattern() -> None:
 
 def test_classify_descriptions() -> None:
     source = Source(id="s", adapter="ics", url="https://x")
-    trusting = Source(id="t", adapter="ics", url="https://x", options={"trust_text": True})
+    trusting = Source(id="t", adapter="ics", url="https://x", trust_text=True)
     gig = event("1", "Kurt Elling", text="The jazz vocalist returns")
     assert classify(gig, source, venue("v")).relevance == "other"
     assert classify(gig, trusting, venue("v")).relevance == "jazz"
@@ -101,7 +101,7 @@ def test_classify_descriptions() -> None:
 
 
 def test_unknown_option() -> None:
-    source = Source(id="s", adapter="ics", url="https://x", options={"unknown": "adjacent"})
+    source = Source(id="s", adapter="ics", url="https://x", unknown="adjacent")
     ruling = classify(event("1", "Dana Moe"), source, venue("v", "regular"))
     assert ruling == Ruling("adjacent", False)
 
@@ -318,6 +318,14 @@ def test_empty_run_after_a_full_one_is_a_failure(scrape: Scraper, store: Store) 
         assert by_id["s"].error == "0 events (had 1 upcoming last run)"
         # A source that had nothing last time either is fine.
         assert by_id["t"].ok
+
+
+def test_scrape_rewrites_titles(scrape: Scraper, store: Store) -> None:
+    scrape.registry.sources[0] = Source(
+        id="s", adapter="fake", url="https://a", venue="club", title_strip="^10/16 |^Doors$"
+    )
+    scrape(s=[event("1", "10/16 Pat Doe Trio"), event("2", "Doors")], t=[])
+    assert [e.title for e in store.current("s")] == ["Pat Doe Trio"]
 
 
 def test_empty_run_after_past_events_is_a_success(scrape: Scraper, store: Store) -> None:

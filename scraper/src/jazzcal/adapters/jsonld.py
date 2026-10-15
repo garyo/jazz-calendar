@@ -11,7 +11,6 @@ Some sites' JSON-LD is incomplete; these fill the gaps from the page itself:
   venue_selector: CSS selector for the venue, used when the location has no name. Reads a
           meta tag's content, or else the element's text.
   venue_pattern: regex applied to that, whose first group is the venue name.
-  title_strip: regex removed from titles, e.g. a leading date "10/15 ".
   no_price: true when the site's offers carry a placeholder price.
 """
 
@@ -77,7 +76,6 @@ class _PageHints:
 
     times: list[time] = field(default_factory=list)
     venue: str | None = None
-    title_strip: str | None = None
     no_price: bool = False
 
 
@@ -100,9 +98,7 @@ def parse(
 
 
 def _hints(tree: HTMLParser, options: Mapping[str, Any]) -> _PageHints:
-    hints = _PageHints(
-        title_strip=options.get("title_strip"), no_price=bool(options.get("no_price"))
-    )
+    hints = _PageHints(no_price=bool(options.get("no_price")))
     if (selector := options.get("time_selector")) and (node := tree.css_first(selector)):
         hints.times = parse_times(node.text(), require_meridiem=True)
     if (selector := options.get("venue_selector")) and (node := tree.css_first(selector)):
@@ -131,8 +127,6 @@ def _event_items(data: Any) -> Iterator[dict]:
 def _parse_event(item: dict, base_url: str, hints: _PageHints) -> ScrapedEvent | None:
     title = _string(item.get("name"))
     title = html_to_text(title) if title and "<" in title else clean(title)
-    if title and hints.title_strip:
-        title = clean(re.sub(hints.title_strip, "", title))
     if not title or not item.get("startDate"):
         return None
     start, all_day = _when(item["startDate"])

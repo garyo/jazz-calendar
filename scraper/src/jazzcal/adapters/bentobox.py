@@ -5,7 +5,6 @@ some of them as links. Each event page has the title as its <h1> and, just below
 full schedule: "October 16, 2026 07:00 PM until October 16, 2026 10:00 PM".
 
 Options:
-  title_strip: regex removed from titles, e.g. a leading date "10/16 ".
   ticket_link: CSS selector for a booking link on the event page, e.g.
           a[href*="exploretock.com"][href*="/experience/"].
   max_follow: cap on event pages fetched per run (default 40). They're cached for 5 days.
@@ -57,8 +56,6 @@ def parse_event_page(page: str, *, url: str, options: dict[str, Any]) -> Scraped
     tree = HTMLParser(page)
     heading = tree.css_first("h1")
     title = clean(heading.text()) if heading else None
-    if title and (strip := options.get("title_strip")):
-        title = clean(re.sub(strip, "", title))
     schedule = tree.css_first("h1 + p")
     times = [
         datetime.strptime(t, "%B %d, %Y %I:%M %p").replace(tzinfo=TZ)
