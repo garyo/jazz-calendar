@@ -1,9 +1,11 @@
 /**
  * The filter controls: search, the venue and town pickers with their
  * chips, the date presets, the jazz-adjacent toggle and the view radios.
- * They report a new view state on every change.
+ * They report a new view state on every change; typing in the search box
+ * waits for a pause, but Enter or clearing it applies at once.
  */
 
+import { debounce } from "./debounce";
 import { byId, h } from "./dom";
 import { createPicker, type PickerOption } from "./picker";
 import type { Venue } from "./types";
@@ -13,6 +15,9 @@ import {
   DEFAULT_STATE,
   type ViewState,
 } from "./url-state";
+
+/** How long search waits after the last keystroke. */
+export const SEARCH_DELAY_MS = 150;
 
 export interface ControlsConfig {
   /** The view state the controls start from and edit. */
@@ -186,15 +191,25 @@ export function filterControls({ state, onChange }: ControlsConfig): Controls {
     onChange(next);
   }
 
+  const searchLater = debounce(changed, SEARCH_DELAY_MS);
   // Browsers fire both events for most controls; onChange sees repeats.
   for (const type of ["input", "change"]) {
     form.addEventListener(type, (event) => {
+      if (type === "input" && event.target === query && query.value) {
+        searchLater();
+        return;
+      }
+      searchLater.cancel();
       const next = read();
       if ((event.target as HTMLInputElement).name === "when") next.day = "";
       onChange(next);
     });
   }
-  form.addEventListener("submit", (event) => event.preventDefault());
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    searchLater.cancel();
+    changed();
+  });
   byId("clear-selection").addEventListener("click", () => {
     venuePicker.setSelected([]);
     townPicker.setSelected([]);

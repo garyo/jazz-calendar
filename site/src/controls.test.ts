@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, test } from "bun:test";
-import { type Controls, filterControls } from "./controls";
+import { beforeEach, describe, expect, jest, test } from "bun:test";
+import { type Controls, filterControls, SEARCH_DELAY_MS } from "./controls";
 import { readFeed } from "./feed";
 import { loadPage, sample, useDom } from "./testing";
 import { DEFAULT_STATE, type ViewState } from "./url-state";
@@ -27,6 +27,45 @@ function setUp(start: Partial<ViewState> = {}): void {
 }
 
 const search = () => document.getElementById("q") as HTMLInputElement;
+const type = (value: string) => {
+  search().value = value;
+  search().dispatchEvent(new Event("input", { bubbles: true }));
+};
+
+describe("search", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    setUp();
+  });
+
+  test("waits for a pause in typing", () => {
+    type("t");
+    type("tr");
+    type("tri");
+    expect(changes).toHaveLength(0);
+    jest.advanceTimersByTime(SEARCH_DELAY_MS);
+    expect(changes.map((c) => c.query)).toEqual(["tri"]);
+    jest.useRealTimers();
+  });
+
+  test("applies at once on Enter", () => {
+    type("trio");
+    search().form?.dispatchEvent(new Event("submit", { cancelable: true }));
+    expect(changes.map((c) => c.query)).toEqual(["trio"]);
+    jest.advanceTimersByTime(SEARCH_DELAY_MS);
+    expect(changes).toHaveLength(1);
+    jest.useRealTimers();
+  });
+
+  test("applies at once when cleared", () => {
+    type("trio");
+    type("");
+    expect(changes.map((c) => c.query)).toEqual([""]);
+    jest.advanceTimersByTime(SEARCH_DELAY_MS);
+    expect(changes).toHaveLength(1);
+    jest.useRealTimers();
+  });
+});
 
 describe("the other controls", () => {
   beforeEach(() => setUp());
