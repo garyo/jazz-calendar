@@ -6,10 +6,10 @@ schema/events.schema.json. Change it compatibly, or bump `FEED_VERSION`.
 
 import logging
 from datetime import date
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, Self
 from urllib.parse import urlsplit
 
-from pydantic import AfterValidator, AwareDatetime, BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, AwareDatetime, BaseModel, ConfigDict, Field, model_validator
 
 log = logging.getLogger(__name__)
 
@@ -123,6 +123,13 @@ class ScrapedEvent(Model):
     relevance: Listed | None = Field(
         None, description="A ruling the source makes per event, e.g. an editor's review"
     )
+
+    @model_validator(mode="after")
+    def _drop_meaningless_end(self) -> Self:
+        """An end at or before the start, or on an all-day listing, is dropped."""
+        if self.end is not None and (self.all_day or self.end <= self.start):
+            self.end = None
+        return self
 
 
 class Event(Model):

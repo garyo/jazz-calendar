@@ -48,14 +48,13 @@ def _parse_event(item: dict) -> ScrapedEvent | None:
     end = _utc(item["utc_end_date"]) if item.get("utc_end_date") else None
     if all_day:
         start = to_local(start.date())[0]
-        end = None
     venue = item.get("venue")
     terms = [t["name"] for key in ("categories", "tags") for t in item.get(key) or []]
     return ScrapedEvent(
         uid=str(item["id"]),
         title=title,
         start=start,
-        end=end if end and end > start else None,
+        end=end,
         all_day=all_day,
         venue_name=clean(venue.get("venue")) if isinstance(venue, dict) else None,
         url=item.get("url"),

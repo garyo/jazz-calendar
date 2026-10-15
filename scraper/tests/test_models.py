@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
 from pydantic import ValidationError
@@ -33,6 +33,14 @@ def test_scraped_event_keeps_web_links() -> None:
     event = scraped(url="https://club.example/gig", ticket_url="HTTP://tix.example/1")
     assert event.url == "https://club.example/gig"
     assert event.ticket_url == "HTTP://tix.example/1"
+
+
+def test_scraped_event_drops_an_end_that_is_not_after_the_start() -> None:
+    later = START + timedelta(hours=2)
+    assert scraped(end=later).end == later
+    assert scraped(end=START).end is None
+    assert scraped(end=START - timedelta(hours=1)).end is None
+    assert scraped(end=later, all_day=True).end is None
 
 
 def test_event_needs_a_web_url() -> None:

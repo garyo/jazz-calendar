@@ -42,7 +42,7 @@ def parse(page: str, *, base_url: str) -> list[ScrapedEvent]:
                 uid=urlsplit(url).path,
                 title=title,
                 start=start,
-                end=end if end and end > start and not all_day else None,
+                end=end,
                 all_day=all_day,
                 venue_name=_venue(article),
                 url=url,

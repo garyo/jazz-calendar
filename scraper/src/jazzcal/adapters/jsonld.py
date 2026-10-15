@@ -154,7 +154,7 @@ def _parse_event(item: dict, base_url: str, hints: _PageHints) -> ScrapedEvent |
         uid=f"{url}#{start.isoformat()}",
         title=title,
         start=start,
-        end=end if end and end > start and not all_day else None,
+        end=end,
         all_day=all_day,
         venue_name=clean(_text(_first(item.get("location"), "name"))) or hints.venue,
         url=url,

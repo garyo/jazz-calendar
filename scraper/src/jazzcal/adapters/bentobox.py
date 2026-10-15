@@ -77,7 +77,7 @@ def parse_event_page(page: str, *, url: str, options: dict[str, Any]) -> Scraped
     ]
     if not title or not times:
         return None
-    start, end = times[0], times[1] if len(times) > 1 and times[1] > times[0] else None
+    start, end = times[0], times[1] if len(times) > 1 else None
     link = tree.css_first(options["ticket_link"]) if options.get("ticket_link") else None
     return ScrapedEvent(
         uid=url,

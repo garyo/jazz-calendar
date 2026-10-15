@@ -54,7 +54,7 @@ def parse(xml: str, *, now: datetime) -> list[ScrapedEvent]:
                 uid=link.rsplit("/", 1)[-1] or title,
                 title=f"{title} ({branch} branch)" if branch else title,
                 start=start,
-                end=end if end and end > start else None,
+                end=end,
                 venue_name=branch,
                 url=link or None,
                 categories=[c for c in categories if c in PERFORMANCE_TYPES],

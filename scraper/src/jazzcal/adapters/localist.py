@@ -59,16 +59,12 @@ def _parse_event(event: dict) -> list[ScrapedEvent]:
         all_day = bool(instance.get("all_day"))
         start = datetime.fromisoformat(instance["start"])
         start = to_local(start.date() if all_day else start)[0]
-        end = (
-            to_local(datetime.fromisoformat(instance["end"]))[0]
-            if instance.get("end") and not all_day
-            else None
-        )
+        end = to_local(datetime.fromisoformat(instance["end"]))[0] if instance.get("end") else None
         events.append(
             ScrapedEvent(
                 uid=str(instance["id"]),
                 start=start,
-                end=end if end and end > start else None,
+                end=end,
                 all_day=all_day,
                 **common,
             )
