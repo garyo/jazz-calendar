@@ -18,6 +18,9 @@
   options:
     include: \b(Jazz|Contemporary Musical Arts)\b
     exclude: \b(Master class|Workshop|Prep)\b
+  enabled: false
+  notes: >-
+    Disabled 2026-10-15 for terms of use: NEC's site terms say use of its Content on any other website is prohibited. The Trumba feed's own terms allow republishing, but we hold to the stricter reading until NEC agrees. Ask NEC communications or the box office.
 
 - id: longy
   adapter: tribe
@@ -30,6 +33,9 @@
   adapter: ics
   url: https://www.trumba.com/calendars/tts-wms-managed-music.ics
   venue: tufts-granoff
+  enabled: false
+  notes: >-
+    Disabled 2026-10-15 for terms of use: Tufts' site terms forbid copying or republishing material from its services. The Trumba feed's own terms allow republishing, but we hold to the stricter reading until Tufts agrees. Ask musicadmin@tufts.edu.
 
 - id: lizard-lounge
   adapter: tribe
