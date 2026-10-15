@@ -13,7 +13,7 @@ from jazzcal.adapters import adapters, get_adapter
 from jazzcal.config import ROOT, TZ, VAR_DIR, Registry
 from jazzcal.http import Http
 from jazzcal.llm import Classifier, ClaudeClassifier
-from jazzcal.models import EventsFile
+from jazzcal.models import feed_schema
 from jazzcal.store import Store
 
 OUT_DIR = VAR_DIR / "out"
@@ -81,11 +81,8 @@ def main() -> None:
                 for e in get_adapter(source.adapter)(source, http):
                     print(e.model_dump_json(exclude={"text"}, exclude_none=True))
         case "schema":
-            schema = {
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                **EventsFile.model_json_schema(mode="serialization"),
-            }
-            (ROOT / "schema" / "events.schema.json").write_text(json.dumps(schema, indent=2) + "\n")
+            schema = json.dumps(feed_schema(), indent=2)
+            (ROOT / "schema" / "events.schema.json").write_text(schema + "\n")
         case "adapters":
             print(_describe_adapters())
 

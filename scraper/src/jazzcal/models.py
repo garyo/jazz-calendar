@@ -243,6 +243,14 @@ class EventsFile(Model):
     )
 
 
+def feed_schema() -> dict[str, Any]:
+    """The JSON Schema of the published feed, as schema/events.schema.json holds it."""
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        **EventsFile.model_json_schema(mode="serialization"),
+    }
+
+
 class SourceStatus(Model):
     id: str
     ok: bool
