@@ -122,6 +122,12 @@ class Registry:
         address = address_key(name)
         return self._by_address.get(address) if address else None
 
+    def venue_for(self, source: Source, scraped: ScrapedEvent) -> str | None:
+        """The listed venue an event is at: its source's, its own, or the one its venue name
+        resolves to. None when that isn't a venue in the registry."""
+        venue = source.venue or scraped.venue or self.resolve_venue(scraped.venue_name or "")
+        return venue if venue in self.venues else None
+
     def source(self, source_id: str) -> Source:
         for s in self.sources:
             if s.id == source_id:

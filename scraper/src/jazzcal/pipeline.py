@@ -153,11 +153,9 @@ def build(
         for scraped in store.current(source.id):
             if _past(scraped, now):
                 continue
-            venue_id = (
-                source.venue or scraped.venue or registry.resolve_venue(scraped.venue_name or "")
-            )
-            if not venue_id or venue_id not in registry.venues:
-                unresolved[f"{source.id}: {scraped.venue_name or venue_id}"] += 1
+            venue_id = registry.venue_for(source, scraped)
+            if not venue_id:
+                unresolved[f"{source.id}: {scraped.venue_name or scraped.venue}"] += 1
                 continue
             ruling = classify(scraped, source, registry.venues[venue_id])
             if ruling.certain and ruling.relevance == "other":

@@ -58,6 +58,11 @@ def test_resolve_venue() -> None:
     assert registry.resolve_venue("1353 Cambridge Street, Cambridge, MA 02139") == "lilypad"
     assert registry.resolve_venue("Jordan Hall at NEC") == "nec"
     assert registry.resolve_venue("Somewhere Else") is None
+    aggregator = Source(id="s", adapter="ics", url="https://x")
+    own = Source(id="t", adapter="ics", url="https://x", venue="nec")
+    assert registry.venue_for(aggregator, event("1", "Gig", venue_name="The Lily Pad")) == "lilypad"
+    assert registry.venue_for(aggregator, event("2", "Gig", venue="gone")) is None
+    assert registry.venue_for(own, event("3", "Gig", venue_name="Somewhere Else")) == "nec"
 
 
 @pytest.mark.parametrize(

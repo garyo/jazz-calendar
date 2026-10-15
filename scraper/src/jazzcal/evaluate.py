@@ -63,7 +63,7 @@ def _cases(registry: Registry, store: Store) -> tuple[list[_Case], list[str]]:
         if scraped is None:
             missing.append(item["title"])
             continue
-        venue = source.venue or scraped.venue or registry.resolve_venue(scraped.venue_name or "")
+        venue = registry.venue_for(source, scraped)
         if not venue:
             missing.append(item["title"])
             continue
