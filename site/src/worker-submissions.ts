@@ -8,6 +8,8 @@
  *                                        scraper (PUBLISH_TOKEN)
  *
  * Submitters' names, emails and notes leave D1 only through the admin API.
+ * A new submission pings the owner's ntfy topic with just the gig's title,
+ * time and venue.
  */
 
 import {
@@ -38,6 +40,11 @@ export interface SubmissionsEnv {
   ADMIN_TOKEN?: string;
   /** Turnstile secret key for the submission form's widget. */
   TURNSTILE_SECRET?: string;
+  /** ntfy server root and topic for new-submission notices; unset skips them. */
+  NTFY_URL?: string;
+  NTFY_TOPIC?: string;
+  /** base64 "user:password" for the ntfy server. */
+  NTFY_TOKEN?: string;
 }
 
 const SUBMIT_PATH = "/api/submissions";
@@ -119,6 +126,7 @@ async function verifyTurnstile(
 async function submit(
   request: Request,
   env: SubmissionsEnv,
+  ctx: ExecutionContext,
 ): Promise<Response> {
   if (request.method !== "POST") return methodNotAllowed("POST");
   if (!env.TURNSTILE_SECRET) {
@@ -150,7 +158,51 @@ async function submit(
   )
     .bind(...Object.values(row))
     .run();
+  notifyNewSubmission(env, ctx, row, new URL("/admin", request.url).href);
   return jsonResponse(201, { id: row.id, status: "pending" });
+}
+
+interface NoticeGig {
+  title: string;
+  date: string;
+  start_time?: string | null;
+  venue?: string | null;
+  venue_name?: string | null;
+}
+
+/** Tells the owner a gig is waiting for review; never delays or fails the response. */
+function notifyNewSubmission(
+  env: SubmissionsEnv,
+  ctx: ExecutionContext,
+  gig: NoticeGig,
+  adminUrl: string,
+): void {
+  if (!env.NTFY_URL || !env.NTFY_TOPIC || !env.NTFY_TOKEN) return;
+  const when = gig.start_time
+    ? `${gig.date} ${gig.start_time}`
+    : `${gig.date}, time TBA`;
+  const where = gig.venue ?? `${gig.venue_name ?? "?"} (not listed)`;
+  // ntfy's JSON form, so non-ASCII titles survive (headers can't carry them).
+  const notice = fetch(env.NTFY_URL, {
+    method: "POST",
+    headers: {
+      authorization: `Basic ${env.NTFY_TOKEN}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      topic: env.NTFY_TOPIC,
+      title: "Boston Jazz Calendar: new gig to review",
+      message: `${gig.title}\n${when} · ${where}`,
+      tags: ["musical_note"],
+      click: adminUrl,
+    }),
+  })
+    .then(async (res) => {
+      if (!res.ok)
+        console.error(`ntfy: HTTP ${res.status} ${await res.text()}`);
+    })
+    .catch((error) => console.error("ntfy:", error));
+  ctx.waitUntil(notice);
 }
 
 async function approvedFeed(
@@ -275,9 +327,10 @@ export function routeSubmissions(
   request: Request,
   env: SubmissionsEnv,
   url: URL,
+  ctx: ExecutionContext,
 ): Promise<Response> | null {
   const { pathname } = url;
-  if (pathname === SUBMIT_PATH) return submit(request, env);
+  if (pathname === SUBMIT_PATH) return submit(request, env, ctx);
   if (pathname === APPROVED_PATH) return approvedFeed(request, env);
   if (pathname === ADMIN_PATH || pathname.startsWith(`${ADMIN_PATH}/`)) {
     return admin(request, env, url);

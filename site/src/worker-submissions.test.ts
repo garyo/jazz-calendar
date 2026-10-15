@@ -44,6 +44,8 @@ let db: Database;
 let env: Env;
 let verified: FormData[];
 let human: boolean;
+let notices: { auth: string | null; body: Record<string, unknown> }[];
+let waiting: Promise<unknown>[];
 const realFetch = globalThis.fetch;
 
 beforeEach(() => {
@@ -58,8 +60,17 @@ beforeEach(() => {
     TURNSTILE_SECRET: SECRET,
   };
   verified = [];
+  notices = [];
+  waiting = [];
   human = true;
   globalThis.fetch = (async (url: string, init?: RequestInit) => {
+    if (url === "https://ntfy.example.com") {
+      notices.push({
+        auth: new Headers(init?.headers).get("authorization"),
+        body: JSON.parse(init?.body as string),
+      });
+      return new Response("{}");
+    }
     expect(url).toBe(
       "https://challenges.cloudflare.com/turnstile/v0/siteverify",
     );
@@ -73,7 +84,9 @@ afterEach(() => {
 });
 
 const ctx = {
-  waitUntil: () => {},
+  waitUntil: (promise: Promise<unknown>) => {
+    waiting.push(promise);
+  },
   passThroughOnException: () => {},
 } as unknown as ExecutionContext;
 
@@ -146,6 +159,29 @@ describe("POST /api/submissions", () => {
     });
     expect(verified[0].get("secret")).toBe(SECRET);
     expect(verified[0].get("response")).toBe(gig.turnstile);
+  });
+
+  test("pings ntfy without the submitter's details, when configured", async () => {
+    await submitted();
+    await Promise.all(waiting);
+    expect(notices).toEqual([]);
+
+    env.NTFY_URL = "https://ntfy.example.com";
+    env.NTFY_TOPIC = "misc";
+    env.NTFY_TOKEN = "dXNlcjpwYXNz";
+    await submitted({ title: "Mehmet Ali Sanlıkol Quintet" });
+    await Promise.all(waiting);
+    expect(notices).toHaveLength(1);
+    const [{ auth, body }] = notices;
+    expect(auth).toBe("Basic dXNlcjpwYXNz");
+    expect(body).toMatchObject({
+      topic: "misc",
+      click: "https://bostonjazzcalendar.com/admin",
+    });
+    expect(body.message).toContain("Mehmet Ali Sanlıkol Quintet");
+    expect(body.message).toContain("lilypad");
+    expect(JSON.stringify(body)).not.toContain("pat@example.com");
+    expect(JSON.stringify(body)).not.toContain("Pat Example");
   });
 
   test("accepts a TBA time and an unlisted venue", async () => {

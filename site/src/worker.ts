@@ -216,7 +216,7 @@ export default {
     if (pathname.startsWith(PUBLISH_PREFIX)) {
       return publish(request, env, pathname.slice(PUBLISH_PREFIX.length));
     }
-    const submissions = routeSubmissions(request, env, url);
+    const submissions = routeSubmissions(request, env, url, ctx);
     if (submissions) return submissions;
     return env.ASSETS.fetch(request);
   },
