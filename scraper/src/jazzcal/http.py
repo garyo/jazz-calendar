@@ -215,14 +215,15 @@ class Http:
         try:
             if resp.next_request is not None:
                 return _Reply(resp.status_code, resp.headers, redirect=resp.next_request)
-            if resp.status_code != 200:
+            if not resp.is_success:
                 return _Reply(resp.status_code, resp.headers)
             body = bytearray()
             for chunk in resp.iter_bytes():
                 body += chunk
                 if len(body) > MAX_BYTES:
                     raise FetchError(f"over {MAX_BYTES:,} bytes: {redact(str(request.url))}")
-            return _Reply(200, resp.headers, body.decode(resp.encoding or "utf-8", "replace"))
+            text = body.decode(resp.encoding or "utf-8", "replace")
+            return _Reply(resp.status_code, resp.headers, text)
         finally:
             resp.close()
 
