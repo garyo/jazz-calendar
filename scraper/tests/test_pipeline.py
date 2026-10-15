@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -10,7 +11,7 @@ from jazzcal import pipeline
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key
 from jazzcal.export import to_ics
-from jazzcal.http import redact
+from jazzcal.http import Http, redact
 from jazzcal.llm import Question, Verdict
 from jazzcal.models import Credit, EventsFile, Regular, ScrapedEvent, Source
 from jazzcal.store import Store
@@ -175,6 +176,51 @@ def test_missing_listings_drop_after_two_runs(store: Store) -> None:
     for expected in (1, 1, 0):
         assert len(pipeline.build(registry, store, NOW)[0].events) == expected
         store.record_success("s", [])
+
+
+class Scraper:
+    """Runs pipeline.scrape with each source yielding what `found` holds for it."""
+
+    def __init__(self, registry: Registry, store: Store, http: Http) -> None:
+        self.registry, self.store, self.http = registry, store, http
+        self.found: dict[str, list[ScrapedEvent]] = {}
+
+    def __call__(self, now: datetime = NOW, **found: list[ScrapedEvent]) -> None:
+        self.found = found
+        pipeline.scrape(self.registry, self.store, self.http, now=now)
+
+    def adapter(self, source: Source, http: Http) -> list[ScrapedEvent]:
+        return self.found[source.id]
+
+
+@pytest.fixture
+def scrape(store: Store, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Scraper]:
+    sources = [Source(id=id, adapter="fake", url="https://a", venue="club") for id in ("s", "t")]
+    registry = Registry({"club": venue("club", "dedicated")}, sources)
+    with Http(tmp_path / "cache", offline=True, max_age=timedelta(hours=6)) as http:
+        scraper = Scraper(registry, store, http)
+        monkeypatch.setattr(pipeline, "get_adapter", lambda name: scraper.adapter)
+        yield scraper
+
+
+def test_empty_run_after_a_full_one_is_a_failure(scrape: Scraper, store: Store) -> None:
+    scrape(s=[event("1", "Gig"), event("2", "Old Gig", hours=-30)], t=[])
+    for _ in range(3):
+        scrape(s=[], t=[])
+        feed, status = pipeline.build(scrape.registry, store, NOW)
+        assert [e.title for e in feed.events] == ["Gig"]
+        by_id = {s.id: s for s in status.sources}
+        assert not by_id["s"].ok
+        assert by_id["s"].error == "0 events (had 1 upcoming last run)"
+        # A source that had nothing last time either is fine.
+        assert by_id["t"].ok
+
+
+def test_empty_run_after_past_events_is_a_success(scrape: Scraper, store: Store) -> None:
+    scrape(s=[event("1", "Gig")], t=[])
+    scrape(now=NOW + timedelta(days=1), s=[], t=[])
+    status = store.status("s")
+    assert status and status.ok
 
 
 def test_failed_source_keeps_last_listings(store: Store) -> None:

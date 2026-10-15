@@ -38,7 +38,14 @@ VENUE_PROFILES = {
 }
 
 
-def scrape(registry: Registry, store: Store, http: Http, only: set[str] | None = None) -> None:
+def scrape(
+    registry: Registry,
+    store: Store,
+    http: Http,
+    only: set[str] | None = None,
+    now: datetime | None = None,
+) -> None:
+    now = now or datetime.now(TZ)
     for source in registry.sources:
         if not source.enabled or (only and source.id not in only):
             continue
@@ -55,7 +62,18 @@ def scrape(registry: Registry, store: Store, http: Http, only: set[str] | None =
                 for e in events
             ]
         log.info("source %s: %d events", source.id, len(events))
+        # Nothing at all, where the last run found shows still to come, more likely means a
+        # broken page than an empty calendar: keep the last good listings.
+        if not events and (had := sum(not _past(e, now) for e in store.last_found(source.id))):
+            error = f"0 events (had {had} upcoming last run)"
+            log.warning("source %s: %s; keeping its listings", source.id, error)
+            store.record_failure(source.id, error)
+            continue
         store.record_success(source.id, events)
+
+
+def _past(event: ScrapedEvent, now: datetime) -> bool:
+    return (event.end or event.start + PAST_GRACE) < now
 
 
 @dataclass
@@ -88,7 +106,7 @@ def build(
             log.warning("source %s stale since %s; skipping it", source.id, status.last_success)
             continue
         for scraped in store.current(source.id):
-            if (scraped.end or scraped.start + PAST_GRACE) < now:
+            if _past(scraped, now):
                 continue
             venue_id = (
                 source.venue or scraped.venue or registry.resolve_venue(scraped.venue_name or "")

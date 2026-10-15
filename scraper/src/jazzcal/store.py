@@ -79,8 +79,15 @@ class Store:
 
     def current(self, source: str) -> list[ScrapedEvent]:
         """Events the source still lists."""
+        return self._listed(source, MAX_MISSES)
+
+    def last_found(self, source: str) -> list[ScrapedEvent]:
+        """Events the source's last successful run found."""
+        return self._listed(source, 1)
+
+    def _listed(self, source: str, max_misses: int) -> list[ScrapedEvent]:
         rows = self.db.execute(
-            "select data from listing where source = ? and misses < ?", (source, MAX_MISSES)
+            "select data from listing where source = ? and misses < ?", (source, max_misses)
         )
         return [ScrapedEvent.model_validate_json(data) for (data,) in rows]
 
