@@ -2,7 +2,7 @@
 
 Options:
   follow: CSS selector for links to event detail pages, for sites whose list page lacks
-          JSON-LD but whose detail pages have it. Detail pages are cached for 24 hours.
+          JSON-LD but whose detail pages have it. Detail pages are cached for 5 days.
   max_follow: cap on detail pages fetched per run (default 60).
 
 Some sites' JSON-LD is incomplete; these fill the gaps from the page itself:
@@ -20,7 +20,7 @@ import logging
 import re
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, field
-from datetime import datetime, time, timedelta
+from datetime import datetime, time
 from typing import Any
 from urllib.parse import urljoin
 
@@ -28,7 +28,7 @@ from dateutil.parser import ParserError, isoparse
 from dateutil.parser import parse as parse_date
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
-from jazzcal.adapters import adapter, clean, html_to_text, to_local
+from jazzcal.adapters import DETAIL_MAX_AGE, adapter, clean, html_to_text, to_local
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
 
@@ -45,7 +45,6 @@ EVENT_TYPES = {
     "LiteraryEvent",
     "PublicationEvent",
 }
-DETAIL_MAX_AGE = timedelta(hours=24)
 TIME = re.compile(r"\b(\d{1,2})(?::(\d\d))?\s*([ap])\.?m\b", re.IGNORECASE)
 
 log = logging.getLogger(__name__)

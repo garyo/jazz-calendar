@@ -21,6 +21,9 @@ Adapter = Callable[[Source, Http], list[ScrapedEvent]]
 
 HORIZON = timedelta(days=180)
 """How far ahead to collect events."""
+DETAIL_MAX_AGE = timedelta(days=5)
+"""How long to reuse a cached event detail page. List pages still refresh every run, so new
+events turn up the same day; details rarely change once posted."""
 
 _registry: dict[str, Adapter] = {}
 

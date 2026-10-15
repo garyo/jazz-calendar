@@ -1,3 +1,5 @@
+import hashlib
+from collections.abc import Iterator
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -7,10 +9,11 @@ import yaml
 from pydantic import ValidationError
 
 from jazzcal import pipeline
+from jazzcal import store as store_module
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key, night_of
 from jazzcal.export import to_ics
-from jazzcal.http import redact
+from jazzcal.http import Http, redact
 from jazzcal.llm import Question, Verdict
 from jazzcal.models import Credit, EventsFile, Regular, ScrapedEvent, Source
 from jazzcal.store import Store
@@ -212,6 +215,64 @@ def test_build_merges_a_late_set_listed_either_side_of_midnight(store: Store) ->
     ]
 
 
+@pytest.fixture
+def ticking_store(store: Store, monkeypatch: pytest.MonkeyPatch) -> Store:
+    """A store whose clock moves a minute with each reading, so first_seen orders listings."""
+    minutes = iter(range(10_000))
+    monkeypatch.setattr(
+        store_module, "_now", lambda: (NOW + timedelta(minutes=next(minutes))).isoformat()
+    )
+    return store
+
+
+def ids(registry: Registry, store: Store) -> dict[tuple[str, ...], str]:
+    """Published event ids by the sources listing each event."""
+    feed, _ = pipeline.build(registry, store, NOW)
+    return {tuple(e.sources): e.id for e in feed.events}
+
+
+def derived_id(source: str, uid: str) -> str:
+    return hashlib.sha1(f"{source}|{uid}".encode()).hexdigest()[:12]
+
+
+def club_registry() -> Registry:
+    sources = [
+        Source(id="venue-site", adapter="ics", url="https://a", venue="club"),
+        Source(id="aggregator", adapter="ics", url="https://b", venue="club"),
+    ]
+    return Registry({"club": venue("club", "dedicated")}, sources)
+
+
+def test_event_ids_hold_as_sources_come_and_go(ticking_store: Store) -> None:
+    store, registry = ticking_store, club_registry()
+    store.record_success("aggregator", [event("b1", "Pat Doe Quartet")])
+    first_id = derived_id("aggregator", "b1")
+    assert ids(registry, store) == {("aggregator",): first_id}
+    # The venue's own listing now leads, but the event keeps its id...
+    store.record_success("venue-site", [event("a1", "Pat Doe Quartet")])
+    assert ids(registry, store) == {("venue-site", "aggregator"): first_id}
+    # ...and keeps it when the aggregator drops it.
+    for _ in range(2):
+        store.record_success("aggregator", [])
+    assert ids(registry, store) == {("venue-site",): first_id}
+
+
+def test_split_events_get_distinct_ids(ticking_store: Store) -> None:
+    store, registry = ticking_store, club_registry()
+    store.record_success("aggregator", [event("b1", "Pat Doe Quartet")])
+    ids(registry, store)
+    store.record_success("venue-site", [event("a1", "Pat Doe Quartet")])
+    assert ids(registry, store) == {("venue-site", "aggregator"): derived_id("aggregator", "b1")}
+    # The listings no longer match: the older keeps the id, the other gets its own.
+    store.record_success("venue-site", [event("a1", "Pat Doe Quartet", hours=10)])
+    split = {
+        ("venue-site",): derived_id("venue-site", "a1"),
+        ("aggregator",): derived_id("aggregator", "b1"),
+    }
+    assert ids(registry, store) == split
+    assert ids(registry, store) == split
+
+
 def test_missing_listings_drop_after_two_runs(store: Store) -> None:
     source = Source(id="s", adapter="ics", url="https://a", venue="club")
     registry = Registry({"club": venue("club", "dedicated")}, [source])
@@ -219,6 +280,51 @@ def test_missing_listings_drop_after_two_runs(store: Store) -> None:
     for expected in (1, 1, 0):
         assert len(pipeline.build(registry, store, NOW)[0].events) == expected
         store.record_success("s", [])
+
+
+class Scraper:
+    """Runs pipeline.scrape with each source yielding what `found` holds for it."""
+
+    def __init__(self, registry: Registry, store: Store, http: Http) -> None:
+        self.registry, self.store, self.http = registry, store, http
+        self.found: dict[str, list[ScrapedEvent]] = {}
+
+    def __call__(self, now: datetime = NOW, **found: list[ScrapedEvent]) -> None:
+        self.found = found
+        pipeline.scrape(self.registry, self.store, self.http, now=now)
+
+    def adapter(self, source: Source, http: Http) -> list[ScrapedEvent]:
+        return self.found[source.id]
+
+
+@pytest.fixture
+def scrape(store: Store, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Scraper]:
+    sources = [Source(id=id, adapter="fake", url="https://a", venue="club") for id in ("s", "t")]
+    registry = Registry({"club": venue("club", "dedicated")}, sources)
+    with Http(tmp_path / "cache", offline=True, max_age=timedelta(hours=6)) as http:
+        scraper = Scraper(registry, store, http)
+        monkeypatch.setattr(pipeline, "get_adapter", lambda name: scraper.adapter)
+        yield scraper
+
+
+def test_empty_run_after_a_full_one_is_a_failure(scrape: Scraper, store: Store) -> None:
+    scrape(s=[event("1", "Gig"), event("2", "Old Gig", hours=-30)], t=[])
+    for _ in range(3):
+        scrape(s=[], t=[])
+        feed, status = pipeline.build(scrape.registry, store, NOW)
+        assert [e.title for e in feed.events] == ["Gig"]
+        by_id = {s.id: s for s in status.sources}
+        assert not by_id["s"].ok
+        assert by_id["s"].error == "0 events (had 1 upcoming last run)"
+        # A source that had nothing last time either is fine.
+        assert by_id["t"].ok
+
+
+def test_empty_run_after_past_events_is_a_success(scrape: Scraper, store: Store) -> None:
+    scrape(s=[event("1", "Gig")], t=[])
+    scrape(now=NOW + timedelta(days=1), s=[], t=[])
+    status = store.status("s")
+    assert status and status.ok
 
 
 def test_failed_source_keeps_last_listings(store: Store) -> None:

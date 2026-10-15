@@ -5,6 +5,7 @@ consecutive successful runs without it, it counts as removed.
 """
 
 import sqlite3
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -21,6 +22,7 @@ create table if not exists listing (
     first_seen text not null,
     last_seen text not null,
     misses integer not null default 0,
+    event_id text,  -- the id the event was last published under
     primary key (source, uid)
 );
 create table if not exists verdict (
@@ -34,9 +36,24 @@ create table if not exists run (
     last_success text,
     ok integer not null,
     events integer not null,
-    error text
+    error text,
+    failures integer not null default 0,  -- consecutive failed runs
+    notified text  -- when we last sent word of those failures
 );
 """
+ADDED_COLUMNS = {
+    "listing": {"event_id": "text"},
+    "run": {"failures": "integer not null default 0", "notified": "text"},
+}
+"""Columns added to SCHEMA since its first release, to add to older databases."""
+
+
+@dataclass
+class Failing:
+    source: str
+    runs: int
+    error: str
+    notified: datetime | None
 
 
 class Store:
@@ -44,6 +61,15 @@ class Store:
         path.parent.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(path)
         self.db.executescript(SCHEMA)
+        self._migrate()
+
+    def _migrate(self) -> None:
+        with self.db:
+            for table, columns in ADDED_COLUMNS.items():
+                have = {row[1] for row in self.db.execute(f"pragma table_info({table})")}
+                for name, declaration in columns.items():
+                    if name not in have:
+                        self.db.execute(f"alter table {table} add column {name} {declaration}")
 
     def close(self) -> None:
         self.db.close()
@@ -61,7 +87,8 @@ class Store:
                 [(source, e.uid, e.model_dump_json(), now, now) for e in events],
             )
             self.db.execute(
-                """insert or replace into run values (?, ?, ?, 1, ?, null)""",
+                """insert or replace into run (source, last_attempt, last_success, ok, events)
+                   values (?, ?, ?, 1, ?)""",
                 (source, now, now, len(events)),
             )
 
@@ -69,20 +96,77 @@ class Store:
         now = _now()
         with self.db:
             self.db.execute(
-                """insert into run (source, last_attempt, ok, events, error)
-                   values (?, ?, 0, 0, ?)
+                """insert into run (source, last_attempt, ok, events, error, failures)
+                   values (?, ?, 0, 0, ?, 1)
                    on conflict (source) do update
                    set last_attempt = excluded.last_attempt, ok = 0, events = 0,
-                       error = excluded.error""",
+                       error = excluded.error, failures = failures + 1""",
                 (source, now, error),
+            )
+
+    def failing(self, min_runs: int) -> list[Failing]:
+        """Sources whose last `min_runs` or more runs all failed."""
+        rows = self.db.execute(
+            """select source, failures, error, notified from run
+               where failures >= ? order by source""",
+            (min_runs,),
+        )
+        return [
+            Failing(source, runs, error, datetime.fromisoformat(notified) if notified else None)
+            for source, runs, error, notified in rows
+        ]
+
+    def mark_notified(self, sources: list[str], when: datetime) -> None:
+        with self.db:
+            self.db.executemany(
+                "update run set notified = ? where source = ?",
+                [(when.isoformat(timespec="seconds"), source) for source in sources],
             )
 
     def current(self, source: str) -> list[ScrapedEvent]:
         """Events the source still lists."""
+        return self._listed(source, MAX_MISSES)
+
+    def last_found(self, source: str) -> list[ScrapedEvent]:
+        """Events the source's last successful run found."""
+        return self._listed(source, 1)
+
+    def _listed(self, source: str, max_misses: int) -> list[ScrapedEvent]:
         rows = self.db.execute(
-            "select data from listing where source = ? and misses < ?", (source, MAX_MISSES)
+            "select data from listing where source = ? and misses < ?", (source, max_misses)
         )
         return [ScrapedEvent.model_validate_json(data) for (data,) in rows]
+
+    def published_ids(self, source: str) -> dict[str, tuple[str, str | None]]:
+        """For each of the source's listings by uid: when the source first listed it, and the
+        id its event was last published under."""
+        rows = self.db.execute(
+            "select uid, first_seen, event_id from listing where source = ?", (source,)
+        )
+        return {uid: (first_seen, event_id) for uid, first_seen, event_id in rows}
+
+    def save_event_ids(self, ids: list[tuple[str, str, str]]) -> None:
+        """Record (source, uid, event id) for listings just published."""
+        with self.db:
+            self.db.executemany(
+                "update listing set event_id = ? where source = ? and uid = ?",
+                [(event_id, source, uid) for source, uid, event_id in ids],
+            )
+
+    def prune(self, before: datetime) -> int:
+        """Forget listings that their source has dropped, of events over before `before`.
+        Returns how many."""
+        dropped = self.db.execute(
+            "select source, uid, data from listing where misses >= ?", (MAX_MISSES,)
+        ).fetchall()
+        old = []
+        for source, uid, data in dropped:
+            event = ScrapedEvent.model_validate_json(data)
+            if (event.end or event.start) < before:
+                old.append((source, uid))
+        with self.db:
+            self.db.executemany("delete from listing where source = ? and uid = ?", old)
+        return len(old)
 
     def status(self, source: str) -> SourceStatus | None:
         row = self.db.execute(
