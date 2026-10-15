@@ -76,7 +76,9 @@ class Http:
     def __exit__(self, *_: object) -> None:
         self.close()
 
-    def get(self, url: str, *, max_age: timedelta | None = None) -> Response:
+    def get(
+        self, url: str, *, max_age: timedelta | None = None, headers: dict[str, str] | None = None
+    ) -> Response:
         max_age = self.max_age if max_age is None else max_age
         cached = self._read_cache(url)
         if cached and (self.offline or _now() - cached.fetched_at < max_age):
@@ -87,7 +89,7 @@ class Http:
         if robots and not robots.can_fetch(url, BOT_NAME):
             raise Disallowed(f"robots.txt disallows {url}")
 
-        headers = {}
+        headers = dict(headers or {})
         if cached:
             if etag := cached.meta.get("etag"):
                 headers["If-None-Match"] = etag

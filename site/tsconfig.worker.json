@@ -14,5 +14,5 @@
     "erasableSyntaxOnly": true,
     "skipLibCheck": true
   },
-  "include": ["src/worker.ts", "src/worker.test.ts"]
+  "include": ["src/worker*.ts"]
 }

@@ -68,6 +68,9 @@ class ScrapedEvent(Model):
     categories: list[str] = Field(default_factory=list, description="Source's own tags")
     text: str | None = Field(None, description="Description, used only for classification")
     cancelled: bool = False
+    relevance: Listed | None = Field(
+        None, description="A ruling the source makes per event, e.g. an editor's review"
+    )
 
 
 class Event(Model):

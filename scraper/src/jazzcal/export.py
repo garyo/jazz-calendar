@@ -63,9 +63,14 @@ def to_ics(feed: EventsFile) -> bytes:
     return cal.to_ical()
 
 
+def site_url() -> str:
+    """The site's origin: $JAZZCAL_SITE, or the production site."""
+    return os.environ.get("JAZZCAL_SITE", SITE).rstrip("/")
+
+
 def publish(out_dir: Path) -> None:
     """Upload the written files through the site's publish API."""
-    site = os.environ.get("JAZZCAL_SITE", SITE).rstrip("/")
+    site = site_url()
     token = os.environ.get("JAZZCAL_PUBLISH_TOKEN")
     if not token:
         raise SystemExit("set JAZZCAL_PUBLISH_TOKEN to publish")

@@ -7,6 +7,8 @@ through the publish API below. The worker stores it in R2.
 
 ```
 public/          static files copied into dist/ (index.html, styles.css, _headers, …)
+public/admin.html  the submissions review page (unlinked, noindex), with admin.css
+migrations/      D1 schema for gig submissions
 src/main.ts      front-end entry: fetches /data/events.json, wires controls, renders
 src/render.ts    DOM construction (text only, never innerHTML), incl. the month grid
 src/picker.ts    multi-select (venues, towns); src/disclosure.ts: popover toggling
@@ -19,6 +21,10 @@ src/time.ts      America/New_York date and time formatting
 src/url-state.ts view state <-> query string
 src/types.ts     TS mirror of ../schema/events.schema.json
 src/worker.ts    the Worker: R2-backed data routes, filtered feeds, the publish API
+src/worker-submissions.ts  the Worker's gig submission and review API (D1)
+src/worker-http.ts         response and bearer-token helpers for the Worker
+src/submission.ts  submission records, limits and validation (shared)
+src/submit.ts    the "Submit a gig" dialog; src/admin.ts: the review page
 src/theme.ts     the review-period theme switcher
 ```
 
@@ -56,17 +62,24 @@ bun run dev          # build, then wrangler dev on http://localhost:8787
 front-end code, run `bun run build` in another terminal. Local R2 data lives
 in `.wrangler/state` and persists between runs.
 
-To try the publish API locally, create `.dev.vars` (gitignored):
+To try the publish and submission APIs locally, create `.dev.vars`
+(gitignored). The Turnstile secret below is Cloudflare's always-passing test
+key; on localhost the form uses the matching test site key.
 
 ```
 PUBLISH_TOKEN=local-dev-token
+ADMIN_TOKEN=local-admin-token
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
 ```
+
+and create the local submissions table once:
+`bunx wrangler d1 migrations apply bostonjazzcalendar --local`.
 
 Other scripts:
 
 | Script | What it does |
 |---|---|
-| `bun run build` | Bundle `src/main.ts` and copy `public/` into `dist/` |
+| `bun run build` | Bundle `src/main.ts` and `src/admin.ts` and copy `public/` into `dist/` |
 | `bun run typecheck` | `tsc` for the front end and the worker (separate configs) |
 | `bun run lint` / `lint:fix` | Biome |
 | `bun run test` | `bun test`: time, filtering, URL-state and worker tests |
@@ -84,14 +97,28 @@ Other scripts:
    `openssl rand -base64 32`):
    `bunx wrangler secret put PUBLISH_TOKEN`
    Give the same token to the scraper's upload step.
-3. Deploy once with `bun run deploy`.
-4. Add the custom domain: in the dashboard, Workers & Pages →
-   `bostonjazzcalendar` → Settings → Domains & Routes → Add →
+3. Set up gig submissions (see [Gig submissions](#gig-submissions)); the
+   deploy fails until `wrangler.toml` has a real D1 `database_id`:
+   1. `bunx wrangler d1 create bostonjazzcalendar`, and put the printed
+      `database_id` in `wrangler.toml`.
+   2. `bunx wrangler d1 migrations apply bostonjazzcalendar --remote`. Run
+      it again whenever `migrations/` gains a file.
+   3. In the dashboard, Turnstile → Add widget, Managed mode, with the
+      hostnames `bostonjazzcalendar.com`, `www.bostonjazzcalendar.com` and
+      `jazz-calendar.garyo.workers.dev`. Put its site key in `SITE_KEY` in
+      `src/submit.ts` (it's public), and its secret key in the Worker:
+      `bunx wrangler secret put TURNSTILE_SECRET`.
+   4. `bunx wrangler secret put ADMIN_TOKEN` with another long random token
+      (`openssl rand -base64 32`). Paste it into `/admin` once; that browser
+      remembers it.
+4. Deploy with `bun run deploy`.
+5. Add the custom domain: in the dashboard, Workers & Pages →
+   `jazz-calendar` → Settings → Domains & Routes → Add →
    Custom domain → `bostonjazzcalendar.com` (and `www.` if wanted). The zone
    must be on the same Cloudflare account. Alternatively, add
    `routes = [{ pattern = "bostonjazzcalendar.com", custom_domain = true }]` to
    `wrangler.toml`.
-5. Optional: set up Cloudflare Email Routing so
+6. Optional: set up Cloudflare Email Routing so
    `listings@bostonjazzcalendar.com` (shown on the page) reaches a real inbox.
 
 ## Routes
@@ -107,6 +134,10 @@ else directly, at no worker CPU cost.
 | `GET /calendar.ics` | R2 key `calendar.ics`, `text/calendar; charset=utf-8` |
 | `GET /calendar.ics?venue=…&town=…&adjacent=0` | A feed of just that selection (below) |
 | `PUT /api/publish/:key` | Upload one of the three keys (see below) |
+| `POST /api/submissions` | A gig from the form (see [Gig submissions](#gig-submissions)) |
+| `GET /api/submissions/approved` | Upcoming approved gigs, for the scraper (`PUBLISH_TOKEN`) |
+| `GET /api/admin/submissions?status=…` | The review queue (`ADMIN_TOKEN`) |
+| `POST /api/admin/submissions/:id` | Approve or reject one (`ADMIN_TOKEN`) |
 
 Data responses carry `Cache-Control: public, max-age=300`, an `ETag`, and
 `Access-Control-Allow-Origin: *`, since the feed is meant to be reused. A
@@ -146,3 +177,36 @@ curl -X PUT \
     token is compared in constant time.
   - `400`: unknown key.
   - `405`: method other than `PUT`.
+
+## Gig submissions
+
+Musicians and venues can send in gigs that no source lists. Nothing appears
+until the owner approves it, and the scraper stays the only publisher of the
+feed:
+
+1. "Submit a gig" (any link to `#submit`) opens a dialog. The form checks
+   its fields with `src/submission.ts`, gets a Cloudflare Turnstile token
+   (the widget's script loads only when the dialog first opens), and posts
+   JSON to `POST /api/submissions`.
+2. The Worker validates the same way (lengths; a date from today to a year
+   out; a start time unless "Time TBA"; a venue id from `events.json`, or
+   "other" with a name and town; an http(s) confirmation link; name and
+   email), then verifies the token with Turnstile's siteverify, and stores a
+   `pending` row in D1. It answers `201 {"id", "status": "pending"}`, `400`
+   with `fields` for bad input, `403` when Turnstile says no, and `503`
+   until `TURNSTILE_SECRET` is set.
+3. The owner reviews at `/admin` (`public/admin.html`, not linked and
+   `noindex`), which shows every field, the submitter's name and email, and
+   the confirmation link. Approving saves any edits (title, date, times,
+   venue, price), and needs a listed venue and a relevance (jazz or
+   jazz-adjacent). A gig at a room we don't list waits until the venue is
+   added to `../data/venues.yaml` and published. Rejecting an approved gig
+   unpublishes it.
+4. The scraper's `submissions` source reads
+   `GET /api/submissions/approved` with its publish token: upcoming approved
+   gigs with only the publishable fields (id, title, date, times, venue id,
+   price, link, relevance). They join the next daily build, below the
+   venues' own sources, so a venue's listing of the same show wins.
+
+Submitters' names, emails and notes never leave D1 except through the admin
+API. Admin and submission responses are `Cache-Control: no-store`.

@@ -1,5 +1,5 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://analytics.oberbrunner.com 'sha256-/bfffyxJzcfqpOR0ydmDxV4kyfcRPrLJxDqIb012/Ts='; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://analytics.oberbrunner.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://analytics.oberbrunner.com https://challenges.cloudflare.com 'sha256-/bfffyxJzcfqpOR0ydmDxV4kyfcRPrLJxDqIb012/Ts='; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://analytics.oberbrunner.com; frame-src https://challenges.cloudflare.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
   Referrer-Policy: strict-origin-when-cross-origin
   X-Content-Type-Options: nosniff
   X-Robots-Tag: noindex

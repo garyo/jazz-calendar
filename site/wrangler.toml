@@ -21,6 +21,16 @@ run_worker_first = ["/data/*", "/calendar.ics", "/api/*"]
 binding = "DATA"
 bucket_name = "bostonjazzcalendar-data"
 
+# Gig submissions and their review (src/worker-submissions.ts). Create the
+# database once with `bunx wrangler d1 create bostonjazzcalendar`, put the
+# printed id below, then apply the schema in migrations/ with
+# `bunx wrangler d1 migrations apply bostonjazzcalendar --remote`
+# (`--local` for wrangler dev). Secrets: ADMIN_TOKEN and TURNSTILE_SECRET.
+[[d1_databases]]
+binding = "DB"
+database_name = "bostonjazzcalendar"
+database_id = "00000000-0000-0000-0000-000000000000"
+
 [observability]
 enabled = true
 head_sampling_rate = 1

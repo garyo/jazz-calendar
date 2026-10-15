@@ -23,6 +23,7 @@ import {
   showCount,
 } from "./render";
 import { feedQuery, selectionLabel } from "./selection";
+import { submitDialog } from "./submit";
 import { themeSwitcher } from "./theme";
 import {
   type DayKey,
@@ -91,6 +92,7 @@ let feed: {
   venues: Map<string, Venue>;
 } | null = null;
 let state = parseState(location.search);
+const submit = submitDialog();
 
 const venuePicker = createPicker({
   id: "venue",
@@ -446,6 +448,7 @@ async function load(): Promise<void> {
     const venues = new Map(file.venues.map((venue) => [venue.id, venue]));
     const regulars = file.regulars ?? [];
     feed = { events: file.events, regulars, venues };
+    submit.setVenues(file.venues);
     populatePickers(
       venuesWithListings([...file.events, ...regulars], venues),
       venues,

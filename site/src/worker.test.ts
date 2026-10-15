@@ -88,6 +88,7 @@ beforeEach(() => {
       fetch: async () => new Response("asset"),
     } as unknown as Fetcher,
     DATA: fakeBucket(store),
+    DB: {} as D1Database,
     PUBLISH_TOKEN: TOKEN,
   };
   cache = new FakeCache();

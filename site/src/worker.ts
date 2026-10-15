@@ -5,6 +5,7 @@
  * /calendar.ics) and accepts fresh copies from the scraper via
  * PUT /api/publish/:key. /calendar.ics with venue, town or adjacent
  * parameters is a feed of just that selection, built from events.json.
+ * Gig submissions and their review live in worker-submissions.ts.
  * Static assets never reach this code unless a run_worker_first path falls
  * through (see wrangler.toml).
  */
@@ -19,10 +20,16 @@ import {
   type Selection,
 } from "./selection";
 import type { EventsFile } from "./types";
+import {
+  hasBearer,
+  methodNotAllowed,
+  textResponse,
+  unauthorized,
+} from "./worker-http";
+import { routeSubmissions, type SubmissionsEnv } from "./worker-submissions";
 
-export interface Env {
+export interface Env extends SubmissionsEnv {
   ASSETS: Fetcher;
-  DATA: R2Bucket;
   /** Bearer token for the publish API (`wrangler secret put PUBLISH_TOKEN`). */
   PUBLISH_TOKEN?: string;
 }
@@ -50,20 +57,10 @@ const FEED_CACHE_CONTROL = "public, max-age=3600";
 const FEED_REFRESH_HOURS = 12;
 /** Longer queries are refused before any parsing. */
 const MAX_QUERY_LENGTH = 2048;
+const READ_METHODS = "GET, HEAD";
 
 function isDataKey(key: string): key is DataKey {
   return Object.hasOwn(CONTENT_TYPES, key);
-}
-
-function textResponse(
-  status: number,
-  body: string,
-  headers: Record<string, string> = {},
-): Response {
-  return new Response(`${body}\n`, {
-    status,
-    headers: { "content-type": "text/plain; charset=utf-8", ...headers },
-  });
 }
 
 /** The first entity tag in an If-None-Match header, unquoted and strong. */
@@ -76,16 +73,12 @@ function isReadMethod(request: Request): boolean {
   return request.method === "GET" || request.method === "HEAD";
 }
 
-function methodNotAllowed(): Response {
-  return textResponse(405, "Method not allowed", { allow: "GET, HEAD" });
-}
-
 async function serveData(
   request: Request,
   env: Env,
   key: DataKey,
 ): Promise<Response> {
-  if (!isReadMethod(request)) return methodNotAllowed();
+  if (!isReadMethod(request)) return methodNotAllowed(READ_METHODS);
   const etag = requestedEtag(request.headers);
   const object = await env.DATA.get(
     key,
@@ -144,7 +137,7 @@ async function serveFilteredCalendar(
   ctx: ExecutionContext,
   url: URL,
 ): Promise<Response> {
-  if (!isReadMethod(request)) return methodNotAllowed();
+  if (!isReadMethod(request)) return methodNotAllowed(READ_METHODS);
   const selection =
     url.search.length <= MAX_QUERY_LENGTH
       ? parseFeedSelection(url.searchParams)
@@ -183,40 +176,14 @@ function isFeedQuery(url: URL): boolean {
   );
 }
 
-/** Constant-time comparison: both sides are hashed to equal-length digests. */
-async function tokensMatch(given: string, expected: string): Promise<boolean> {
-  const encoder = new TextEncoder();
-  const [a, b] = await Promise.all(
-    [given, expected].map((token) =>
-      crypto.subtle.digest("SHA-256", encoder.encode(token)),
-    ),
-  );
-  const x = new Uint8Array(a);
-  const y = new Uint8Array(b);
-  let diff = 0;
-  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
-  return diff === 0;
-}
-
-async function isAuthorized(request: Request, env: Env): Promise<boolean> {
-  const expected = env.PUBLISH_TOKEN;
-  const match = request.headers.get("authorization")?.match(/^Bearer (.+)$/);
-  if (!expected || !match) return false;
-  return tokensMatch(match[1], expected);
-}
-
 async function publish(
   request: Request,
   env: Env,
   key: string,
 ): Promise<Response> {
-  if (request.method !== "PUT") {
-    return textResponse(405, "Method not allowed", { allow: "PUT" });
-  }
-  if (!(await isAuthorized(request, env))) {
-    return textResponse(401, "Unauthorized", {
-      "www-authenticate": 'Bearer realm="publish"',
-    });
+  if (request.method !== "PUT") return methodNotAllowed("PUT");
+  if (!(await hasBearer(request, env.PUBLISH_TOKEN))) {
+    return unauthorized("publish");
   }
   if (!isDataKey(key)) {
     const keys = Object.keys(CONTENT_TYPES).join(", ");
@@ -249,6 +216,8 @@ export default {
     if (pathname.startsWith(PUBLISH_PREFIX)) {
       return publish(request, env, pathname.slice(PUBLISH_PREFIX.length));
     }
+    const submissions = routeSubmissions(request, env, url);
+    if (submissions) return submissions;
     return env.ASSETS.fetch(request);
   },
 } satisfies ExportedHandler<Env>;

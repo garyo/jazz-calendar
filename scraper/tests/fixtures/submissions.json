@@ -1,0 +1,48 @@
+{
+  "submissions": [
+    {
+      "id": "0b6f2d1e-8a3c-4f5e-9d7a-1c2b3a4d5e6f",
+      "title": "The Fictional Quartet",
+      "date": "2026-10-22",
+      "start_time": "20:00",
+      "end_time": "23:00",
+      "venue": "lilypad",
+      "price": "$15",
+      "url": "https://example.com/gigs/fictional-quartet",
+      "relevance": "jazz"
+    },
+    {
+      "id": "1c7a3e2f-9b4d-4a6f-8e8b-2d3c4b5e6f70",
+      "title": "Late Set:  Example Organ Trio",
+      "date": "2026-10-31",
+      "start_time": "22:30",
+      "end_time": "03:00",
+      "venue": "wallys",
+      "price": null,
+      "url": "https://example.org/late-set",
+      "relevance": "adjacent"
+    },
+    {
+      "id": "2d8b4f3a-0c5e-4b7a-9f9c-3e4d5c6f7a81",
+      "title": "Sunday Brunch with the Example Trio",
+      "date": "2026-10-25",
+      "start_time": null,
+      "end_time": null,
+      "venue": "wellington-belmont",
+      "price": "Free",
+      "url": "https://example.net/brunch",
+      "relevance": "jazz"
+    },
+    {
+      "id": "3e9c5a4b-1d6f-4c8b-8a0d-4f5e6d7a8b92",
+      "title": "Broken Date",
+      "date": "next Tuesday",
+      "start_time": "20:00",
+      "end_time": null,
+      "venue": "lilypad",
+      "price": null,
+      "url": "https://example.com/broken",
+      "relevance": "jazz"
+    }
+  ]
+}

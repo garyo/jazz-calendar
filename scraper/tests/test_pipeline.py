@@ -108,6 +108,26 @@ def test_classify_certainty() -> None:
     assert not classify(event("5", "Funk Night"), source, venue("v")).certain
 
 
+def test_event_relevance_outranks_rules() -> None:
+    source = Source(id="s", adapter="submissions", url="https://x")
+    reviewed = event("1", "Karaoke Night", relevance="adjacent")
+    assert classify(reviewed, source, venue("v")) == Ruling("adjacent", True)
+
+
+def test_unknown_venue_id_is_skipped(store: Store) -> None:
+    source = Source(id="s", adapter="submissions", url="https://a")
+    registry = Registry({"club": venue("club")}, [source])
+    store.record_success(
+        "s",
+        [
+            event("1", "Pat Doe Quartet", venue="club", relevance="jazz"),
+            event("2", "Dana Moe Trio", venue="gone", relevance="jazz"),
+        ],
+    )
+    feed, _ = pipeline.build(registry, store, NOW)
+    assert [(e.title, e.relevance) for e in feed.events] == [("Pat Doe Quartet", "jazz")]
+
+
 def test_tags() -> None:
     assert tags(event("1", "Sunday Jazz Brunch", price="Free")) == ["brunch", "free"]
     assert tags(event("2", "Recital: Pat Doe '27 MM, Jazz Piano")) == ["student"]

@@ -1,15 +1,17 @@
 """Decide whether an event is jazz, jazz-adjacent, or neither, and tag it.
 
-In order: the source's own `relevance`; the source's include/exclude patterns; keyword rules
-on the title and the source's categories; then the venue's default (everything at a
-dedicated jazz room is jazz). Descriptions count only at rooms with regular jazz, or for sources
-with `trust_text` (e.g. presenters whose blurbs are about the act), since bios elsewhere
-mention jazz in passing. At regular-jazz rooms a trio, quartet, etc. or a jam is jazz too.
+In order: the event's own `relevance` (an editor's ruling on a submitted gig), then the
+source's; the source's include/exclude patterns; keyword rules on the title and the source's
+categories; then the venue's default (everything at a dedicated jazz room is jazz). Descriptions
+count only at rooms with regular jazz, or for sources with `trust_text` (e.g. presenters whose
+blurbs are about the act), since bios elsewhere mention jazz in passing. At regular-jazz rooms a
+trio, quartet, etc. or a jam is jazz too.
 
-A ruling is *certain* when it rests on something decisive: the source's word, an include or
-exclude pattern, an explicit genre in the title or tags, or a dedicated jazz room. The rest are
-best guesses that a language model may overrule (see llm.py). A source's `unknown` option sets
-the guess for listings nothing else settles, for rooms where unfamiliar acts are usually jazz.
+A ruling is *certain* when it rests on something decisive: the event's or source's word, an
+include or exclude pattern, an explicit genre in the title or tags, or a dedicated jazz room. The
+rest are best guesses that a language model may overrule (see llm.py). A source's `unknown`
+option sets the guess for listings nothing else settles, for rooms where unfamiliar acts are
+usually jazz.
 """
 
 import re
@@ -64,6 +66,8 @@ class Ruling:
 
 def classify(event: ScrapedEvent, source: Source, venue: VenueConfig) -> Ruling:
     labels = " ".join([event.title, *event.categories])
+    if event.relevance:
+        return Ruling(event.relevance, True)
     if source.relevance:
         return Ruling(source.relevance, True)
     options = source.options

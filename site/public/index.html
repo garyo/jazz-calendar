@@ -58,6 +58,7 @@
         </div>
         <p id="updated" class="updated"></p>
         <div class="subscribe">
+          <a class="submit-link" href="#submit">Submit a gig</a>
           <button id="subscribe-toggle" type="button" class="button button-primary subscribe-toggle">
             Subscribe<span class="subscribe-toggle-more">&nbsp;to this view</span>
           </button>
@@ -169,15 +170,19 @@
             collector, BostonJazzCalendarBot, visits each once a day, follows
             each site’s robots.txt and terms, and takes only the facts: date,
             time, who’s playing and price. We never copy descriptions or
-            photos, and every listing links back to its source.
+            photos, and every listing links back to its source. Musicians and
+            venues can also <a href="#submit">submit gigs</a>; we check each
+            one before it appears.
           </p>
           <p><strong>Plans change: check the venue’s page before you go.</strong></p>
         </section>
         <section aria-labelledby="submit-heading">
           <h2 id="submit-heading">Listings &amp; corrections</h2>
           <p>
-            Playing a gig, running a room, or spotted a mistake? Send the
-            date, time, venue and a link to
+            Playing a gig or running a room?
+            <a href="#submit">Submit a gig</a> with a link that confirms it;
+            we review every submission before it appears. Spotted a mistake?
+            Write to
             <a href="mailto:listings@bostonjazzcalendar.com">listings@bostonjazzcalendar.com</a>.
           </p>
           <p>
@@ -206,5 +211,104 @@
         </fieldset>
       </div>
     </footer>
+    <dialog id="submit-dialog" class="submit-dialog" aria-labelledby="submit-heading">
+      <div class="submit-head">
+        <h2 id="submit-heading" class="submit-heading">Submit a gig</h2>
+        <button type="button" class="submit-close" data-submit-close aria-label="Close">×</button>
+      </div>
+      <form id="submit-form" class="submit-form" novalidate>
+        <p class="submit-intro">
+          For gigs in Greater Boston that aren’t listed yet. We check each one
+          against the link you give before it appears, usually within a few
+          days.
+        </p>
+        <div class="form-field">
+          <label class="form-label" for="submit-title">Act or event</label>
+          <input id="submit-title" name="title" type="text" required autocomplete="off" placeholder="e.g. Pat Doe Quartet" />
+        </div>
+        <div class="form-row">
+          <div class="form-field form-field-date">
+            <label class="form-label" for="submit-date">Date</label>
+            <input id="submit-date" name="date" type="date" required />
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="submit-start">Starts</label>
+            <input id="submit-start" name="start_time" type="time" required />
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="submit-end">Ends <span class="form-optional">optional</span></label>
+            <input id="submit-end" name="end_time" type="time" />
+          </div>
+        </div>
+        <label class="form-check">
+          <input id="submit-tba" name="time_tba" type="checkbox" />
+          <span>Time TBA</span>
+        </label>
+        <div class="form-field">
+          <label class="form-label" for="submit-venue">Venue</label>
+          <select id="submit-venue" name="venue" required>
+            <option value="">Choose a venue…</option>
+            <option id="submit-venue-other" value="other">Somewhere else (not listed)</option>
+          </select>
+        </div>
+        <div id="submit-other-venue" class="form-row" hidden>
+          <div class="form-field form-field-wide">
+            <label class="form-label" for="submit-venue-name">Venue name</label>
+            <input id="submit-venue-name" name="venue_name" type="text" autocomplete="off" />
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="submit-venue-town">Town</label>
+            <input id="submit-venue-town" name="venue_town" type="text" autocomplete="off" placeholder="e.g. Somerville" />
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="submit-price">Price <span class="form-optional">optional</span></label>
+          <input id="submit-price" name="price" type="text" autocomplete="off" placeholder="e.g. $20, Free, $15–25" />
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="submit-url">Link that confirms the gig</label>
+          <input id="submit-url" name="url" type="url" required inputmode="url" placeholder="https://" aria-describedby="submit-url-hint" />
+          <p id="submit-url-hint" class="form-hint">The venue’s calendar, your own site, or the ticket page. The listing links to it.</p>
+        </div>
+        <fieldset class="form-private" aria-describedby="submit-private-hint">
+          <legend class="form-label">About you</legend>
+          <p id="submit-private-hint" class="form-hint">
+            Only the editor sees your name and email, to ask about this gig.
+            They’re never published or shared.
+          </p>
+          <div class="form-row">
+            <div class="form-field form-field-wide">
+              <label class="form-label" for="submit-name">Your name</label>
+              <input id="submit-name" name="submitter_name" type="text" required autocomplete="name" />
+            </div>
+            <div class="form-field form-field-wide">
+              <label class="form-label" for="submit-email">Email</label>
+              <input id="submit-email" name="submitter_email" type="email" required autocomplete="email" />
+            </div>
+          </div>
+        </fieldset>
+        <div class="form-field">
+          <label class="form-label" for="submit-notes">Notes to the editor <span class="form-optional">optional</span></label>
+          <textarea id="submit-notes" name="notes" rows="3"></textarea>
+        </div>
+        <div id="submit-turnstile" class="submit-turnstile"></div>
+        <p id="submit-status" class="submit-status" role="status"></p>
+        <p class="submit-actions">
+          <button id="submit-send" type="submit" class="button button-primary">Send for review</button>
+          <button type="button" class="button" data-submit-close>Cancel</button>
+        </p>
+      </form>
+      <div id="submit-done" class="submit-done" hidden>
+        <p id="submit-done-title" class="submit-done-title" tabindex="-1">Thanks! Your gig is in the queue.</p>
+        <p>
+          We’ll check it against your link, and it will appear with the next
+          daily update once approved. If we have a question, we’ll email you.
+        </p>
+        <p class="submit-actions">
+          <button id="submit-another" type="button" class="button button-primary">Submit another</button>
+          <button type="button" class="button" data-submit-close>Close</button>
+        </p>
+      </div>
+    </dialog>
   </body>
 </html>

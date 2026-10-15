@@ -665,6 +665,237 @@ input::placeholder {
     monospace;
 }
 
+/* Submit a gig: the header link and the dialog's form. */
+
+.submit-link {
+  margin-right: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+:root:has(.submit-dialog[open]) {
+  overflow: hidden;
+}
+
+.submit-dialog {
+  width: min(36rem, calc(100% - 2 * var(--gutter)));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: var(--shadow-popover);
+  overscroll-behavior: contain;
+  /* Fields scrolled into view clear the sticky header. */
+  scroll-padding-top: 4.5rem;
+}
+
+.submit-dialog::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+
+.submit-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg);
+}
+
+.submit-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.submit-close {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: none;
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.submit-close:hover {
+  border-color: var(--rule);
+  color: var(--ink);
+}
+
+.submit-form,
+.submit-done {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem var(--gutter) 1.25rem;
+}
+
+.submit-form p,
+.submit-done p {
+  margin: 0;
+}
+
+.submit-intro {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.form-field {
+  display: grid;
+  align-content: start;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 0.75rem;
+}
+
+.form-row > .form-field {
+  flex: 1 1 7rem;
+}
+
+.form-row > .form-field-date,
+.form-row > .form-field-wide {
+  flex: 2 1 11rem;
+}
+
+.form-label {
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.form-optional {
+  margin-left: 0.3em;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.form-hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.field-error {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--cancelled);
+}
+
+:is(.submit-form, .review-card)
+  :is(input:not([type="checkbox"], [type="radio"]), select, textarea) {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+:is(.submit-form, .review-card) textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+:is(.submit-form, .review-card)
+  :is(input, select, textarea):hover:not(:disabled),
+:is(.submit-form, .review-card) :is(input, select, textarea):focus {
+  border-color: var(--ink);
+}
+
+:is(.submit-form, .review-card) [aria-invalid="true"] {
+  border-color: var(--cancelled);
+}
+
+:is(.submit-form, .review-card) :disabled {
+  opacity: 0.5;
+}
+
+.form-check {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.form-check input {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.form-private {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.form-private legend {
+  padding-inline: 0.3rem;
+}
+
+.submit-form .form-private input {
+  background: var(--bg);
+}
+
+/* Room for the Turnstile widget, so the form doesn't jump when it loads. */
+.submit-turnstile {
+  min-height: 65px;
+}
+
+.submit-turnstile[data-state="failed"] {
+  min-height: 0;
+}
+
+.submit-status {
+  font-size: 0.875rem;
+}
+
+.submit-status:empty {
+  display: none;
+}
+
+.submit-status[data-kind="error"] {
+  font-weight: 600;
+  color: var(--cancelled);
+}
+
+.submit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.submit-done-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
 /* A single day picked from the month grid */
 
 .day-filter {
@@ -1434,6 +1665,16 @@ a.event-link:hover {
   .subscribe-panel {
     left: var(--gutter);
     right: var(--gutter);
+  }
+
+  .submit-dialog {
+    width: 100%;
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
   }
 
   .subscribe-toggle-more {

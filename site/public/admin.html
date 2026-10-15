@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" data-theme="program">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Review submissions · Boston Jazz Calendar</title>
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/theme-program.css" />
+    <link rel="stylesheet" href="/admin.css" />
+    <script type="module" src="/admin.js"></script>
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="wrap masthead-bar">
+        <div class="masthead-text">
+          <h1 class="wordmark">Gig submissions</h1>
+        </div>
+        <p class="updated"><a href="/">Back to the calendar</a></p>
+      </div>
+    </header>
+
+    <main class="wrap admin">
+      <form id="signin" class="admin-signin" hidden>
+        <label class="form-field" for="admin-token">
+          <span class="form-label">Admin token</span>
+          <input id="admin-token" type="password" autocomplete="off" spellcheck="false" required />
+        </label>
+        <p class="form-hint">
+          The ADMIN_TOKEN secret. This browser remembers it until you sign out.
+        </p>
+        <p><button type="submit" class="button button-primary">Sign in</button></p>
+        <p id="signin-status" class="submit-status" data-kind="error" role="alert"></p>
+      </form>
+
+      <section id="review" hidden>
+        <div class="toolbar admin-toolbar">
+          <fieldset id="status-tabs" class="segmented">
+            <legend class="sr-only">Show</legend>
+            <label><input type="radio" name="status" value="pending" checked /><span>Pending</span></label>
+            <label><input type="radio" name="status" value="approved" /><span>Approved</span></label>
+            <label><input type="radio" name="status" value="rejected" /><span>Rejected</span></label>
+          </fieldset>
+          <button id="refresh" type="button" class="button button-small">Refresh</button>
+          <button id="signout" type="button" class="link-button">Sign out</button>
+        </div>
+        <p class="form-hint admin-help">
+          Approved gigs reach the site with the scraper’s next run. A gig needs
+          a listed venue: add new rooms to <code>data/venues.yaml</code>,
+          publish, then choose them here.
+        </p>
+        <p id="review-status" class="count" role="status" aria-live="polite"></p>
+        <ol id="review-list" class="review-list"></ol>
+      </section>
+    </main>
+  </body>
+</html>

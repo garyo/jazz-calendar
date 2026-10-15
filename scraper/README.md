@@ -47,6 +47,16 @@ as Wally's jam. The feed carries them in a separate `regulars` list, and the sit
 their own section. They never become calendar events: a standing schedule doesn't promise any
 particular night. Only list what a venue or organizer publishes, and recheck it now and then.
 
+### Submitted gigs
+
+Musicians and venues can submit gigs on the site; the owner approves them on its `/admin` page
+(see `../site/README.md`). The `submissions` source reads the approved, upcoming ones from
+`$JAZZCAL_SITE/api/submissions/approved` with `JAZZCAL_PUBLISH_TOKEN`, so it needs no settings
+of its own. Each comes with the venue id and relevance the editor chose (`ScrapedEvent.relevance`,
+which `classify.py` takes as certain) and links to the page the submitter gave as confirmation.
+It sits below the venues' own sources, so their listing of the same show wins. To try it against
+a local `wrangler dev`: `JAZZCAL_SITE=http://127.0.0.1:8787 uv run jazzcal show submissions`.
+
 ### Classification
 
 `classify.py` decides jazz, adjacent or other with keyword rules. A ruling is *certain* when

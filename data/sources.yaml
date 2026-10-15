@@ -2,7 +2,8 @@
 # so venues' own feeds come before aggregators.
 #
 # adapter:   ics | tribe | jsonld | localist | spektrix | bibliocommons | squarespace |
-#            musicidb | ploughandstars | burren | bentobox | textschedule   (see scraper/src/jazzcal/adapters/)
+#            musicidb | ploughandstars | burren | bentobox | textschedule | ticketmaster |
+#            submissions   (see scraper/src/jazzcal/adapters/)
 # venue:     venue id, for single-venue sources
 # relevance: jazz | adjacent, to skip classification
 # options:   include / exclude — regexes matched against title + source categories;
@@ -219,6 +220,17 @@
   notes: >-
     Open Fridays in odd months; the month's sets are posted as plain text on the home page
     a week or two ahead.
+
+# --- Submitted gigs ------------------------------------------------------
+# Below the venues' own sources, so a venue's listing of the same show wins.
+
+- id: submissions
+  adapter: submissions
+  url: https://bostonjazzcalendar.com/api/submissions/approved
+  notes: >-
+    Gigs sent in through the site's form and approved on /admin. The adapter reads them from
+    $JAZZCAL_SITE (default bostonjazzcalendar.com) with JAZZCAL_PUBLISH_TOKEN; each carries
+    the editor's venue and relevance.
 
 # --- Aggregators ---------------------------------------------------------
 
