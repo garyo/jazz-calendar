@@ -1,0 +1,62 @@
+[
+ {
+  "isOnSale": false,
+  "planId": "601APNNMRMBJQQPBSCNQGQHGKKCRPSSGN",
+  "priceList": {
+   "id": "21001AHGQKHHCBJDNTTTMDTTPLSBDJSQB"
+  },
+  "event": {
+   "id": "14601AQGMDCVKHRBCGJLMKRPVNVKVHPJG"
+  },
+  "start": "2023-10-15T18:00:00",
+  "startUtc": "2023-10-15T22:00:00",
+  "startSellingAtWeb": "2023-09-06T11:30:00",
+  "startSellingAtWebUtc": "2023-09-06T15:30:00Z",
+  "stopSellingAtWeb": "2023-10-15T17:30:00",
+  "stopSellingAtWebUtc": "2023-10-15T21:30:00Z",
+  "webInstanceId": null,
+  "cancelled": false,
+  "id": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+  "hasBestAvailableOverlay": false
+ },
+ {
+  "isOnSale": false,
+  "planId": "601APNNMRMBJQQPBSCNQGQHGKKCRPSSGN",
+  "priceList": {
+   "id": "147601AHHMJNSNQQCPDPHHLJJNLLKLCSL"
+  },
+  "event": {
+   "id": "14601AQGMDCVKHRBCGJLMKRPVNVKVHPJG"
+  },
+  "start": "2025-10-10T19:00:00",
+  "startUtc": "2025-10-10T23:00:00",
+  "startSellingAtWeb": "2023-09-06T11:30:00",
+  "startSellingAtWebUtc": "2023-09-06T15:30:00Z",
+  "stopSellingAtWeb": "2025-10-10T18:30:00",
+  "stopSellingAtWebUtc": "2025-10-10T22:30:00Z",
+  "webInstanceId": null,
+  "cancelled": false,
+  "id": "119601AVSGVHJJDJHRTDDCMNQJRMJHKPN",
+  "hasBestAvailableOverlay": false
+ },
+ {
+  "isOnSale": true,
+  "planId": "601APNNMRMBJQQPBSCNQGQHGKKCRPSSGN",
+  "priceList": {
+   "id": "147601AHHMJNSNQQCPDPHHLJJNLLKLCSL"
+  },
+  "event": {
+   "id": "14601AQGMDCVKHRBCGJLMKRPVNVKVHPJG"
+  },
+  "start": "2026-10-18T18:00:00",
+  "startUtc": "2026-10-18T22:00:00",
+  "startSellingAtWeb": "2023-09-06T11:30:00",
+  "startSellingAtWebUtc": "2023-09-06T15:30:00Z",
+  "stopSellingAtWeb": "2026-10-18T17:30:00",
+  "stopSellingAtWebUtc": "2026-10-18T21:30:00Z",
+  "webInstanceId": null,
+  "cancelled": false,
+  "id": "215201ALMBGBDBSRNHVPVTSLTQMMNMTGS",
+  "hasBestAvailableOverlay": false
+ }
+]

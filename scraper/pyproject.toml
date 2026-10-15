@@ -1,0 +1,45 @@
+[project]
+name = "jazzcal"
+version = "0.1.0"
+description = "Scraper and aggregator for bostonjazzcalendar.com"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+    "icalendar>=6.1",
+    "protego>=0.4",
+    "pydantic>=2.10",
+    "python-dateutil>=2.9",
+    "pyyaml>=6.0",
+    "rapidfuzz>=3.10",
+    "recurring-ical-events>=3.4",
+    "selectolax>=0.3.27",
+]
+
+[project.scripts]
+jazzcal = "jazzcal.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+    "types-python-dateutil>=2.9",
+    "types-pyyaml>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

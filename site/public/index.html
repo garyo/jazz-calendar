@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Boston Jazz Calendar</title>
+    <meta
+      name="description"
+      content="Live jazz in Greater Boston, night by night: clubs, bars, concert halls and jam sessions, each linked straight to the venue."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f5efe4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#131015" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="Boston Jazz Calendar" />
+    <meta
+      property="og:description"
+      content="Live jazz in Greater Boston, night by night."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="text/calendar" title="Boston Jazz Calendar" href="/calendar.ics" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400&display=swap"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="preload" href="/data/events.json" as="fetch" crossorigin />
+    <script type="module" src="/main.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#listings">Skip to listings</a>
+
+    <header class="masthead">
+      <div class="wrap">
+        <p class="eyebrow">Greater Boston · Live music listings</p>
+        <h1 class="wordmark">Boston Jazz Calendar</h1>
+        <p class="tagline">
+          Every jazz gig we can find, from the clubs to the corner bars, with a
+          link straight to the venue.
+        </p>
+        <div class="masthead-meta">
+          <p class="subscribe">
+            <a id="subscribe-webcal" class="button button-primary" href="webcal://bostonjazzcalendar.com/calendar.ics">
+              Subscribe in your calendar
+            </a>
+            <span class="subscribe-alt">
+              or add the feed by URL:
+              <a id="subscribe-https" href="https://bostonjazzcalendar.com/calendar.ics">bostonjazzcalendar.com/calendar.ics</a>
+            </span>
+          </p>
+          <p id="updated" class="updated"></p>
+        </div>
+      </div>
+    </header>
+
+    <main id="listings" class="wrap" tabindex="-1">
+      <search aria-label="Filter listings">
+        <form id="filters" class="filters">
+          <div class="filter-row">
+            <label class="field field-search">
+              <span class="field-label">Search</span>
+              <input id="q" name="q" type="search" placeholder="Artist, band or venue" autocomplete="off" spellcheck="false" />
+            </label>
+            <label class="field field-town">
+              <span class="field-label">Town</span>
+              <select id="town" name="town">
+                <option value="">All towns</option>
+              </select>
+            </label>
+          </div>
+          <div class="filter-row">
+            <fieldset class="presets">
+              <legend class="sr-only">When</legend>
+              <label><input type="radio" name="when" value="tonight" /><span>Tonight</span></label>
+              <label><input type="radio" name="when" value="weekend" /><span>This weekend</span></label>
+              <label><input type="radio" name="when" value="week" /><span>Next 7 days</span></label>
+              <label><input type="radio" name="when" value="all" checked /><span>Everything</span></label>
+            </fieldset>
+            <label class="toggle">
+              <input id="adjacent" name="adjacent" type="checkbox" checked />
+              <span>Include jazz-adjacent</span>
+            </label>
+          </div>
+        </form>
+      </search>
+
+      <p id="count" class="count" role="status" aria-live="polite"></p>
+      <div id="results" class="results">
+        <noscript>
+          <div class="notice">
+            <p class="notice-title">This calendar needs JavaScript.</p>
+            <p>
+              You can still subscribe to the
+              <a href="/calendar.ics">calendar feed</a> or read the raw
+              <a href="/data/events.json">listings data</a>.
+            </p>
+          </div>
+        </noscript>
+      </div>
+    </main>
+
+    <footer class="colophon">
+      <div class="wrap colophon-grid">
+        <section aria-labelledby="about-heading">
+          <h2 id="about-heading">About</h2>
+          <p>
+            Boston Jazz Calendar is an independent listing, not affiliated with
+            any venue, artist or promoter. We gather dates, times and prices
+            from venues’ own sites and public calendars, and every listing
+            links back to its source.
+          </p>
+          <p><strong>Plans change: check the venue’s page before you go.</strong></p>
+        </section>
+        <section aria-labelledby="submit-heading">
+          <h2 id="submit-heading">Listings &amp; corrections</h2>
+          <p>
+            Playing a gig, running a room, or spotted a mistake? Send the
+            date, time, venue and a link to
+            <a href="mailto:listings@bostonjazzcalendar.com">listings@bostonjazzcalendar.com</a>.
+          </p>
+          <p>
+            Venues and artists who’d rather not be listed can write to the same
+            address; we remove listings promptly on request.
+          </p>
+        </section>
+      </div>
+      <div class="wrap">
+        <p class="fine-print">
+          Venue names belong to their owners and appear here only to identify
+          them. No ads, no tracking.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

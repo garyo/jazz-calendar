@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+.env
+scraper/var/
+.DS_Store
+
+# Personal notes and drafts, never published
+private/

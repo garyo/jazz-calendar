@@ -1,0 +1,214 @@
+# Event sources. Order is priority: when sources list the same event, the earlier one wins,
+# so venues' own feeds come before aggregators.
+#
+# adapter:   ics | tribe | jsonld | localist | spektrix | bibliocommons | squarespace |
+#            musicidb | ploughandstars | burren | recurring   (see scraper/src/jazzcal/adapters/)
+# venue:     venue id, for single-venue sources
+# relevance: jazz | adjacent, to skip classification
+# options:   include / exclude — regexes matched against title + source categories;
+#            trust_text — let a description mentioning jazz count at any venue;
+#            plus adapter-specific options
+
+- id: nec
+  adapter: ics
+  url: https://www.trumba.com/calendars/nec.ics
+  venue: nec
+  options:
+    include: \b(Jazz|Contemporary Musical Arts)\b
+    exclude: \b(Master class|Workshop|Prep)\b
+
+- id: longy
+  adapter: tribe
+  url: https://longy.edu
+  venue: longy
+
+- id: tufts
+  adapter: ics
+  url: https://www.trumba.com/calendars/tts-wms-managed-music.ics
+  venue: tufts-granoff
+
+- id: lizard-lounge
+  adapter: tribe
+  url: https://lizardloungeclub.com
+  venue: lizard-lounge
+
+- id: arts-at-the-armory
+  adapter: ics
+  url: https://artsatthearmory.org/events.ics
+  venue: arts-at-the-armory
+
+- id: mad-monkfish
+  adapter: bentobox
+  url: https://www.themadmonkfish.com/jazz-schedule/
+  venue: mad-monkfish
+  relevance: jazz
+  options:
+    title_strip: ^\d{1,2}/\d{1,2}\s+
+    ticket_link: a[href*="exploretock.com/themadmonkfish/experience/"]
+  notes: Only the www host serves pages; themadmonkfish.com/<path> returns 404.
+
+- id: mit
+  adapter: localist
+  url: https://calendar.mit.edu
+  venue: mit
+  options:
+    params: {"type[]": [103224]}
+    include: \bjazz\b
+  notes: Event type 103224 is "Performing Arts". robots.txt disallows ?types URLs on /calendar.
+
+- id: northeastern
+  adapter: localist
+  url: https://calendar.northeastern.edu
+  venue: northeastern
+  options:
+    params: {"type[]": [12879, 12887, 12888]}
+  notes: Event types Concert, Live Performance, Music.
+
+- id: the-cabot
+  adapter: spektrix
+  url: https://tickets.thecabot.org/thecabot/api/v3
+  venue: the-cabot
+  options:
+    page_url: https://thecabot.org/whats-on/
+    title_replace: [["^OC: ", "Off Cabot: "], ["\\s+'\\d\\d\\s*$", ""]]
+    exclude: \bSinger-Songwriter\b
+  notes: Genre attributes are generous (Blues/Soul on rock acts); "OC:" marks the Off Cabot room.
+
+- id: bpl
+  adapter: bibliocommons
+  url: https://gateway.bibliocommons.com/v2/libraries/bpl/events/search
+  venue: bpl
+  options:
+    query: jazz
+
+- id: hobgoblin
+  adapter: jsonld
+  url: https://www.hobgoblinbar.com/events/
+  venue: hobgoblin
+  options:
+    follow: a[href*="/event/"]
+    max_follow: 30
+    # JSON-LD gives only the date; the time is in the heading's paragraph.
+    time_selector: article h1 + p
+    title_strip: ^\d{1,2}/\d{1,2}\s+
+
+- id: beehive
+  adapter: jsonld
+  url: https://www.beehiveboston.com/musiccalendar
+  venue: beehive
+  options:
+    follow: a[href*="/event-details/"]
+    max_follow: 30
+    exclude: \bTBA\b
+  notes: Wix detail pages are ~1.5 MB each; cached for 24 h.
+
+- id: berklee-bpc
+  adapter: jsonld
+  url: https://www.berklee.edu/events/department/BPC
+  venue: berklee-performance-center
+  options:
+    follow: a[href*="/BPC/events/"]
+    max_follow: 40
+    trust_text: true
+  notes: robots.txt sets Crawl-delay 10 and disallows ?page= and ?keys=, so only the first list page.
+
+- id: berklee-red-room
+  adapter: jsonld
+  url: https://www.berklee.edu/red-room-cafe-939/events
+  venue: berklee-red-room
+  options:
+    follow: a[href*="/red-room-cafe-939/events/"]
+    max_follow: 20
+
+- id: vivo
+  adapter: jsonld
+  url: https://www.vivoperformingarts.org/live-performances/performance-event-calendar/?genre=jazz
+  relevance: jazz
+  options:
+    follow: a[href*="/productions/"]
+    max_follow: 30
+  notes: Vivo (formerly Celebrity Series) jazz list; events across several halls.
+
+- id: global-arts-live
+  adapter: jsonld
+  url: https://www.globalartslive.org/events/list-events
+  options:
+    follow: a[href^="/content/event_page/"]
+    max_follow: 60
+    trust_text: true
+    # JSON-LD has M-D-Y dates and a blank location; take the time and venue from the page.
+    time_selector: .date-display-single
+    venue_selector: meta[property="og:title"]
+    venue_pattern: \bat ((?:(?! at ).)+)$
+    no_price: true  # every event's offer says $20
+  notes: All genres (much world music); Crawl-delay 10, so a cold run takes ~10 minutes.
+
+- id: lilypad
+  adapter: squarespace
+  url: https://www.lilypadinman.com/home
+  venue: lilypad
+  notes: >-
+    Squarespace list page (its ?format=json is robots-disallowed). Genre labels come through as
+    categories; "Avant-garde" and unlabeled acts don't match the classifier's keywords yet.
+
+- id: scullers
+  adapter: musicidb
+  url: https://musicidb.com/venue/getVenueEvents.htm?listType=upcoming&frameType=listWidget&descrip=1&venueId=715
+  venue: scullers
+  notes: The MusicIDB list widget scullersjazz.com embeds; TicketWeb links.
+
+- id: plough-and-stars
+  adapter: ploughandstars
+  url: https://calendar.ploughandstars.com/events/calendar
+  venue: plough-and-stars
+  notes: Act names only, no genres; mostly rock/folk, so few events pass the classifier.
+
+- id: the-burren
+  adapter: burren
+  url: https://www.burren.com/music.html
+  venue: the-burren
+  notes: Static page; one-line genre blurbs ("Gypsy jazz") feed the classifier.
+
+# --- Residencies: weekly series venues don't list by date ------------------
+
+- id: wallys-jam
+  adapter: recurring
+  url: https://www.wallyscafe.com/one-night/
+  venue: wallys
+  relevance: jazz
+  options: {title: Jam session, days: [tue, wed, thu, fri, sat], start: "19:00", end: "21:00"}
+  notes: Confirmed on wallyscafe.com 2026-10-15. Night sets (10pm-midnight) are unlisted.
+
+- id: bluebird-monday
+  adapter: recurring
+  url: https://www.thebluebirdbar.com
+  venue: bluebird-bar
+  relevance: jazz
+  options: {title: Monday night jazz, days: [mon], start: "19:00", end: "21:00"}
+  notes: From the Bluebird's home page, 2026-10-15.
+
+- id: bluebird-brunch
+  adapter: recurring
+  url: https://www.thebluebirdbar.com
+  venue: bluebird-bar
+  relevance: jazz
+  options: {title: Sunday jazz brunch, days: [sun], start: "11:00", end: "14:00"}
+  notes: Reported by musicians; not on the Bluebird's site. Confirm with the venue.
+
+- id: phoenix-landing-jam
+  adapter: recurring
+  url: https://jazzboston.org/jazzjams/
+  venue: phoenix-landing
+  relevance: jazz
+  options: {title: JazzBoston jam session, days: [fri], nth: [1, 3], start: "17:00", end: "19:00"}
+  notes: From JazzBoston's jam list, 2026-10-15.
+
+# --- Aggregators ---------------------------------------------------------
+
+- id: artsboston
+  adapter: ics
+  url: https://bostix.org/wp-json/apollo/v1/calendar/subscribe/all
+  enabled: false
+  notes: >-
+    Public ICS of every ArtsBoston/Bostix listing; JazzBoston's calendar is built from the same
+    data. Disabled until ArtsBoston agrees to our use of it.

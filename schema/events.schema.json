@@ -1,0 +1,273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Event": {
+      "additionalProperties": false,
+      "description": "A published event.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "start": {
+          "description": "ISO 8601 with UTC offset, Boston local time",
+          "format": "date-time",
+          "title": "Start",
+          "type": "string"
+        },
+        "end": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "End"
+        },
+        "all_day": {
+          "default": false,
+          "description": "True when no start time is known",
+          "title": "All Day",
+          "type": "boolean"
+        },
+        "venue": {
+          "description": "Venue id; see EventsFile.venues",
+          "title": "Venue",
+          "type": "string"
+        },
+        "url": {
+          "description": "Where to read about the event: the venue's or source's page",
+          "title": "Url",
+          "type": "string"
+        },
+        "ticket_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ticket Url"
+        },
+        "price": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Free text, e.g. '$20', 'Free', '$15-25'",
+          "title": "Price"
+        },
+        "artists": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Artists",
+          "type": "array"
+        },
+        "relevance": {
+          "enum": [
+            "jazz",
+            "adjacent"
+          ],
+          "title": "Relevance",
+          "type": "string"
+        },
+        "tags": {
+          "description": "e.g. 'jam', 'brunch', 'big band'",
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "cancelled": {
+          "default": false,
+          "title": "Cancelled",
+          "type": "boolean"
+        },
+        "sources": {
+          "description": "Ids of the sources that list this event",
+          "items": {
+            "type": "string"
+          },
+          "title": "Sources",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "start",
+        "end",
+        "all_day",
+        "venue",
+        "url",
+        "ticket_url",
+        "price",
+        "artists",
+        "relevance",
+        "tags",
+        "cancelled",
+        "sources"
+      ],
+      "title": "Event",
+      "type": "object"
+    },
+    "Venue": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Stable slug, e.g. 'lilypad'",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Address"
+        },
+        "town": {
+          "description": "Municipality, e.g. 'Cambridge'",
+          "title": "Town",
+          "type": "string"
+        },
+        "neighborhood": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. 'Inman Square', 'South End'",
+          "title": "Neighborhood"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Venue home page",
+          "title": "Url"
+        },
+        "jazz_level": {
+          "enum": [
+            "dedicated",
+            "regular",
+            "occasional"
+          ],
+          "title": "Jazz Level",
+          "type": "string"
+        },
+        "lat": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lat"
+        },
+        "lng": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lng"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "address",
+        "town",
+        "neighborhood",
+        "url",
+        "jazz_level",
+        "lat",
+        "lng"
+      ],
+      "title": "Venue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The published feed, served as /data/events.json.",
+  "properties": {
+    "version": {
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "venues": {
+      "items": {
+        "$ref": "#/$defs/Venue"
+      },
+      "title": "Venues",
+      "type": "array"
+    },
+    "events": {
+      "description": "Sorted by start",
+      "items": {
+        "$ref": "#/$defs/Event"
+      },
+      "title": "Events",
+      "type": "array"
+    }
+  },
+  "required": [
+    "version",
+    "generated_at",
+    "venues",
+    "events"
+  ],
+  "title": "EventsFile",
+  "type": "object"
+}

@@ -1,0 +1,1110 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//wp-events-plugin.com//7.4.3//EN
+TZID:America/New_York
+X-WR-TIMEZONE:America/New_York
+BEGIN:VEVENT
+SUMMARY:Atomic Comedy Indie Improv Night
+DTSTART;TZID=America/New_York:20261015T193000
+DTEND;TZID=America/New_York:20261015T193000
+DTSTAMP:20260703T152156Z
+UID:20177@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/atomic-comedy-indie-improv-night-2-
+ 2026-08-20-2026-09-17-2026-10-15/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Bill Blumenreich Presents: Chill Towards Enlightenment: A Stoke Se
+ minar with Chad Goes Deep
+DTSTART;TZID=America/New_York:20261015T193000
+DTEND;TZID=America/New_York:20261015T223000
+DTSTAMP:20261013T151239Z
+UID:20028@artsatthearmory.org
+CATEGORIES:Performance Hall,Podcast
+URL:https://artsatthearmory.org/events/chill-towards-enlightenment-chad-go
+ es-deep/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Third Space Presents Vintage After Dark: a Halloween Social & Mark
+ et
+DTSTART;TZID=America/New_York:20261016T180000
+DTEND;TZID=America/New_York:20261016T220000
+DTSTAMP:20261009T141659Z
+UID:20228@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/third-space-vintage-after-dark-a-ha
+ lloween-social-market/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:IMPROV COMEDY: an evening of
+DTSTART;TZID=America/New_York:20261016T193000
+DTEND;TZID=America/New_York:20261016T220000
+DTSTAMP:20260717T142956Z
+UID:20195@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/improv-comedy-an-evening-of-2026-07
+ -17-2026-08-21-2026-09-18-2026-10-16/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Photographic Resource Center’s 50th anniversary Gala
+DTSTART;TZID=America/New_York:20261017T170000
+DTEND;TZID=America/New_York:20261017T220000
+DTSTAMP:20260925T164512Z
+UID:20260@artsatthearmory.org
+CATEGORIES:Performance Hall
+URL:https://artsatthearmory.org/events/photographic-resource-centers-50th-
+ anniversary-gala/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Purrranormal Comedy Show 2026
+DTSTART;TZID=America/New_York:20261017T190000
+DTEND;TZID=America/New_York:20261017T210000
+DTSTAMP:20260910T120825Z
+UID:20241@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/purrranormal-comedy-show-2026/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:GottaBal! Dance
+DTSTART;TZID=America/New_York:20261018T160000
+DTEND;TZID=America/New_York:20261018T200000
+DTSTAMP:20260814T155403Z
+UID:20217@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/gottabal-dance-19/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:BLOWWLOWEEN IX: BLOWW'S CLUES
+DTSTART;TZID=America/New_York:20261018T180000
+DTEND;TZID=America/New_York:20261018T220000
+DTSTAMP:20260925T131310Z
+UID:20255@artsatthearmory.org
+CATEGORIES:Performance Hall,Theater
+URL:https://artsatthearmory.org/events/blowwloween-ix-blowws-clues/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:West Coast Swing Training
+DTSTART;TZID=America/New_York:20261019T190000
+DTEND;TZID=America/New_York:20261019T220000
+DTSTAMP:20261009T164307Z
+UID:20252@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/west-coast-swing-training-2026-10-1
+ 9/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Nothing But The Truth
+DTSTART;TZID=America/New_York:20261021T190000
+DTEND;TZID=America/New_York:20261021T213000
+DTSTAMP:20261002T150127Z
+UID:20206@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/nothing-but-the-truth/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Circus Guild Presents: Cirque of the Dead
+DTSTART;TZID=America/New_York:20261022T193000
+DTEND;TZID=America/New_York:20261022T220000
+DTSTAMP:20260929T193958Z
+UID:20259@artsatthearmory.org
+CATEGORIES:Circus,Performance Hall
+URL:https://artsatthearmory.org/events/cirque-of-the-dead-2026-1/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Songwriters In-The-Round with Janet Feld\, Dana Cooper & Louise Co
+ ombe
+DTSTART;TZID=America/New_York:20261022T193000
+DTEND;TZID=America/New_York:20261022T210000
+DTSTAMP:20260812T201912Z
+UID:20213@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/songwriters-in-the-round-with-janet
+ -feld-dana-cooper-louise-coombe/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Bingo with Will Pottorff and Friends
+DTSTART;TZID=America/New_York:20261023T193000
+DTEND;TZID=America/New_York:20261023T210000
+DTSTAMP:20260918T150244Z
+UID:20248@artsatthearmory.org
+CATEGORIES:Gaming
+URL:https://artsatthearmory.org/events/bingo-with-will-pottorff-and-friend
+ s/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Circus Guild Presents: Cirque of the Dead
+DTSTART;TZID=America/New_York:20261023T193000
+DTEND;TZID=America/New_York:20261023T220000
+DTSTAMP:20260929T193946Z
+UID:20261@artsatthearmory.org
+CATEGORIES:Circus,Performance Hall
+URL:https://artsatthearmory.org/events/cirque-of-the-dead-2/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Misfit Variety Show: Comedy for Weirdos\, Rebels\, and the Misunde
+ rstood
+DTSTART;TZID=America/New_York:20261024T163000
+DTEND;TZID=America/New_York:20261024T180000
+DTSTAMP:20260925T131915Z
+UID:20256@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/misfit-variety-show-comedy-for-weir
+ dos-rebels-and-the-misunderstood/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Circus Guild Presents: Cirque of the Dead
+DTSTART;TZID=America/New_York:20261024T183000
+DTEND;TZID=America/New_York:20261024T210000
+DTSTAMP:20260929T193936Z
+UID:20262@artsatthearmory.org
+CATEGORIES:Circus,Performance Hall
+URL:https://artsatthearmory.org/events/cirque-of-the-dead-3/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:BSides Cambridge 2026
+DTSTART;TZID=America/New_York:20261025T083000
+DTEND;TZID=America/New_York:20261025T140000
+DTSTAMP:20260929T201420Z
+UID:20267@artsatthearmory.org
+CATEGORIES:Community,Performance Hall
+URL:https://artsatthearmory.org/events/bsides-cambridge-2026/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Fish Tank Comedy Character Showcase
+DTSTART;TZID=America/New_York:20261025T190000
+DTEND;TZID=America/New_York:20261025T210000
+DTSTAMP:20260910T131857Z
+UID:20243@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/fish-tank-comedy-character-showcase
+ /
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:West Coast Swing Training
+DTSTART;TZID=America/New_York:20261026T190000
+DTEND;TZID=America/New_York:20261026T220000
+DTSTAMP:20261009T164307Z
+UID:20253@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/west-coast-swing-training-2026-10-2
+ 6/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM: FRENEMIES
+DTSTART;TZID=America/New_York:20261027T183000
+DTEND;TZID=America/New_York:20261027T213000
+DTSTAMP:20260629T173411Z
+UID:15764@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2026-10-2
+ 7/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:UX Horror Stories
+DTSTART;TZID=America/New_York:20261027T190000
+DTEND;TZID=America/New_York:20261027T220000
+DTSTAMP:20260929T203435Z
+UID:20269@artsatthearmory.org
+CATEGORIES:Cafe,Comedy,Community
+URL:https://artsatthearmory.org/events/ux-horror-stories/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Strummerville Ukulele Club
+DTSTART;TZID=America/New_York:20261028T183000
+DTEND;TZID=America/New_York:20261028T210000
+DTSTAMP:20260703T152304Z
+UID:20182@artsatthearmory.org
+CATEGORIES:Cafe,Event Type,Music
+URL:https://artsatthearmory.org/events/strummerville-2026-08-26-2026-09-23
+ -2026-10-28/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Clay N. Ferno's Comedy and Music Halloween Revue
+DTSTART;TZID=America/New_York:20261029T180000
+DTEND;TZID=America/New_York:20261029T220000
+DTSTAMP:20260929T202533Z
+UID:20268@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/clay-n-fernos-comedy-and-music-hall
+ oween-revue/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Arts at the Armory Presents The Rocky Horror Picture Show
+DTSTART;TZID=America/New_York:20261029T190000
+DTEND;TZID=America/New_York:20261029T220000
+DTSTAMP:20260925T163344Z
+UID:19619@artsatthearmory.org
+CATEGORIES:Performance Hall,Theater
+URL:https://artsatthearmory.org/events/the-rocky-horror-picture-show/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Circus Guild Presents: Cirque of the Dead
+DTSTART;TZID=America/New_York:20261030T193000
+DTEND;TZID=America/New_York:20261030T220000
+DTSTAMP:20260929T193611Z
+UID:20263@artsatthearmory.org
+CATEGORIES:Circus,Performance Hall
+URL:https://artsatthearmory.org/events/cirque-of-the-dead-4/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Circus Guild Presents: Cirque of the Dead
+DTSTART;TZID=America/New_York:20261031T163000
+DTEND;TZID=America/New_York:20261031T190000
+DTSTAMP:20260929T193656Z
+UID:20264@artsatthearmory.org
+CATEGORIES:Circus,Performance Hall
+URL:https://artsatthearmory.org/events/cirque-of-the-dead-5/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Circus Guild Presents: Cirque of the Dead
+DTSTART;TZID=America/New_York:20261031T200000
+DTEND;TZID=America/New_York:20261031T223000
+DTSTAMP:20260929T193739Z
+UID:20265@artsatthearmory.org
+CATEGORIES:Circus,Performance Hall
+URL:https://artsatthearmory.org/events/cirque-of-the-dead-6/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Getting Personal: A Night of Creative Nonfiction
+DTSTART;TZID=America/New_York:20261101T144500
+DTEND;TZID=America/New_York:20261101T170000
+DTSTAMP:20261009T153555Z
+UID:20294@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/getting-personal-a-night-of-creativ
+ e-nonfiction/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:West Coast Swing Training
+DTSTART;TZID=America/New_York:20261102T190000
+DTEND;TZID=America/New_York:20261102T220000
+DTSTAMP:20261009T164307Z
+UID:20299@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/west-coast-swing-training-2026-11-0
+ 2/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:An Evening with Kate Nash
+DTSTART;TZID=America/New_York:20261103T190000
+DTEND;TZID=America/New_York:20261103T220000
+DTSTAMP:20261009T161518Z
+UID:20296@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/an-evening-with-kate-nash/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Smut Slam
+DTSTART;TZID=America/New_York:20261103T193000
+DTEND;TZID=America/New_York:20261103T213000
+DTSTAMP:20260703T151950Z
+UID:20163@artsatthearmory.org
+CATEGORIES:Cafe,Literary Art
+URL:https://artsatthearmory.org/events/smut-slam-3-2026-08-04-2026-09-01-2
+ 026-10-06-2026-11-03/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Party Around the World: Celebrating Language\, Culture and Connect
+ ion
+DTSTART;TZID=America/New_York:20261104T183000
+DTEND;TZID=America/New_York:20261104T213000
+DTSTAMP:20261009T155656Z
+UID:20295@artsatthearmory.org
+CATEGORIES:Community,Performance Hall
+URL:https://artsatthearmory.org/events/party-around-the-world/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:[SOLD OUT] Bill Blumenreich Presents Joanne McNally: Pinotphile
+DTSTART;TZID=America/New_York:20261105T183000
+DTEND;TZID=America/New_York:20261105T210000
+DTSTAMP:20261013T151358Z
+UID:19988@artsatthearmory.org
+CATEGORIES:Comedy,Performance Hall
+URL:https://artsatthearmory.org/events/joanne-mcnally-pinotphile/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Worlds Collide Showcase
+DTSTART;TZID=America/New_York:20261105T193000
+DTEND;TZID=America/New_York:20261105T220000
+DTSTAMP:20260918T145247Z
+UID:20247@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/worlds-collide-showcase/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Bill Blumenreich Presents Joanne McNally: Pinotphile
+DTSTART;TZID=America/New_York:20261105T210000
+DTEND;TZID=America/New_York:20261105T230000
+DTSTAMP:20261013T151513Z
+UID:20083@artsatthearmory.org
+CATEGORIES:Comedy,Performance Hall
+URL:https://artsatthearmory.org/events/bill-blumenreich-presents-joanne-mc
+ nally-pinotphile/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Gary Higgins
+DTSTART;TZID=America/New_York:20261106T190000
+DTEND;TZID=America/New_York:20261106T220000
+DTSTAMP:20260910T022247Z
+UID:20237@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/gary-higgins/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:A Night To Be Heard: B.Heard World Gala
+DTSTART;TZID=America/New_York:20261106T190000
+DTEND;TZID=America/New_York:20261106T223000
+DTSTAMP:20261009T162228Z
+UID:20297@artsatthearmory.org
+CATEGORIES:Community,Dance,Film,Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/a-night-to-be-heard-2026/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20261107T093000
+DTEND;TZID=America/New_York:20261107T133000
+DTSTAMP:20261009T150927Z
+UID:20270@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Circus Up 2026 Benefit Show
+DTSTART;TZID=America/New_York:20261108T141500
+DTEND;TZID=America/New_York:20261108T170000
+DTSTAMP:20261009T152123Z
+UID:17516@artsatthearmory.org
+CATEGORIES:Circus,Performance Hall,Special Event
+URL:https://artsatthearmory.org/events/circus-up-benefit/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Lady Ray and Her Jazz Birds
+DTSTART;TZID=America/New_York:20261108T170000
+DTEND;TZID=America/New_York:20261108T190000
+DTSTAMP:20260822T015753Z
+UID:20224@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/lady-ray-and-her-jazz-birds-8/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:SOLD OUT: The Bowery Presents The Blasting Company [Moved to the R
+ oyale]
+DTSTART;TZID=America/New_York:20261109T190000
+DTEND;TZID=America/New_York:20261109T220000
+DTSTAMP:20260807T153544Z
+UID:20119@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/the-blasting-company/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:West Coast Swing Training
+DTSTART;TZID=America/New_York:20261109T190000
+DTEND;TZID=America/New_York:20261109T220000
+DTSTAMP:20261009T164307Z
+UID:20300@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/west-coast-swing-training-2026-11-0
+ 2-2026-11-09/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Bowery Presents Pokey LaFarge
+DTSTART;TZID=America/New_York:20261110T183000
+DTEND;TZID=America/New_York:20261110T220000
+DTSTAMP:20260908T152644Z
+UID:20072@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/the-bowery-presents-pokey-lafarge/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Bowery Presents: Bedouine with Other Delights
+DTSTART;TZID=America/New_York:20261111T190000
+DTEND;TZID=America/New_York:20261111T230000
+DTSTAMP:20260424T151646Z
+UID:20029@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/the-bowery-presents-bedouine-with-o
+ ther-delights/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Tunefoolery Coffee House
+DTSTART;TZID=America/New_York:20261111T190000
+DTEND;TZID=America/New_York:20261111T220000
+DTSTAMP:20260703T152028Z
+UID:20168@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/tunefoolery-coffee-house-2026-08-12
+ -2026-09-09-2026-10-14-2026-11-11/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Get to the Gig Presents Weatherday
+DTSTART;TZID=America/New_York:20261112T190000
+DTEND;TZID=America/New_York:20261112T223000
+DTSTAMP:20260916T142000Z
+UID:20021@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/weatherday-111226/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Pub Sing
+DTSTART;TZID=America/New_York:20261112T190000
+DTEND;TZID=America/New_York:20261112T220000
+DTSTAMP:20260703T152106Z
+UID:20173@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/pub-sing-6-2026-08-13-2026-09-10-20
+ 26-10-08-2026-11-12/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:World Class Music Live Presents Rumbo Tumba
+DTSTART;TZID=America/New_York:20261113T190000
+DTEND;TZID=America/New_York:20261113T220000
+DTSTAMP:20261009T163348Z
+UID:20298@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/rumbo-tumba/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Nova Comedy Collective Presents: Nebula Night
+DTSTART;TZID=America/New_York:20261113T200000
+DTEND;TZID=America/New_York:20261113T200000
+DTSTAMP:20260703T152900Z
+UID:20129@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/the-nova-comedy-collective-presents
+ -nebula-night-2026-11-13/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20261114T093000
+DTEND;TZID=America/New_York:20261114T133000
+DTSTAMP:20261009T150927Z
+UID:20271@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Orkest at the ROOTED Armory Cafe
+DTSTART;TZID=America/New_York:20261114T190000
+DTEND;TZID=America/New_York:20261114T210000
+DTSTAMP:20261009T163749Z
+UID:19437@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/orkest-at-the-rooted-armory-cafe/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:West Coast Swing Training
+DTSTART;TZID=America/New_York:20261116T190000
+DTEND;TZID=America/New_York:20261116T220000
+DTSTAMP:20261009T164307Z
+UID:20301@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/west-coast-swing-training-2026-11-0
+ 2-2026-11-09-2026-11-16/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Bowery Presents Liana Flores
+DTSTART;TZID=America/New_York:20261116T190000
+DTEND;TZID=America/New_York:20261116T223000
+DTSTAMP:20260807T132958Z
+UID:20120@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/liana-flores/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM: KEEPING THE FAITH
+DTSTART;TZID=America/New_York:20261117T183000
+DTEND;TZID=America/New_York:20261117T213000
+DTSTAMP:20260925T130422Z
+UID:15765@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2026-11-2
+ 4/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Bowery Presents WHY?
+DTSTART;TZID=America/New_York:20261118T190000
+DTEND;TZID=America/New_York:20261118T223000
+DTSTAMP:20260810T174849Z
+UID:20210@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/the-bowery-presents-why/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Atomic Comedy Indie Improv Night
+DTSTART;TZID=America/New_York:20261119T193000
+DTEND;TZID=America/New_York:20261119T193000
+DTSTAMP:20260703T152156Z
+UID:20178@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/atomic-comedy-indie-improv-night-2-
+ 2026-08-20-2026-09-17-2026-10-15-2026-11-19/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:IMPROV COMEDY: an evening of
+DTSTART;TZID=America/New_York:20261120T193000
+DTEND;TZID=America/New_York:20261120T220000
+DTSTAMP:20260717T142956Z
+UID:20196@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/improv-comedy-an-evening-of-2026-07
+ -17-2026-08-21-2026-09-18-2026-10-16-2026-11-20/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20261121T093000
+DTEND;TZID=America/New_York:20261121T133000
+DTSTAMP:20261009T150927Z
+UID:20272@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:GottaBal! Dance
+DTSTART;TZID=America/New_York:20261122T160000
+DTEND;TZID=America/New_York:20261122T200000
+DTSTAMP:20260814T155502Z
+UID:20218@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/gottabal-dance-20/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Get To the Gig Presents Other Lives
+DTSTART;TZID=America/New_York:20261122T190000
+DTEND;TZID=America/New_York:20261122T220000
+DTSTAMP:20260916T141950Z
+UID:20077@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/get-to-the-gig-presents-other-lives
+ /
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:West Coast Swing Training
+DTSTART;TZID=America/New_York:20261123T190000
+DTEND;TZID=America/New_York:20261123T220000
+DTSTAMP:20261009T164307Z
+UID:20302@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/west-coast-swing-training-2026-11-0
+ 2-2026-11-09-2026-11-16-2026-11-23/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:West Coast Swing Training
+DTSTART;TZID=America/New_York:20261130T190000
+DTEND;TZID=America/New_York:20261130T220000
+DTSTAMP:20261009T164307Z
+UID:20303@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/west-coast-swing-training-2026-11-0
+ 2-2026-11-09-2026-11-16-2026-11-23-2026-11-30/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Smut Slam
+DTSTART;TZID=America/New_York:20261201T193000
+DTEND;TZID=America/New_York:20261201T213000
+DTSTAMP:20260703T151950Z
+UID:20164@artsatthearmory.org
+CATEGORIES:Cafe,Literary Art
+URL:https://artsatthearmory.org/events/smut-slam-3-2026-08-04-2026-09-01-2
+ 026-10-06-2026-11-03-2026-12-01/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20261205T093000
+DTEND;TZID=America/New_York:20261205T133000
+DTSTAMP:20261009T150927Z
+UID:20274@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Guitar Stop All Ages Student Recital
+DTSTART;TZID=America/New_York:20261206T103000
+DTEND;TZID=America/New_York:20261206T173000
+DTSTAMP:20260910T131302Z
+UID:20242@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/guitar-stop-all-ages-student-recita
+ l/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:West Coast Swing Training
+DTSTART;TZID=America/New_York:20261207T190000
+DTEND;TZID=America/New_York:20261207T220000
+DTSTAMP:20261009T164307Z
+UID:20304@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/west-coast-swing-training-2026-11-0
+ 2-2026-11-09-2026-11-16-2026-11-23-2026-11-30-2026-12-07/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Tunefoolery Coffee House
+DTSTART;TZID=America/New_York:20261209T190000
+DTEND;TZID=America/New_York:20261209T220000
+DTSTAMP:20260703T152028Z
+UID:20169@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/tunefoolery-coffee-house-2026-08-12
+ -2026-09-09-2026-10-14-2026-11-11-2026-12-09/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Bowery Presents: Whitmer Thomas
+DTSTART;TZID=America/New_York:20261210T190000
+DTEND;TZID=America/New_York:20261210T223000
+DTSTAMP:20260822T021953Z
+UID:20226@artsatthearmory.org
+CATEGORIES:Comedy,Performance Hall
+URL:https://artsatthearmory.org/events/the-bowery-presents-whitmer-thomas/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Pub Sing
+DTSTART;TZID=America/New_York:20261210T190000
+DTEND;TZID=America/New_York:20261210T220000
+DTSTAMP:20260703T152106Z
+UID:20174@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/pub-sing-6-2026-08-13-2026-09-10-20
+ 26-10-08-2026-11-12-2026-12-10/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Arts at the Armory Spotlight Series Presents Tito Puente Jr.
+DTSTART;TZID=America/New_York:20261211T190000
+DTEND;TZID=America/New_York:20261211T223000
+DTSTAMP:20260313T144110Z
+UID:19986@artsatthearmory.org
+CATEGORIES:Dance,Music,Performance Hall
+URL:https://artsatthearmory.org/events/arts-at-the-armory-spotlight-series
+ -presents-tito-puente-jr/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Nova Comedy Collective Presents: Nebula Night
+DTSTART;TZID=America/New_York:20261211T200000
+DTEND;TZID=America/New_York:20261211T200000
+DTSTAMP:20260703T152900Z
+UID:20130@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/the-nova-comedy-collective-presents
+ -nebula-night-2026-12-11/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20261212T093000
+DTEND;TZID=America/New_York:20261212T133000
+DTSTAMP:20261009T150927Z
+UID:20275@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Lady Ray and Her Jazz Birds
+DTSTART;TZID=America/New_York:20261213T170000
+DTEND;TZID=America/New_York:20261213T190000
+DTSTAMP:20260822T015813Z
+UID:20225@artsatthearmory.org
+CATEGORIES:Cafe,Music
+URL:https://artsatthearmory.org/events/lady-ray-and-her-jazz-birds-9/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:West Coast Swing Training
+DTSTART;TZID=America/New_York:20261214T190000
+DTEND;TZID=America/New_York:20261214T220000
+DTSTAMP:20261009T164307Z
+UID:20305@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/west-coast-swing-training-2026-11-0
+ 2-2026-11-09-2026-11-16-2026-11-23-2026-11-30-2026-12-07-2026-12-14/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Atomic Comedy Indie Improv Night
+DTSTART;TZID=America/New_York:20261217T193000
+DTEND;TZID=America/New_York:20261217T193000
+DTSTAMP:20260703T152156Z
+UID:20179@artsatthearmory.org
+CATEGORIES:Cafe,Comedy
+URL:https://artsatthearmory.org/events/atomic-comedy-indie-improv-night-2-
+ 2026-08-20-2026-09-17-2026-10-15-2026-11-19-2026-12-17/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20261219T093000
+DTEND;TZID=America/New_York:20261219T133000
+DTSTAMP:20261009T150927Z
+UID:20276@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ /
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Made in Mass: Holiday Movie Night at Arts at the Armory
+DTSTART;TZID=America/New_York:20261219T170000
+DTEND;TZID=America/New_York:20261219T223000
+DTSTAMP:20260929T194846Z
+UID:20266@artsatthearmory.org
+CATEGORIES:Film,Performance Hall
+URL:https://artsatthearmory.org/events/made-in-mass-holiday-movie-night/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:West Coast Swing Training
+DTSTART;TZID=America/New_York:20261221T190000
+DTEND;TZID=America/New_York:20261221T220000
+DTSTAMP:20261009T164307Z
+UID:20306@artsatthearmory.org
+CATEGORIES:Cafe,Dance
+URL:https://artsatthearmory.org/events/west-coast-swing-training-2026-11-0
+ 2-2026-11-09-2026-11-16-2026-11-23-2026-11-30-2026-12-07-2026-12-14-2026-1
+ 2-21/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM
+DTSTART;TZID=America/New_York:20261222T183000
+DTEND;TZID=America/New_York:20261222T213000
+DTSTAMP:20251219T162559Z
+UID:15766@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2026-12-2
+ 2/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270102T093000
+DTEND;TZID=America/New_York:20270102T133000
+DTSTAMP:20261009T150927Z
+UID:20278@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270109T093000
+DTEND;TZID=America/New_York:20270109T133000
+DTSTAMP:20261009T150927Z
+UID:20279@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270116T093000
+DTEND;TZID=America/New_York:20270116T133000
+DTSTAMP:20261009T150927Z
+UID:20280@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Bowery Presents Jean-Michel Blais
+DTSTART;TZID=America/New_York:20270116T190000
+DTEND;TZID=America/New_York:20270116T220000
+DTSTAMP:20260921T145925Z
+UID:20244@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/jean-michael-blais/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270123T093000
+DTEND;TZID=America/New_York:20270123T133000
+DTSTAMP:20261009T150927Z
+UID:20281@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM
+DTSTART;TZID=America/New_York:20270126T183000
+DTEND;TZID=America/New_York:20270126T213000
+DTSTAMP:20251219T162559Z
+UID:15767@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2027-01-2
+ 6/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270130T093000
+DTEND;TZID=America/New_York:20270130T133000
+DTSTAMP:20261009T150927Z
+UID:20282@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Arts at the Armory Spotlight Series Presents Boston Dance Theater
+DTSTART;TZID=America/New_York:20270131T170000
+DTEND;TZID=America/New_York:20270131T200000
+DTSTAMP:20260911T154526Z
+UID:20245@artsatthearmory.org
+CATEGORIES:Dance,Performance Hall
+URL:https://artsatthearmory.org/events/spotlight-series-boston-dance-theat
+ er/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270206T093000
+DTEND;TZID=America/New_York:20270206T133000
+DTSTAMP:20261009T150927Z
+UID:20283@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Arts at the Armory Spotlight Series Presents Blind Boys of Alabama
+DTSTART;TZID=America/New_York:20270212T190000
+DTEND;TZID=America/New_York:20270212T220000
+DTSTAMP:20261007T160713Z
+UID:17646@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/spotlight-series-blind-boys-of-alab
+ ama/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270213T093000
+DTEND;TZID=America/New_York:20270213T133000
+DTSTAMP:20261009T150927Z
+UID:20284@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06-2027-02-13/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270220T093000
+DTEND;TZID=America/New_York:20270220T133000
+DTSTAMP:20261009T150927Z
+UID:20285@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06-13-2027-02-20/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM
+DTSTART;TZID=America/New_York:20270223T183000
+DTEND;TZID=America/New_York:20270223T213000
+DTSTAMP:20251219T162559Z
+UID:15768@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2027-02-2
+ 3/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270227T093000
+DTEND;TZID=America/New_York:20270227T133000
+DTSTAMP:20261009T150927Z
+UID:20286@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06-20-2027-02-27/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270306T093000
+DTEND;TZID=America/New_York:20270306T133000
+DTSTAMP:20261009T150927Z
+UID:20287@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06-27-2027-03-06/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270313T093000
+DTEND;TZID=America/New_York:20270313T133000
+DTSTAMP:20261009T150927Z
+UID:20288@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06-06-2027-03-13/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:MassConcerts Presents Valencia Grace
+DTSTART;TZID=America/New_York:20270316T190000
+DTEND;TZID=America/New_York:20270316T223000
+DTSTAMP:20260710T140142Z
+UID:20188@artsatthearmory.org
+CATEGORIES:Music,Performance Hall
+URL:https://artsatthearmory.org/events/massconcerts-presents-valencia-grac
+ e/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270320T093000
+DTEND;TZID=America/New_York:20270320T133000
+DTSTAMP:20261009T150927Z
+UID:20289@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06-13-2027-03-20/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM
+DTSTART;TZID=America/New_York:20270323T183000
+DTEND;TZID=America/New_York:20270323T213000
+DTSTAMP:20251219T162559Z
+UID:15769@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2027-03-2
+ 3/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270327T093000
+DTEND;TZID=America/New_York:20270327T133000
+DTSTAMP:20261009T150927Z
+UID:20290@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06-20-2027-03-27/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270403T093000
+DTEND;TZID=America/New_York:20270403T133000
+DTSTAMP:20261009T150927Z
+UID:20291@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06-27-2027-04-03/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270410T093000
+DTEND;TZID=America/New_York:20270410T133000
+DTSTAMP:20261009T150927Z
+UID:20292@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06-03-2027-04-10/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Somerville Winter Farmers Market
+DTSTART;TZID=America/New_York:20270417T093000
+DTEND;TZID=America/New_York:20270417T133000
+DTSTAMP:20261009T150927Z
+UID:20293@artsatthearmory.org
+CATEGORIES:Market,Performance Hall
+URL:https://artsatthearmory.org/events/somerville-winter-farmers-market-20
+ 26-11-07-2026-11-14-2026-11-21-2026-11-28-2026-12-05-2026-12-12-2026-12-19
+ -2026-12-26-2027-01-02-2027-01-09-2027-01-16-2027-01-23-2027-01-30-2027-02
+ -06-10-2027-04-17/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM
+DTSTART;TZID=America/New_York:20270427T183000
+DTEND;TZID=America/New_York:20270427T213000
+DTSTAMP:20251219T162559Z
+UID:15770@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2027-04-2
+ 7/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM
+DTSTART;TZID=America/New_York:20270525T183000
+DTEND;TZID=America/New_York:20270525T213000
+DTSTAMP:20251219T162559Z
+UID:15771@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2027-05-2
+ 5/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM
+DTSTART;TZID=America/New_York:20270622T183000
+DTEND;TZID=America/New_York:20270622T213000
+DTSTAMP:20251219T162559Z
+UID:15772@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2027-06-2
+ 2/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM
+DTSTART;TZID=America/New_York:20270727T183000
+DTEND;TZID=America/New_York:20270727T213000
+DTSTAMP:20251219T162559Z
+UID:15773@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2027-07-2
+ 7/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM
+DTSTART;TZID=America/New_York:20270824T183000
+DTEND;TZID=America/New_York:20270824T213000
+DTSTAMP:20251219T162559Z
+UID:15774@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2027-08-2
+ 4/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Moth: Boston StorySLAM
+DTSTART;TZID=America/New_York:20270928T183000
+DTEND;TZID=America/New_York:20270928T213000
+DTSTAMP:20251219T162559Z
+UID:15775@artsatthearmory.org
+CATEGORIES:Literary Art,Performance Hall
+URL:https://artsatthearmory.org/events/the-moth-boston-storyslam-2027-09-2
+ 8/
+END:VEVENT
+BEGIN:VTIMEZONE
+TZID:America/New_York
+X-LIC-LOCATION:America/New_York
+BEGIN:DAYLIGHT
+DTSTART:20260308T030000
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+BEGIN:STANDARD
+DTSTART:20261101T010000
+TZNAME:EST
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20270314T030000
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+END:VTIMEZONE
+END:VCALENDAR

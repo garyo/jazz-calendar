@@ -1,0 +1,3605 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Trumba Corporation//Trumba Calendar Services 0.11.26214//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:NEC Performances & Events
+X-WR-TIMEZONE:America/New_York
+BEGIN:VTIMEZONE
+TZID:America/New_York
+BEGIN:STANDARD
+DTSTART:20071104T020000
+RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=11
+TZNAME:EST
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20070311T020000
+RRULE:FREQ=YEARLY;BYDAY=2SU;BYMONTH=3
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Eden MacAdam-Somer featuring Gordon Beeferman
+DTSTART;TZID=America/New_York:20261015T193000
+DTEND;TZID=America/New_York:20261015T213000
+DTSTAMP:20261009T144906Z
+UID:http://uid.trumba.com/event/204298706
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QDKbMAO
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Eden-MacAdam-Somer-fe
+ aturing-Gordon-Beeferman/E204298706
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Huan Li '28 DMA\, Piano
+DTSTART;TZID=America/New_York:20261015T200000
+DTEND;TZID=America/New_York:20261015T220000
+DTSTAMP:20261012T124816Z
+UID:http://uid.trumba.com/event/204494513
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/: \, https://necmusic.edu/on-campus/performances-
+ events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Huan-Li-28-DMA-Piano/E2044945
+ 13
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vivo Performing Arts Presents: Brentano String Quartet
+DTSTART;TZID=America/New_York:20261016T200000
+DTEND;TZID=America/New_York:20261016T220000
+DTSTAMP:20260720T113518Z
+UID:http://uid.trumba.com/event/205844083
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Various
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.vivo
+ performingarts.org/productions/brentano-string-quartet-2026
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Vivo-Performing-Arts-Presents-Brentan
+ o-String-Quartet/E205844083
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Maxwell DeForest '27 BM\, Trumpet
+DTSTART;TZID=America/New_York:20261016T203000
+DTEND;TZID=America/New_York:20261016T223000
+DTSTAMP:20261005T104902Z
+UID:http://uid.trumba.com/event/204494520
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/: \, https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Maxwell-DeForest-27-BM-Trumpe
+ t/E204494520
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Longwood Symphony Orchestra Presents: City Alive
+DTSTART;TZID=America/New_York:20261017T200000
+DTEND;TZID=America/New_York:20261017T220000
+DTSTAMP:20261002T154740Z
+UID:http://uid.trumba.com/event/210327746
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$10 and up
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://app.arts
+ -people.com/?show=355889
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Longwood-Symphony-Orchestra-Presents-
+ City-Alive/E210327746
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Paula Robison\, Flute | The Great Vivaldi
+DTSTART;TZID=America/New_York:20261018T150000
+DTEND;TZID=America/New_York:20261018T160000
+DTSTAMP:20261006T110031Z
+UID:http://uid.trumba.com/event/204358293
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QDSfMAO
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Orchestra\,Woodwinds
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Paula-Robison-Flute-T
+ he-Great-Vivaldi/E204358293
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Elijah Barclift '27 BM\, French horn
+DTSTART;TZID=America/New_York:20261018T160000
+DTEND;TZID=America/New_York:20261018T180000
+DTSTAMP:20261012T124114Z
+UID:http://uid.trumba.com/event/204494525
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/: \, https://necmusic.edu/on-campus/performances-
+ events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Elijah-Barclift-27-BM-French-
+ horn/E204494525
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Masha Lakisova '26 MM\, Violin
+DTSTART;TZID=America/New_York:20261018T160000
+DTEND;TZID=America/New_York:20261018T180000
+DTSTAMP:20261012T124227Z
+UID:http://uid.trumba.com/event/204494527
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall\; https://necmusic.edu/on-campus/performances-events/s
+ treaming-performances/: \, https://necmusic.edu/on-campus/performances-eve
+ nts/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Masha-Lakisova-26-MM-Violin/E
+ 204494527
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Michael Meraw\, Baritone + Leonardo Ciampa\, Pian
+ o
+DTSTART;TZID=America/New_York:20261018T200000
+DTEND;TZID=America/New_York:20261018T210000
+DTSTAMP:20261012T124316Z
+UID:http://uid.trumba.com/event/204358324
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QCJiMAO
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Voice
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Michael-Meraw-Bariton
+ e-Leonardo-Ciampa-Piano/E204358324
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:POSTPONED Recital: Max Ignas '26 DMA\, Trumpet
+DTSTART;TZID=America/New_York:20261018T200000
+DTEND;TZID=America/New_York:20261018T220000
+DTSTAMP:20261012T124646Z
+UID:http://uid.trumba.com/event/204494533
+CATEGORIES:NEC Performances & Events
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion
+X-TRUMBA-LINK:https://nec.trumba.com/POSTPONED-Recital-Max-Ignas-26-DMA-Tr
+ umpet/E204494533
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Tuesday Night New Music 3
+DTSTART;TZID=America/New_York:20261020T200000
+DTEND;TZID=America/New_York:20261020T210000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204359284
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/Tuesday-Night-New-Music-3/E204359284
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Liederabend LXXXIII: Shades of Romanticism\, Part 1
+DTSTART;TZID=America/New_York:20261021T180000
+DTEND;TZID=America/New_York:20261021T190000
+DTSTAMP:20261013T124811Z
+UID:http://uid.trumba.com/event/209986022
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/: \, https://necmusic.edu/on-campus
+ /performances-events/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Collaborative
+  Piano\,Voice
+X-TRUMBA-LINK:https://nec.trumba.com/Liederabend-LXXXIII-Shades-of-Romanti
+ cism-Part-1/E209986022
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Symphony + David Loebel: Montgomery\, Haydn\, and Dvořák
+DTSTART;TZID=America/New_York:20261021T193000
+DTEND;TZID=America/New_York:20261021T203000
+DTSTAMP:20261013T104222Z
+UID:http://uid.trumba.com/event/204359320
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q50TMAS
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Symphony-David-Loebel-Montgomery-
+ Haydn-and-Dvok/E204359320
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Jazz Orchestra: Blues and the Abstract Truth
+DTSTART;TZID=America/New_York:20261022T193000
+DTEND;TZID=America/New_York:20261022T213000
+DTSTAMP:20261009T154959Z
+UID:http://uid.trumba.com/event/204271290
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre\; https://necmusic.edu/on-cam
+ pus/performances-events/streaming-performances/black-box-theater/: \, http
+ s://necmusic.edu/on-campus/performances-events/streaming-performances/blac
+ k-box-theater/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Jazz-Orchestra-Blues-and-the-Abst
+ ract-Truth/E204271290
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Piano Seminar: Marc Ponthus
+DTSTART;TZID=America/New_York:20261023T100000
+DTEND;TZID=America/New_York:20261023T120000
+DTSTAMP:20260911T103152Z
+UID:http://uid.trumba.com/event/208456384
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Workshop/Cl
+ ass/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Piano-Seminar-Marc-Ponthus/E208456384
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Unbound Afterdark
+DTSTART;TZID=America/New_York:20261024T203000
+DTEND;TZID=America/New_York:20261024T213000
+DTSTAMP:20261007T134845Z
+UID:http://uid.trumba.com/event/210763850
+CATEGORIES:NEC Performances & Events
+LOCATION:Student Life & Performance Center
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$300
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necmusic
+ .edu/give/scholarship-gala/nec-unbound-afterdark/#tickets
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Special Eve
+ nt
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Unbound-Afterdark/E210763850
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Symphony Chamber Players Presents: Carter\, Schubert\, Mend
+ elssohn
+DTSTART;TZID=America/New_York:20261025T150000
+DTEND;TZID=America/New_York:20261025T170000
+DTSTAMP:20260909T091328Z
+UID:http://uid.trumba.com/event/208269767
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$43.25 and up
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.bso.
+ org/events/oct-25-bso-chamber-players?performance=2026-10-25-15:00
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Boston-Symphony-Chamber-Players-Prese
+ nts-Carter-Schubert-Mendelssohn/E208269767
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:First & Second Year Undergraduate Voice Showcase
+DTSTART;TZID=America/New_York:20261025T150000
+DTEND;TZID=America/New_York:20261025T163000
+DTSTAMP:20261013T104104Z
+UID:http://uid.trumba.com/event/208573962
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Voice
+X-TRUMBA-LINK:https://nec.trumba.com/First-Second-Year-Undergraduate-Voice
+ -Showcase/E208573962
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Gaia Wilmer Master Class
+DTSTART;TZID=America/New_York:20261026T160000
+DTEND;TZID=America/New_York:20261026T173000
+DTSTAMP:20260820T155615Z
+UID:http://uid.trumba.com/event/206883850
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Master clas
+ s
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Gaia-Wilmer-Master-Class/E206883850
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Wenting Kang\, viola
+DTSTART;TZID=America/New_York:20261026T193000
+DTEND;TZID=America/New_York:20261026T210000
+DTSTAMP:20261013T174449Z
+UID:http://uid.trumba.com/event/206802760
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009fZe9MAE
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert\,Re
+ cital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Wenting-Kang-viola/E2
+ 06802760
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Sound & Music in the Muslim World
+DTSTART;TZID=America/New_York:20261027T093000
+DTEND;TZID=America/New_York:20261027T193000
+DTSTAMP:20260924T101717Z
+UID:http://uid.trumba.com/event/209652002
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+URL:https://www.soundandmusicinthemuslimworld.com/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert\,Sp
+ ecial Event
+X-TRUMBA-LINK:https://nec.trumba.com/Sound-Music-in-the-Muslim-World/E2096
+ 52002
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Stephanie Economou Colloquium
+DTSTART;TZID=America/New_York:20261027T183000
+DTEND;TZID=America/New_York:20261027T203000
+DTSTAMP:20260828T164529Z
+UID:http://uid.trumba.com/event/207307142
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Workshop/Cl
+ ass/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/Stephanie-Economou-Colloquium/E207307
+ 142
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Wind Ensemble + Kevin Fitzgerald
+DTSTART;TZID=America/New_York:20261027T193000
+DTEND;TZID=America/New_York:20261027T213000
+DTSTAMP:20261012T153006Z
+UID:http://uid.trumba.com/event/204378229
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QBVhMAO
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Wind Ensemble
+ s
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Wind-Ensemble-Kevin-Fitzgerald/E2
+ 04378229
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:First & Second Year Undergraduate Voice Showcase
+DTSTART;TZID=America/New_York:20261028T180000
+DTEND;TZID=America/New_York:20261028T193000
+DTSTAMP:20261013T104123Z
+UID:http://uid.trumba.com/event/208573963
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Voice
+X-TRUMBA-LINK:https://nec.trumba.com/First-Second-Year-Undergraduate-Voice
+ -Showcase/E208573963
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Stephanie Economou Composition Master Class
+DTSTART;TZID=America/New_York:20261028T183000
+DTEND;TZID=America/New_York:20261028T203000
+DTSTAMP:20260828T164739Z
+UID:http://uid.trumba.com/event/207307650
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Master clas
+ s\,Workshop/Class/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/Stephanie-Economou-Composition-Master
+ -Class/E207307650
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Philharmonia + Earl Lee: Berlioz\, Skye\, and Ravel
+DTSTART;TZID=America/New_York:20261028T193000
+DTEND;TZID=America/New_York:20261028T203000
+DTSTAMP:20261009T132040Z
+UID:http://uid.trumba.com/event/204377040
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q4CTMA0
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Philharmonia-Earl-Lee-Berlioz-Sky
+ e-and-Ravel/E204377040
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Perkin Opera Scenes | Night 1
+DTSTART;TZID=America/New_York:20261029T180000
+DTEND;TZID=America/New_York:20261029T200000
+DTSTAMP:20261013T140518Z
+UID:http://uid.trumba.com/event/204350431
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera
+X-TRUMBA-LINK:https://nec.trumba.com/Perkin-Opera-Scenes-Night-1/E20435043
+ 1
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Sonata Night 60: Mendelssohn and Brahms
+DTSTART;TZID=America/New_York:20261029T183000
+DTEND;TZID=America/New_York:20261029T203000
+DTSTAMP:20261014T132007Z
+UID:http://uid.trumba.com/event/204677173
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/burnes-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/burnes-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/Sonata-Night-60-Mendelssohn-and-Brahm
+ s/E204677173
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Christian Wolff Composition Seminar
+DTSTART;TZID=America/New_York:20261029T190000
+DTEND;TZID=America/New_York:20261029T210000
+DTSTAMP:20261008T144619Z
+UID:http://uid.trumba.com/event/210837203
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Special Eve
+ nt\,Workshop/Class/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/Christian-Wolff-Composition-Seminar/E
+ 210837203
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Town Hall Cadenzas: How Musicians Underscore Words\, Ideas\, and H
+ ope
+DTSTART;TZID=America/New_York:20261029T190000
+DTEND;TZID=America/New_York:20261029T203000
+DTSTAMP:20260930T171943Z
+UID:http://uid.trumba.com/event/209985806
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Rehearsal Room and Virtual
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free with Registra
+ tion
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://docs.goo
+ gle.com/forms/d/e/1FAIpQLSfk0R4dUazk5b6meRZ3I4XScZ6SfSV0dKXX8dS875yC0H5veA
+ /viewform?usp=dialog
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Community P
+ erformances and Partnerships\,Workshop/Class/Seminar
+X-TRUMBA-LINK:https://nec.trumba.com/Town-Hall-Cadenzas-How-Musicians-Unde
+ rscore-Words-Ideas-and-Hope/E209985806
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Connections Concert | October 29 | 7:30 p.m.
+DTSTART;TZID=America/New_York:20261029T193000
+DTEND;TZID=America/New_York:20261029T213000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204325622
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Connections-Concert-Oct
+ ober-29-730-pm/E204325622
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Chamber Singers + Erica J. Washburn | Liminal Spaces
+DTSTART;TZID=America/New_York:20261029T193000
+DTEND;TZID=America/New_York:20261029T203000
+DTSTAMP:20261014T183059Z
+UID:http://uid.trumba.com/event/204377215
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q6EHMA0
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Choral
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Chamber-Singers-Erica-J-Washburn-
+ Liminal-Spaces/E204377215
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Piano Seminar: Earle Brown and Morton Feldman Conference
+DTSTART;TZID=America/New_York:20261030T100000
+DTEND;TZID=America/New_York:20261030T120000
+DTSTAMP:20260911T103604Z
+UID:http://uid.trumba.com/event/208456448
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Workshop/Cl
+ ass/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Piano-Seminar-Earle-Brown-and-Morton-
+ Feldman-Conference/E208456448
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Cambridge Symphony Orchestra Presents: Masterworks: Brahms\, Poule
+ nc & Bach
+DTSTART;TZID=America/New_York:20261030T200000
+DTEND;TZID=America/New_York:20261030T220000
+DTSTAMP:20261007T102604Z
+UID:http://uid.trumba.com/event/210752024
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Various
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.camb
+ ridgesymphony.org/concerts/2026/10/30/october-masterworks
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Cambridge-Symphony-Orchestra-Presents
+ -Masterworks-Brahms-Poulenc-Bach/E210752024
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Nan Ni '27 DMA\, Piano
+DTSTART;TZID=America/New_York:20261030T203000
+DTEND;TZID=America/New_York:20261030T223000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494543
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/: \, https://necmusic.edu/on-campus/performances-
+ events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Nan-Ni-27-DMA-Piano/E20449454
+ 3
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Sebastián Haros '27 BM\, Trumpet
+DTSTART;TZID=America/New_York:20261030T203000
+DTEND;TZID=America/New_York:20261030T223000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494539
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall\; https://necmusic.edu/on-campus/performances-events/s
+ treaming-performances/: \, https://necmusic.edu/on-campus/performances-eve
+ nts/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Sebastin-Haros-27-BM-Trumpet/
+ E204494539
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Touring Children's Opera | Little Red Riding Hood
+DTSTART;TZID=America/New_York:20261031T100000
+DTEND;TZID=America/New_York:20261031T110000
+DTSTAMP:20261013T112621Z
+UID:http://uid.trumba.com/event/207730682
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Community P
+ erformances and Partnerships\,Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Touring-Childrens-Opera-Little-Re
+ d-Riding-Hood/E207730682
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston College Symphony Orchestra Presents: Musical Source Codes
+DTSTART;TZID=America/New_York:20261101T150000
+DTEND;TZID=America/New_York:20261101T170000
+DTSTAMP:20260914T134948Z
+UID:http://uid.trumba.com/event/208748395
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$20
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009nAvVMAU
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Boston-College-Symphony-Orchestra-Pre
+ sents-Musical-Source-Codes/E208748395
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Pavel Nersessian\, Piano
+DTSTART;TZID=America/New_York:20261101T160000
+DTEND;TZID=America/New_York:20261101T170000
+DTSTAMP:20261006T151515Z
+UID:http://uid.trumba.com/event/204377265
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/: \, https://necmusic.edu/on-campus
+ /performances-events/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Pavel-Nersessian-Pian
+ o/E204377265
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Dana Chang Foundation Presents: One Light Continues
+DTSTART;TZID=America/New_York:20261101T193000
+DTEND;TZID=America/New_York:20261101T213000
+DTSTAMP:20260924T163843Z
+UID:http://uid.trumba.com/event/209663609
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$49.22
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009quNVMAY
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Dana-Chang-Foundation-Presents-One-Li
+ ght-Continues/E209663609
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:EE Faculty Recital: Kyra Zhao\, piano
+DTSTART;TZID=America/New_York:20261101T193000
+DTEND;TZID=America/New_York:20261101T203000
+DTSTAMP:20261013T152223Z
+UID:http://uid.trumba.com/event/210168214
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-LINK:https://nec.trumba.com/EE-Faculty-Recital-Kyra-Zhao-piano/E2
+ 10168214
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:First Monday at Jordan Hall: Hungarian Pathways and Appalachian Tr
+ ails
+DTSTART;TZID=America/New_York:20261102T193000
+DTEND;TZID=America/New_York:20261102T210000
+DTSTAMP:20261014T161113Z
+UID:http://uid.trumba.com/event/205421840
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q2vRMAS
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert\,In
+ stitute for Concert Artists (Artist Diploma)\,NEC Concert Artists Series
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/First-Monday-at-Jordan-Hall-Hungarian
+ -Pathways-and-Appalachian-Trails/E205421840
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Branching Out: Crafting Interdisciplinary Performances
+DTSTART;TZID=America/New_York:20261103T140000
+DTEND;TZID=America/New_York:20261103T152000
+DTSTAMP:20261013T113920Z
+UID:http://uid.trumba.com/event/209993394
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Rehearsal Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free with Registra
+ tion
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://docs.goo
+ gle.com/forms/d/e/1FAIpQLScfFKIAH0pa6B3bNihwyOCHz6V0zJSb7pUyFOFkLRf3v-450w
+ /viewform?usp=dialog
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Community P
+ erformances and Partnerships\,Workshop/Class/Seminar
+X-TRUMBA-LINK:https://nec.trumba.com/Branching-Out-Crafting-Interdisciplin
+ ary-Performances/E209993394
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Philharmonia + David Loebel: Agócs\, Smetana\, and Bartók
+DTSTART;TZID=America/New_York:20261104T193000
+DTEND;TZID=America/New_York:20261104T203000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204378145
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q2gxMAC
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Philharmonia-David-Loebel-Agcs-Sm
+ etana-and-Bartk/E204378145
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Notes of Deception: A Conversation with Merryl Goldberg and Hankus
+  Netsky
+DTSTART;TZID=America/New_York:20261105T200000
+DTEND;TZID=America/New_York:20261105T213000
+DTSTAMP:20260908T134056Z
+UID:http://uid.trumba.com/event/208192158
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-LINK:https://nec.trumba.com/Notes-of-Deception-A-Conversation-wit
+ h-Merryl-Goldberg-and-Hankus-Netsky/E208192158
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Piano Seminar: Eliot Fisk on Scarlatti Sonatas
+DTSTART;TZID=America/New_York:20261106T100000
+DTEND;TZID=America/New_York:20261106T120000
+DTSTAMP:20260911T104056Z
+UID:http://uid.trumba.com/event/208456580
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Workshop/Cl
+ ass/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Piano-Seminar-Eliot-Fisk-on-Scarlatti
+ -Sonatas/E208456580
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Modern Orchestra Project Presents: Delight of the Muses
+DTSTART;TZID=America/New_York:20261106T193000
+DTEND;TZID=America/New_York:20261106T213000
+DTSTAMP:20260915T141609Z
+UID:http://uid.trumba.com/event/208173091
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$10.50 and up
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009k4rRMAQ
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Boston-Modern-Orchestra-Project-Prese
+ nts-Delight-of-the-Muses/E208173091
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Undergraduate Opera Studio: Scenes Program | Night 1
+DTSTART;TZID=America/New_York:20261106T193000
+DTEND;TZID=America/New_York:20261106T213000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204354747
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera
+X-TRUMBA-LINK:https://nec.trumba.com/Undergraduate-Opera-Studio-Scenes-Pro
+ gram-Night-1/E204354747
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Hao Tian '27 BM\, Contemporary Musical Arts
+DTSTART;TZID=America/New_York:20261106T203000
+DTEND;TZID=America/New_York:20261106T213000
+DTSTAMP:20261005T140818Z
+UID:http://uid.trumba.com/event/210579059
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/: \, https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Hao-Tian-27-BM-Contemporary-M
+ usical-Arts/E210579059
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Undergraduate Opera Studio: Scenes Program | Night 2
+DTSTART;TZID=America/New_York:20261107T193000
+DTEND;TZID=America/New_York:20261107T213000
+DTSTAMP:20260818T125915Z
+UID:http://uid.trumba.com/event/206802805
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera
+X-TRUMBA-LINK:https://nec.trumba.com/Undergraduate-Opera-Studio-Scenes-Pro
+ gram-Night-2/E206802805
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Paul July Joseph '27 BM\, Contemporary Musical Arts
+DTSTART;TZID=America/New_York:20261107T200000
+DTEND;TZID=America/New_York:20261107T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494557
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/: \, https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Paul-July-Joseph-27-BM-Contem
+ porary-Musical-Arts/E204494557
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Subin Lee '27 GD\, Harp
+DTSTART;TZID=America/New_York:20261108T120000
+DTEND;TZID=America/New_York:20261108T140000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494562
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/: \, https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Subin-Lee-27-GD-Harp/E2044945
+ 62
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Civic Symphony Presents: Season Opener
+DTSTART;TZID=America/New_York:20261108T150000
+DTEND;TZID=America/New_York:20261108T170000
+DTSTAMP:20260909T123759Z
+UID:http://uid.trumba.com/event/208285200
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$11.50 and up
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.tix.
+ com/ticket-sales/tix/2919/event/1479765
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Boston-Civic-Symphony-Presents-Season
+ -Opener/E208285200
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Minsoo Sohn\, Piano: The Well-Tempered Clavier\, 
+ Book 1
+DTSTART;TZID=America/New_York:20261108T193000
+DTEND;TZID=America/New_York:20261108T203000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204378180
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QE5NMAW
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Minsoo-Sohn-Piano-The
+ -Well-Tempered-Clavier-Book-1/E204378180
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Evan Beachy '27 MM\, Bass Trombone
+DTSTART;TZID=America/New_York:20261108T200000
+DTEND;TZID=America/New_York:20261108T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494572
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/: \, https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Evan-Beachy-27-MM-Bass-Trombo
+ ne/E204494572
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Master Class: Garth Knox\, Viola
+DTSTART;TZID=America/New_York:20261109T180000
+DTEND;TZID=America/New_York:20261109T200000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/205422008
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Master clas
+ s
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Master-Class-Garth-Knox
+ -Viola/E205422008
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Institute for Concert Artists Recital: Clayton Stephenson\, Piano
+DTSTART;TZID=America/New_York:20261109T193000
+DTEND;TZID=America/New_York:20261109T210000
+DTSTAMP:20260825T122521Z
+UID:http://uid.trumba.com/event/206471499
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009fZvtMAE
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Institute f
+ or Concert Artists (Artist Diploma)\,NEC Concert Artists Series\,Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Institute-for-Concert-Artists-Recital
+ -Clayton-Stephenson-Piano/E206471499
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Master Class: Garth Knox\, viola
+DTSTART;TZID=America/New_York:20261110T190000
+DTEND;TZID=America/New_York:20261110T210000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/205422010
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Master clas
+ s
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Master-Class-Garth-Knox-viola/E205422
+ 010
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:CMA Presents Water with Special Guest Multi-instrumentalist Shahza
+ d Ismaily
+DTSTART;TZID=America/New_York:20261110T193000
+DTEND;TZID=America/New_York:20261110T213000
+DTSTAMP:20260924T145659Z
+UID:http://uid.trumba.com/event/207537680
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009faNJMAY
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/CMA-Presents-Water-with-Special-Guest
+ -Multi-instrumentalist-Shahzad-Ismaily/E207537680
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Piano Department Concert: Scarlatti Keyboard Sonatas | Novembe
+ r 10th| 8:00 p.m.
+DTSTART;TZID=America/New_York:20261110T200000
+DTEND;TZID=America/New_York:20261110T220000
+DTSTAMP:20261007T145401Z
+UID:http://uid.trumba.com/event/205685001
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Piano-Department-Concert-Scarlatt
+ i-Keyboard-Sonatas-November-10th-800-pm/E205685001
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Ravani Loushy Kay '27 BM\, Violin
+DTSTART;TZID=America/New_York:20261110T200000
+DTEND;TZID=America/New_York:20261110T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494580
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall\; https://necmusic.edu/on-campus/performances-events/s
+ treaming-performances/: \, https://necmusic.edu/on-campus/performances-eve
+ nts/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Ravani-Loushy-Kay-27-BM-Violi
+ n/E204494580
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Symphony + Paul Biss
+DTSTART;TZID=America/New_York:20261111T193000
+DTEND;TZID=America/New_York:20261111T213000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204378196
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q5IDMA0
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Symphony-Paul-Biss/E204378196
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:EE Faculty Recital: Jayoung Kim\, piano
+DTSTART;TZID=America/New_York:20261111T200000
+DTEND;TZID=America/New_York:20261111T210000
+DTSTAMP:20260930T141951Z
+UID:http://uid.trumba.com/event/210171993
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/burnes-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/burnes-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-LINK:https://nec.trumba.com/EE-Faculty-Recital-Jayoung-Kim-piano/
+ E210171993
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Piano Department Concert: Scarlatti Keyboard Sonatas | Novembe
+ r 12th| 7:30 p.m.
+DTSTART;TZID=America/New_York:20261112T193000
+DTEND;TZID=America/New_York:20261112T213000
+DTSTAMP:20260903T105420Z
+UID:http://uid.trumba.com/event/205685002
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Piano-Department-Concert-Scarlatt
+ i-Keyboard-Sonatas-November-12th-730-pm/E205685002
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: String Repertory Orchestra and Youth Repertory Orchestra
+DTSTART;TZID=America/New_York:20261112T193000
+DTEND;TZID=America/New_York:20261112T203000
+DTSTAMP:20260929T134955Z
+UID:http://uid.trumba.com/event/205600903
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - ticket requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009favBMAQ
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-String-Repertory-Orchestra-a
+ nd-Youth-Repertory-Orchestra/E205600903
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:EE Faculty Recital: Deborah Nemko\, piano
+DTSTART;TZID=America/New_York:20261112T200000
+DTEND;TZID=America/New_York:20261112T210000
+DTSTAMP:20260930T142521Z
+UID:http://uid.trumba.com/event/210172119
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/keller-room/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/keller-room/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-LINK:https://nec.trumba.com/EE-Faculty-Recital-Deborah-Nemko-pian
+ o/E210172119
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Piano Seminar: Jazz Pianists
+DTSTART;TZID=America/New_York:20261113T100000
+DTEND;TZID=America/New_York:20261113T120000
+DTSTAMP:20260911T104159Z
+UID:http://uid.trumba.com/event/208456584
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Workshop/Cl
+ ass/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Piano-Seminar-Jazz-Pianists/E20845658
+ 4
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vivo Performing Arts Presents: Nemanja Radulović & Double Sens Ch
+ amber Orchestra
+DTSTART;TZID=America/New_York:20261113T200000
+DTEND;TZID=America/New_York:20261113T220000
+DTSTAMP:20260720T113801Z
+UID:http://uid.trumba.com/event/205844095
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Various
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.vivo
+ performingarts.org/productions/nemanja-radulovic-and-double-sens
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Vivo-Performing-Arts-Presents-Nemanja
+ -Radulovi-Double-Sens-Chamber-Orchestra/E205844095
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:White Snake Projects Presents: Requiem for America
+DTSTART;TZID=America/New_York:20261114T193000
+DTEND;TZID=America/New_York:20261114T213000
+DTSTAMP:20260918T163400Z
+UID:http://uid.trumba.com/event/208172554
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$23.40 and up
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009juAXMAY/section
+ Groups/a0bRi00000DW6nZIAT
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/White-Snake-Projects-Presents-Requiem
+ -for-America/E208172554
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Alex Matheson '26 DMA\, Composition
+DTSTART;TZID=America/New_York:20261115T120000
+DTEND;TZID=America/New_York:20261115T140000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494595
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall\; https://necmusic.edu/on-campus/performances-events/s
+ treaming-performances/: \, https://necmusic.edu/on-campus/performances-eve
+ nts/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Alex-Matheson-26-DMA-Composit
+ ion/E204494595
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Kayla Adams '27 MM\, Trumpet
+DTSTART;TZID=America/New_York:20261115T120000
+DTEND;TZID=America/New_York:20261115T140000
+DTSTAMP:20260916T175332Z
+UID:http://uid.trumba.com/event/204494566
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/: \, https://necmusic.edu/on-campus/performances-
+ events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Kayla-Adams-27-MM-Trumpet/E20
+ 4494566
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vivo Performing Arts Presents: Dover Quartet
+DTSTART;TZID=America/New_York:20261115T150000
+DTEND;TZID=America/New_York:20261115T170000
+DTSTAMP:20260720T114115Z
+UID:http://uid.trumba.com/event/205844103
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Various
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.vivo
+ performingarts.org/productions/dover-quartet-2026
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Vivo-Performing-Arts-Presents-Dover-Q
+ uartet/E205844103
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Song and Verse
+DTSTART;TZID=America/New_York:20261115T160000
+DTEND;TZID=America/New_York:20261115T170000
+DTSTAMP:20261001T141439Z
+UID:http://uid.trumba.com/event/209986060
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/: \, https://necmusic.edu/on-campus
+ /performances-events/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Collaborative
+  Piano\,Voice
+X-TRUMBA-LINK:https://nec.trumba.com/Song-and-Verse/E209986060
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Baroque Orchestra
+DTSTART;TZID=America/New_York:20261116T193000
+DTEND;TZID=America/New_York:20261116T213000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204378243
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall\; https://necmusic.edu/on-campus/performances-events/s
+ treaming-performances/brown-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Baroque-Orchestra/E204378243
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Bower Jam Session Series
+DTSTART;TZID=America/New_York:20261117T190000
+DTEND;TZID=America/New_York:20261117T210000
+DTSTAMP:20260901T161351Z
+UID:http://uid.trumba.com/event/207554255
+CATEGORIES:NEC Performances & Events
+LOCATION:Student Life and Performance Center
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Bower-Jam-Session-Series/E207554255
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Youth Symphony
+DTSTART;TZID=America/New_York:20261117T193000
+DTEND;TZID=America/New_York:20261117T203000
+DTSTAMP:20260929T134934Z
+UID:http://uid.trumba.com/event/205601135
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - ticket requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009fbmPMAQ
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Youth-Symphony/E205601135
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Kerui Yang '26 BM\, Bass
+DTSTART;TZID=America/New_York:20261117T200000
+DTEND;TZID=America/New_York:20261117T210000
+DTSTAMP:20261002T202033Z
+UID:http://uid.trumba.com/event/210345980
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/: \, https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano\,Voice
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Kerui-Yang-26-BM-Bass/E210345
+ 980
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Tuesday Night New Music 4
+DTSTART;TZID=America/New_York:20261117T200000
+DTEND;TZID=America/New_York:20261117T210000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204380354
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/Tuesday-Night-New-Music-4/E204380354
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Chamber Orchestra
+DTSTART;TZID=America/New_York:20261118T193000
+DTEND;TZID=America/New_York:20261118T213000
+DTSTAMP:20261002T192302Z
+UID:http://uid.trumba.com/event/204378248
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q3WXMA0
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Chamber-Orchestra/E204378248
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Hasan Imam Hamdani '28 DMA\, Contemporary Musical Arts
+DTSTART;TZID=America/New_York:20261118T200000
+DTEND;TZID=America/New_York:20261118T210000
+DTSTAMP:20261002T202432Z
+UID:http://uid.trumba.com/event/210345982
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/: \, https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Hasan-Imam-Hamdani-28-DMA-Con
+ temporary-Musical-Arts/E210345982
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: I-Hsuan Liu '27 MM\, Double Bass
+DTSTART;TZID=America/New_York:20261118T200000
+DTEND;TZID=America/New_York:20261118T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494599
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/: \, https://necmusic.edu/on-campus/performances-
+ events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-I-Hsuan-Liu-27-MM-Double-Bass
+ /E204494599
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Sonata Night 61
+DTSTART;TZID=America/New_York:20261119T183000
+DTEND;TZID=America/New_York:20261119T203000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204677182
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/burnes-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/burnes-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/Sonata-Night-61/E204677182
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:EE Faculty Recital: SarahAnn Duffy\, Mezzo-Soprano
+DTSTART;TZID=America/New_York:20261119T190000
+DTEND;TZID=America/New_York:20261119T200000
+DTSTAMP:20261003T123915Z
+UID:http://uid.trumba.com/event/210172125
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/: \, https://necmusic.edu/on-campus
+ /performances-events/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-LINK:https://nec.trumba.com/EE-Faculty-Recital-SarahAnn-Duffy-Mez
+ zo-Soprano/E210172125
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Kenneth Radnofsky\, Saxophone\, and Friends
+DTSTART;TZID=America/New_York:20261119T193000
+DTEND;TZID=America/New_York:20261119T213000
+DTSTAMP:20260929T101840Z
+UID:http://uid.trumba.com/event/204379166
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QE6zMAG
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Woodwinds
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Kenneth-Radnofsky-Sax
+ ophone-and-Friends/E204379166
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Opera: Hansel and Gretel | Night 1
+DTSTART;TZID=America/New_York:20261119T193000
+DTEND;TZID=America/New_York:20261119T213000
+DTSTAMP:20260721T173209Z
+UID:http://uid.trumba.com/event/204180205
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$20
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/events/a0SRi00000LE0NRMA1
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Opera-Hansel-and-Gretel-Night-1/E
+ 204180205
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Piano Seminar: Tania León
+DTSTART;TZID=America/New_York:20261120T100000
+DTEND;TZID=America/New_York:20261120T120000
+DTSTAMP:20260911T104424Z
+UID:http://uid.trumba.com/event/208456977
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Workshop/Cl
+ ass/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Piano-Seminar-Tania-Len/E208456977
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Opera: Hansel and Gretel | Night 2
+DTSTART;TZID=America/New_York:20261120T193000
+DTEND;TZID=America/New_York:20261120T213000
+DTSTAMP:20260721T173239Z
+UID:http://uid.trumba.com/event/205456511
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$20
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/events/a0SRi00000LE0NRMA1
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Opera-Hansel-and-Gretel-Night-2/E
+ 205456511
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Aranto Productions Presents: Barcelona Guitar Trio and Dance
+DTSTART;TZID=America/New_York:20261120T200000
+DTEND;TZID=America/New_York:20261120T220000
+DTSTAMP:20260529T111526Z
+UID:http://uid.trumba.com/event/204202032
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$84.01 and up
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.even
+ tbrite.com/e/barcelona-guitar-trio-and-dance-tickets-1988123228094
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Aranto-Productions-Presents-Barcelona
+ -Guitar-Trio-and-Dance/E204202032
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Twinkle Garden/Twinkle Sprout Showcase
+DTSTART;TZID=America/New_York:20261121T083000
+DTEND;TZID=America/New_York:20261121T093000
+DTSTAMP:20261002T100510Z
+UID:http://uid.trumba.com/event/205601246
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Twinkle-GardenTwinkle-Sprout
+ -Showcase/E205601246
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Suzuki Fall Concert
+DTSTART;TZID=America/New_York:20261121T113000
+DTEND;TZID=America/New_York:20261121T123000
+DTSTAMP:20261002T100549Z
+UID:http://uid.trumba.com/event/205601230
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - ticket requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Suzuki-Fall-Concert/E2056012
+ 30
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Opera: Hansel and Gretel | Night 3
+DTSTART;TZID=America/New_York:20261121T193000
+DTEND;TZID=America/New_York:20261121T213000
+DTSTAMP:20260824T105103Z
+UID:http://uid.trumba.com/event/205456512
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$20
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/events/a0SRi00000LE0NRMA1
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Opera-Hansel-and-Gretel-Night-3/E
+ 205456512
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Opera: Hansel and Gretel | Night 4
+DTSTART;TZID=America/New_York:20261122T150000
+DTEND;TZID=America/New_York:20261122T170000
+DTSTAMP:20260721T173321Z
+UID:http://uid.trumba.com/event/205456513
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$20
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/events/a0SRi00000LE0NRMA1
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Opera-Hansel-and-Gretel-Night-4/E
+ 205456513
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vivo Performing Arts Presents:  What Makes It Great? with Rob Kapi
+ low: Mozart's Clarinet Concerto
+DTSTART;TZID=America/New_York:20261122T150000
+DTEND;TZID=America/New_York:20261122T170000
+DTSTAMP:20260720T114357Z
+UID:http://uid.trumba.com/event/205844110
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Various
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.vivo
+ performingarts.org/productions/what-makes-it-great-mozart-2026
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Vivo-Performing-Arts-Presents-What-Ma
+ kes-It-Great-with-Rob-Kapilow-Mozarts-Clarinet-Concerto/E205844110
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Gunther Schuller Legacy Concert
+DTSTART;TZID=America/New_York:20261122T200000
+DTEND;TZID=America/New_York:20261122T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204379194
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QBp3MAG
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Composition\,Jazz\,Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/Gunther-Schuller-Legacy-Concert/E2043
+ 79194
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Anna Choi '26 MM\, Oboe
+DTSTART;TZID=America/New_York:20261122T200000
+DTEND;TZID=America/New_York:20261122T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494604
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/: \, https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Woodwinds
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Anna-Choi-26-MM-Oboe/E2044946
+ 04
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Niko Nelson '28 DMA\, Jazz Piano
+DTSTART;TZID=America/New_York:20261122T200000
+DTEND;TZID=America/New_York:20261122T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494606
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall\; https://necmusic.edu/on-campus/performances-events/s
+ treaming-performances/: \, https://necmusic.edu/on-campus/performances-eve
+ nts/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz\,Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Niko-Nelson-28-DMA-Jazz-Piano
+ /E204494606
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz from Eben Jordan: Cecil McBee and Joe Morris Student Ensemble
+ s
+DTSTART;TZID=America/New_York:20261123T190000
+DTEND;TZID=America/New_York:20261123T220000
+DTSTAMP:20261008T125026Z
+UID:http://uid.trumba.com/event/207541981
+CATEGORIES:NEC Performances & Events
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-from-Eben-Jordan-Cecil-McBee-and
+ -Joe-Morris-Student-Ensembles/E207541981
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Saxophone Ensemble
+DTSTART;TZID=America/New_York:20261123T193000
+DTEND;TZID=America/New_York:20261123T203000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204379894
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QBdlMAG
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Woodwinds
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Saxophone-Ensemble/E204379894
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Bower Jam Session Series
+DTSTART;TZID=America/New_York:20261124T190000
+DTEND;TZID=America/New_York:20261124T210000
+DTSTAMP:20260901T161400Z
+UID:http://uid.trumba.com/event/207554256
+CATEGORIES:NEC Performances & Events
+LOCATION:Student Life and Performance Center
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Bower-Jam-Session-Series/E207554256
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Ji Yung Lee\, Piano
+DTSTART;TZID=America/New_York:20261124T193000
+DTEND;TZID=America/New_York:20261124T203000
+DTSTAMP:20261006T092355Z
+UID:http://uid.trumba.com/event/207178162
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QEADMA4
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Collaborative
+  Piano\,Piano\,Voice
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Ji-Yung-Lee-Piano/E20
+ 7178162
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:CMA Small Ensemble Concert
+DTSTART;TZID=America/New_York:20261130T190000
+DTEND;TZID=America/New_York:20261130T220000
+DTSTAMP:20260922T154622Z
+UID:http://uid.trumba.com/event/207537684
+CATEGORIES:NEC Performances & Events
+LOCATION:Pierce Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:Free - No Ticket
+  Required
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/CMA-Small-Ensemble-Concert/E207537684
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz Composers Workshop Orchestra
+DTSTART;TZID=America/New_York:20261201T193000
+DTEND;TZID=America/New_York:20261201T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204273310
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-Composers-Workshop-Orchestra/E20
+ 4273310
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Showcase | December 2nd | 4:00 p.m. - 10:00 p.m.
+DTSTART;TZID=America/New_York:20261202T160000
+DTEND;TZID=America/New_York:20261202T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/205610562
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Piano\,Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Showcase-December-2nd-4
+ 00-pm-1000-pm/E205610562
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:An Evening of Handel and Shakespeare | Night 1
+DTSTART;TZID=America/New_York:20261202T180000
+DTEND;TZID=America/New_York:20261202T200000
+DTSTAMP:20260925T152308Z
+UID:http://uid.trumba.com/event/204356048
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre\; https://necmusic.edu/on-cam
+ pus/performances-events/streaming-performances/black-box-theater/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera
+X-TRUMBA-LINK:https://nec.trumba.com/An-Evening-of-Handel-and-Shakespeare-
+ Night-1/E204356048
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Breaking the Ensemble Mold: Student Agency\, Culturally Responsive
+  Pedagogy and Creative Music-Making
+DTSTART;TZID=America/New_York:20261202T190000
+DTEND;TZID=America/New_York:20261202T203000
+DTSTAMP:20260930T162017Z
+UID:http://uid.trumba.com/event/210100162
+CATEGORIES:NEC Performances & Events
+LOCATION:Prevost Room or Virtual
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free with Registra
+ tion
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://docs.goo
+ gle.com/forms/d/e/1FAIpQLSfsefyiKTNgjD_DXkFO6JvmeJdmSffHsO5BV0jS8JpDjkmkCA
+ /viewform?usp=dialog
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Community P
+ erformances and Partnerships\,Workshop/Class/Seminar
+X-TRUMBA-LINK:https://nec.trumba.com/Breaking-the-Ensemble-Mold-Student-Ag
+ ency-Culturally-Responsive-Pedagogy-and-Creative-Music-Making/E210100162
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Seungeun Lee '27 BM\, Contemporary Musical Arts
+DTSTART;TZID=America/New_York:20261202T200000
+DTEND;TZID=America/New_York:20261202T210000
+DTSTAMP:20261008T123353Z
+UID:http://uid.trumba.com/event/210345988
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/: \, https://necmusic.edu/on-campus/performances-
+ events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Seungeun-Lee-27-BM-Contempora
+ ry-Musical-Arts/E210345988
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:An Evening of Handel and Shakespeare | Night 2
+DTSTART;TZID=America/New_York:20261203T180000
+DTEND;TZID=America/New_York:20261203T200000
+DTSTAMP:20260925T152340Z
+UID:http://uid.trumba.com/event/209756302
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre\; https://necmusic.edu/on-cam
+ pus/performances-events/streaming-performances/black-box-theater/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera
+X-TRUMBA-LINK:https://nec.trumba.com/An-Evening-of-Handel-and-Shakespeare-
+ Night-2/E209756302
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz from Eben Jordan with the Brazilian and Mark Zaleski Student 
+ Ensembles
+DTSTART;TZID=America/New_York:20261203T190000
+DTEND;TZID=America/New_York:20261203T220000
+DTSTAMP:20261008T161723Z
+UID:http://uid.trumba.com/event/204271427
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Ensemble Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-from-Eben-Jordan-with-the-Brazil
+ ian-and-Mark-Zaleski-Student-Ensembles/E204271427
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Fall Gala
+DTSTART;TZID=America/New_York:20261203T193000
+DTEND;TZID=America/New_York:20261203T210000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204326507
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QMkTMAW
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion\,Chamber Music\,Piano\,Strings\,Woodwinds
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Fall-Gala/E204326507
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: NEC Adult Education
+DTSTART;TZID=America/New_York:20261203T193000
+DTEND;TZID=America/New_York:20261203T203000
+DTSTAMP:20261002T100618Z
+UID:http://uid.trumba.com/event/205601375
+CATEGORIES:NEC Performances & Events
+LOCATION:Pierce Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Adult Educa
+ tion
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-NEC-Adult-Education/E20560137
+ 5
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Hannah Byun '28 DMA\, Piano
+DTSTART;TZID=America/New_York:20261203T200000
+DTEND;TZID=America/New_York:20261203T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494618
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/: \, https://necmusic.edu/on-campus/performances-
+ events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Hannah-Byun-28-DMA-Piano/E204
+ 494618
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Kaia Berman Peters '26 MM\, Contemporary Musical Arts
+DTSTART;TZID=America/New_York:20261203T200000
+DTEND;TZID=America/New_York:20261203T210000
+DTSTAMP:20261009T141323Z
+UID:http://uid.trumba.com/event/210916185
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall\; https://necmusic.edu/on-campus/performances-events/s
+ treaming-performances/: \, https://necmusic.edu/on-campus/performances-eve
+ nts/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Kaia-Berman-Peters-26-MM-Cont
+ emporary-Musical-Arts/E210916185
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Piano Seminar: Michelle Kann
+DTSTART;TZID=America/New_York:20261204T100000
+DTEND;TZID=America/New_York:20261204T120000
+DTSTAMP:20260911T104550Z
+UID:http://uid.trumba.com/event/208456991
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Workshop/Cl
+ ass/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Piano-Seminar-Michelle-Kann/E20845699
+ 1
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Symphonic Choir and Chamber Singers: Britten Celebration
+DTSTART;TZID=America/New_York:20261204T193000
+DTEND;TZID=America/New_York:20261204T213000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204457589
+CATEGORIES:NEC Performances & Events
+LOCATION:Church of the Covenant\, 67 Newbury Street\, Boston
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Choral
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Symphonic-Choir-and-Chamber-Singe
+ rs-Britten-Celebration/E204457589
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Molly Pope '27 MM\, Viola
+DTSTART;TZID=America/New_York:20261204T203000
+DTEND;TZID=America/New_York:20261204T223000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204495121
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/: \, https://necmusic.edu/on-campus/performances-
+ events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Molly-Pope-27-MM-Viola/E20449
+ 5121
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Nicholas Abraham '27 MM\, Jazz Trumpet
+DTSTART;TZID=America/New_York:20261204T203000
+DTEND;TZID=America/New_York:20261204T223000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204494631
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Hall\; https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/: \, https://necmusic.edu/on-campus/performanc
+ es-events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion\,Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Nicholas-Abraham-27-MM-Jazz-T
+ rumpet/E204494631
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Preparatory String Orchestra 8:30
+DTSTART;TZID=America/New_York:20261205T083000
+DTEND;TZID=America/New_York:20261205T093000
+DTSTAMP:20261002T100631Z
+UID:http://uid.trumba.com/event/205601460
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Preparatory-String-Orchestra
+ -830/E205601460
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Preparatory String Orchestra 10:30
+DTSTART;TZID=America/New_York:20261205T103000
+DTEND;TZID=America/New_York:20261205T113000
+DTSTAMP:20261002T100703Z
+UID:http://uid.trumba.com/event/205601462
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Preparatory-String-Orchestra
+ -1030/E205601462
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Showcase | December 5th | 7:00 p.m. - 10:00 p.m.
+DTSTART;TZID=America/New_York:20261205T190000
+DTEND;TZID=America/New_York:20261205T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/205610571
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Piano\,Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Showcase-December-5th-7
+ 00-pm-1000-pm/E205610571
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Showcase | December 6th | 12:00 p.m. - 10:00 p.m.
+DTSTART;TZID=America/New_York:20261206T120000
+DTEND;TZID=America/New_York:20261206T150000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/205610572
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Piano\,Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Showcase-December-6th-1
+ 200-pm-1000-pm/E205610572
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Jr. MYWE\, MYWE Concert Band\, & Sr. MYWE
+DTSTART;TZID=America/New_York:20261206T140000
+DTEND;TZID=America/New_York:20261206T150000
+DTSTAMP:20261002T100711Z
+UID:http://uid.trumba.com/event/205601509
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - ticket requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009fbpdMAA
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Wind Ensemble
+ s
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Jr-MYWE-MYWE-Concert-Band-Sr
+ -MYWE/E205601509
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Youth Philharmonic Orchestra
+DTSTART;TZID=America/New_York:20261206T193000
+DTEND;TZID=America/New_York:20261206T203000
+DTSTAMP:20261002T100721Z
+UID:http://uid.trumba.com/event/205601524
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - ticket requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009fbrFMAQ
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Youth-Philharmonic-Orchestra
+ /E205601524
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz from Eben Jordan: Jason Moran and Mark Tipton Student Ensembl
+ es
+DTSTART;TZID=America/New_York:20261207T190000
+DTEND;TZID=America/New_York:20261207T220000
+DTSTAMP:20261008T125619Z
+UID:http://uid.trumba.com/event/204271448
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Ensemble Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-from-Eben-Jordan-Jason-Moran-and
+ -Mark-Tipton-Student-Ensembles/E204271448
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:First Monday at Jordan Hall: String Titans | Casals and Tertis at 
+ 150
+DTSTART;TZID=America/New_York:20261207T193000
+DTEND;TZID=America/New_York:20261207T210000
+DTSTAMP:20260828T150857Z
+UID:http://uid.trumba.com/event/205421827
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q357MAC
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/First-Monday-at-Jordan-Hall-String-Ti
+ tans-Casals-and-Tertis-at-150/E205421827
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Jason Palmer\, Jazz Trumpet
+DTSTART;TZID=America/New_York:20261207T200000
+DTEND;TZID=America/New_York:20261207T220000
+DTSTAMP:20260715T091815Z
+UID:http://uid.trumba.com/event/204457621
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall\; https://necmusic.edu/on-campus/performances-events/s
+ treaming-performances/brown-hall/: \, https://necmusic.edu/on-campus/perfo
+ rmances-events/streaming-performances/brown-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Jason-Palmer-Jazz-Tru
+ mpet/E204457621
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz from Eben Jordan featuring Early Jazz\, Reichman\, and Non-Ma
+ jor Ensembles
+DTSTART;TZID=America/New_York:20261208T190000
+DTEND;TZID=America/New_York:20261208T220000
+DTSTAMP:20261008T130017Z
+UID:http://uid.trumba.com/event/204272149
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Ensemble Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-from-Eben-Jordan-featuring-Early
+ -Jazz-Reichman-and-Non-Major-Ensembles/E204272149
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Youth Brass Ensemble\, String Chamber Orchestra\, & Juni
+ or Repertory Orchestra
+DTSTART;TZID=America/New_York:20261208T193000
+DTEND;TZID=America/New_York:20261208T203000
+DTSTAMP:20261002T100733Z
+UID:http://uid.trumba.com/event/205601542
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - ticket requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009fbsrMAA
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion\,Orchestra\,Strings
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Youth-Brass-Ensemble-String-
+ Chamber-Orchestra-Junior-Repertory-Orchestra/E205601542
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Tuesday Night New Music 5
+DTSTART;TZID=America/New_York:20261208T200000
+DTEND;TZID=America/New_York:20261208T220000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204459267
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/Tuesday-Night-New-Music-5/E204459267
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Liederabend LXXXIV: Shades of Romanticism\, Part 2
+DTSTART;TZID=America/New_York:20261209T180000
+DTEND;TZID=America/New_York:20261209T190000
+DTSTAMP:20261008T145655Z
+UID:http://uid.trumba.com/event/209986027
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/: \, https://necmusic.edu/on-campus
+ /performances-events/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Collaborative
+  Piano\,Voice
+X-TRUMBA-LINK:https://nec.trumba.com/Liederabend-LXXXIV-Shades-of-Romantic
+ ism-Part-2/E209986027
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz from Eben Jordan featuring the Jazz Vocal and Songwriting Ens
+ embles
+DTSTART;TZID=America/New_York:20261209T190000
+DTEND;TZID=America/New_York:20261209T220000
+DTSTAMP:20261008T130215Z
+UID:http://uid.trumba.com/event/204272169
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Ensemble Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-from-Eben-Jordan-featuring-the-J
+ azz-Vocal-and-Songwriting-Ensembles/E204272169
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Philharmonia + Hugh Wolff: Shostakovich\, Prokofiev\, and Stra
+ vinsky
+DTSTART;TZID=America/New_York:20261209T193000
+DTEND;TZID=America/New_York:20261209T213000
+DTSTAMP:20260929T135948Z
+UID:http://uid.trumba.com/event/204457863
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q4kLMAS
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert\,In
+ stitute for Concert Artists (Artist Diploma)\,NEC Concert Artists Series
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra\,Pi
+ ano\,Voice
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Philharmonia-Hugh-Wolff-Shostakov
+ ich-Prokofiev-and-Stravinsky/E204457863
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Brandon Topolski '27 GD\, Percussion
+DTSTART;TZID=America/New_York:20261209T200000
+DTEND;TZID=America/New_York:20261209T220000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204495143
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/: \, https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Brandon-Topolski-27-GD-Percus
+ sion/E204495143
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Opera: Musical Theatre Performance
+DTSTART;TZID=America/New_York:20261210T180000
+DTEND;TZID=America/New_York:20261210T200000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204357179
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Opera
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Opera\,Voice
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Opera-Musical-Theatre-Performance
+ /E204357179
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Jazz Orchestra: John Coltrane Centennial Concert
+DTSTART;TZID=America/New_York:20261210T193000
+DTEND;TZID=America/New_York:20261210T213000
+DTSTAMP:20261009T141636Z
+UID:http://uid.trumba.com/event/204272361
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q86PMAS
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Jazz-Orchestra-John-Coltrane-Cent
+ ennial-Concert/E204272361
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Piano Seminar: Texting Scarlatti
+DTSTART;TZID=America/New_York:20261211T100000
+DTEND;TZID=America/New_York:20261211T120000
+DTSTAMP:20260911T104750Z
+UID:http://uid.trumba.com/event/208457044
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Workshop/Cl
+ ass/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Piano-Seminar-Texting-Scarlatti/E2084
+ 57044
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC New Music Ensemble + Claire Chase
+DTSTART;TZID=America/New_York:20261211T200000
+DTEND;TZID=America/New_York:20261211T220000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204458935
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre\; https://necmusic.edu/on-cam
+ pus/performances-events/streaming-performances/black-box-theater/: \, http
+ s://necmusic.edu/on-campus/performances-events/streaming-performances/blac
+ k-box-theater/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-New-Music-Ensemble-Claire-Chase/E
+ 204458935
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vivo Performing Arts Presents:  Jeremy Denk\, piano
+DTSTART;TZID=America/New_York:20261211T200000
+DTEND;TZID=America/New_York:20261211T220000
+DTSTAMP:20260720T114553Z
+UID:http://uid.trumba.com/event/205844492
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Various
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.vivo
+ performingarts.org/productions/jeremy-denk-2027
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Vivo-Performing-Arts-Presents-Jeremy-
+ Denk-piano/E205844492
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: String Training Orchestra 8 & 9
+DTSTART;TZID=America/New_York:20261212T080000
+DTEND;TZID=America/New_York:20261212T090000
+DTSTAMP:20261002T100745Z
+UID:http://uid.trumba.com/event/205601571
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - ticket requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra\,St
+ rings
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-String-Training-Orchestra-8-
+ 9/E205601571
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Piano Seminar Fall Recital
+DTSTART;TZID=America/New_York:20261212T150000
+DTEND;TZID=America/New_York:20261212T160000
+DTSTAMP:20261002T100752Z
+UID:http://uid.trumba.com/event/205601561
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep\,Recit
+ al
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Piano-Seminar-Fall-Recital/E
+ 205601561
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Baroque Presents: Handel's Messiah
+DTSTART;TZID=America/New_York:20261212T193000
+DTEND;TZID=America/New_York:20261212T213000
+DTSTAMP:20260825T103357Z
+UID:http://uid.trumba.com/event/207111361
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$5 and up
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://bostonba
+ roque.my.salesforce-sites.com/ticket#/events/a0SVX00000QL69t2AD
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Boston-Baroque-Presents-Handels-Messi
+ ah/E207111361
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Youth Jazz Orchestra
+DTSTART;TZID=America/New_York:20261212T193000
+DTEND;TZID=America/New_York:20261212T203000
+DTSTAMP:20261002T100759Z
+UID:http://uid.trumba.com/event/205602441
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Youth-Jazz-Orchestra/E205602
+ 441
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: NEC Adult Education
+DTSTART;TZID=America/New_York:20261212T193000
+DTEND;TZID=America/New_York:20261212T203000
+DTSTAMP:20261002T100807Z
+UID:http://uid.trumba.com/event/205601549
+CATEGORIES:NEC Performances & Events
+LOCATION:Pierce Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Adult Educa
+ tion\,Recital
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-NEC-Adult-Education/E20560154
+ 9
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Anne Chao '28 DMA\, Flute
+DTSTART;TZID=America/New_York:20261212T200000
+DTEND;TZID=America/New_York:20261212T210000
+DTSTAMP:20261008T125137Z
+UID:http://uid.trumba.com/event/210345985
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/: \, https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano\,Woodwi
+ nds
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Anne-Chao-28-DMA-Flute/E21034
+ 5985
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:CMA Small Ensemble Festival
+DTSTART;TZID=America/New_York:20261213T110000
+DTEND;TZID=America/New_York:20261213T220000
+DTSTAMP:20260922T154733Z
+UID:http://uid.trumba.com/event/207537687
+CATEGORIES:NEC Performances & Events
+LOCATION:Pierce Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:Free - No Ticket
+  Required
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/CMA-Small-Ensemble-Festival/E20753768
+ 7
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Baroque Presents: Handel's Messiah
+DTSTART;TZID=America/New_York:20261213T150000
+DTEND;TZID=America/New_York:20261213T170000
+DTSTAMP:20260825T103455Z
+UID:http://uid.trumba.com/event/207111362
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$5 and up
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://bostonba
+ roque.my.salesforce-sites.com/ticket#/events/a0SVX00000QL69t2AD
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Boston-Baroque-Presents-Handels-Messi
+ ah/E207111362
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Julian Quinones '26 BM\, Jazz Trombone
+DTSTART;TZID=America/New_York:20261213T160000
+DTEND;TZID=America/New_York:20261213T170000
+DTSTAMP:20261002T203544Z
+UID:http://uid.trumba.com/event/210345990
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances: \, https://necmusic.edu/on-campus/performances-eve
+ nts/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion\,Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Julian-Quinones-26-BM-Jazz-Tr
+ ombone/E210345990
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Liederabend LXXXV
+DTSTART;TZID=America/New_York:20261213T200000
+DTEND;TZID=America/New_York:20261213T210000
+DTSTAMP:20261001T111808Z
+UID:http://uid.trumba.com/event/209986031
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/: \, https://necmusic.edu/on-campus
+ /performances-events/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Collaborative
+  Piano\,Voice
+X-TRUMBA-LINK:https://nec.trumba.com/Liederabend-LXXXV/E209986031
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Sebastian Fuentes '26 DMA\, Jazz Guitar
+DTSTART;TZID=America/New_York:20261213T200000
+DTEND;TZID=America/New_York:20261213T220000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204495148
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Hall\; https://necmusic.edu/on-campus/performances-ev
+ ents/streaming-performances/: \, https://necmusic.edu/on-campus/performanc
+ es-events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz\,Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Sebastian-Fuentes-26-DMA-Jazz
+ -Guitar/E204495148
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz from Eben Jordan: Bob Nieske and Frank Carlberg Student Ensem
+ bles
+DTSTART;TZID=America/New_York:20261214T190000
+DTEND;TZID=America/New_York:20261214T220000
+DTSTAMP:20261008T130456Z
+UID:http://uid.trumba.com/event/204272409
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Ensemble Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-from-Eben-Jordan-Bob-Nieske-and-
+ Frank-Carlberg-Student-Ensembles/E204272409
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Chamber Singers + NEC Symphonic Winds + Navy Band Northeast: I
+ nto the Holidays!
+DTSTART;TZID=America/New_York:20261214T193000
+DTEND;TZID=America/New_York:20261214T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204459112
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009Q7ALMA0
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion\,Choral
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Chamber-Singers-NEC-Symphonic-Win
+ ds-Navy-Band-Northeast-Into-the-Holidays/E204459112
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Sonata Class Recital
+DTSTART;TZID=America/New_York:20261215T173000
+DTEND;TZID=America/New_York:20261215T193000
+DTSTAMP:20260911T113455Z
+UID:http://uid.trumba.com/event/208460542
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Piano\,Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Sonata-Class-Recital/E208460542
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz from Eben Jordan: John Lockwood and Jerry Bergonzi Student En
+ sembles
+DTSTART;TZID=America/New_York:20261215T190000
+DTEND;TZID=America/New_York:20261215T210000
+DTSTAMP:20261008T162057Z
+UID:http://uid.trumba.com/event/204271407
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Ensemble Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-from-Eben-Jordan-John-Lockwood-a
+ nd-Jerry-Bergonzi-Student-Ensembles/E204271407
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Lab Orchestra + Graduate Student Conductors
+DTSTART;TZID=America/New_York:20261215T200000
+DTEND;TZID=America/New_York:20261215T220000
+DTSTAMP:20260908T103537Z
+UID:http://uid.trumba.com/event/204537394
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall\; https://necmusic.edu/on-campus/performances-events/s
+ treaming-performances/brown-hall/: \, https://necmusic.edu/on-campus/perfo
+ rmances-events/streaming-performances/brown-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Lab-Orchestra-Graduate-Student-Co
+ nductors/E204537394
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz from Eben Jordan: Mark Walker Latin\, Anna Webber\, and Jason
+  Palmer Student Ensembles
+DTSTART;TZID=America/New_York:20261216T190000
+DTEND;TZID=America/New_York:20261216T220000
+DTSTAMP:20260901T132942Z
+UID:http://uid.trumba.com/event/204272411
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Ensemble Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-from-Eben-Jordan-Mark-Walker-Lat
+ in-Anna-Webber-and-Jason-Palmer-Student-Ensembles/E204272411
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Dvořák: Borromeo String Quartet Seminar Recital
+DTSTART;TZID=America/New_York:20261216T200000
+DTEND;TZID=America/New_York:20261216T220000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/205610627
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://necboxof
+ fice.my.salesforce-sites.com/ticket/#/instances/a0FRi000009QI2XMAW
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+ \,Strings
+X-TRUMBA-LINK:https://nec.trumba.com/Dvok-Borromeo-String-Quartet-Seminar-
+ Recital/E205610627
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Recital: Zhehao Wang '27 MM\, PIano
+DTSTART;TZID=America/New_York:20261216T200000
+DTEND;TZID=America/New_York:20261216T220000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204495163
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/: \, https://necmusic.edu/on-campus/performances-
+ events/streaming-performances/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Recital-Zhehao-Wang-27-MM-PIano/E2044
+ 95163
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz from Eben Jordan: World Rhythms\, Jazz Composers and Gospel S
+ tudent Ensembles
+DTSTART;TZID=America/New_York:20261217T190000
+DTEND;TZID=America/New_York:20261217T220000
+DTSTAMP:20261008T131109Z
+UID:http://uid.trumba.com/event/204273147
+CATEGORIES:NEC Performances & Events
+LOCATION:Eben Jordan Ensemble Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-from-Eben-Jordan-World-Rhythms-J
+ azz-Composers-and-Gospel-Student-Ensembles/E204273147
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Concentration Concert | December 17th | 7:30 p.m.
+DTSTART;TZID=America/New_York:20261217T193000
+DTEND;TZID=America/New_York:20261217T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/205610619
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Concentration-Concert-D
+ ecember-17th-730-pm/E205610619
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Piano Seminar: Discussion Session
+DTSTART;TZID=America/New_York:20261218T100000
+DTEND;TZID=America/New_York:20261218T120000
+DTSTAMP:20260911T104814Z
+UID:http://uid.trumba.com/event/208457047
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Workshop/Cl
+ ass/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Piano-Seminar-Discussion-Session/E208
+ 457047
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Clarinet Ensemble Recital
+DTSTART;TZID=America/New_York:20261219T090000
+DTEND;TZID=America/New_York:20261219T100000
+DTSTAMP:20261002T100816Z
+UID:http://uid.trumba.com/event/205602478
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep\,Recit
+ al
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Woodwinds
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Clarinet-Ensemble-Recital/E2
+ 05602478
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Stephen Drury\, Piano
+DTSTART;TZID=America/New_York:20270112T193000
+DTEND;TZID=America/New_York:20270112T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204537441
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Stephen-Drury-Piano/E
+ 204537441
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Pei-Shan Lee\, Piano
+DTSTART;TZID=America/New_York:20270113T193000
+DTEND;TZID=America/New_York:20270113T213000
+DTSTAMP:20260930T135402Z
+UID:http://uid.trumba.com/event/204538470
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Collaborative
+  Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Pei-Shan-Lee-Piano/E2
+ 04538470
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: MaryAnn McCormick\, Mezzo-Soprano
+DTSTART;TZID=America/New_York:20270115T193000
+DTEND;TZID=America/New_York:20270115T203000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204359270
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Voice
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-MaryAnn-McCormick-Mez
+ zo-Soprano/E204359270
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Friday Baroque Ensemble & Baroque Chamber Orchestra
+DTSTART;TZID=America/New_York:20270117T110000
+DTEND;TZID=America/New_York:20270117T120000
+DTSTAMP:20261002T100835Z
+UID:http://uid.trumba.com/event/205646799
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Friday-Baroque-Ensemble-Baro
+ que-Chamber-Orchestra/E205646799
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:EE Faculty Recital: Rebecca Kasdan\, Violin
+DTSTART;TZID=America/New_York:20270117T120000
+DTEND;TZID=America/New_York:20270117T133000
+DTSTAMP:20261009T101018Z
+UID:http://uid.trumba.com/event/210311546
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-LINK:https://nec.trumba.com/EE-Faculty-Recital-Rebecca-Kasdan-Vio
+ lin/E210311546
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Pei-Shan Lee\, Piano
+DTSTART;TZID=America/New_York:20270117T150000
+DTEND;TZID=America/New_York:20270117T170000
+DTSTAMP:20260930T135421Z
+UID:http://uid.trumba.com/event/210168436
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Collaborative
+  Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Pei-Shan-Lee-Piano/E2
+ 10168436
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:EE Faculty Recital: Rodney Lister\, Composition
+DTSTART;TZID=America/New_York:20270119T200000
+DTEND;TZID=America/New_York:20270119T213000
+DTSTAMP:20261009T102301Z
+UID:http://uid.trumba.com/event/210311547
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/burnes-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-LINK:https://nec.trumba.com/EE-Faculty-Recital-Rodney-Lister-Comp
+ osition/E210311547
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Tuesday Night New Music 6
+DTSTART;TZID=America/New_York:20270119T200000
+DTEND;TZID=America/New_York:20270119T220000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204538526
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/Tuesday-Night-New-Music-6/E204538526
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Borromeo String Quartet Guest Artist Award Concert
+DTSTART;TZID=America/New_York:20270120T193000
+DTEND;TZID=America/New_York:20270120T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204539624
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/Borromeo-String-Quartet-Guest-Artist-
+ Award-Concert/E204539624
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Concentration Concerts | January 21| 4:00 p.m.
+DTSTART;TZID=America/New_York:20270121T160000
+DTEND;TZID=America/New_York:20270121T220000
+DTSTAMP:20260715T093421Z
+UID:http://uid.trumba.com/event/205610636
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Concentration-Concerts-
+ January-21-400-pm/E205610636
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Composers' Series
+DTSTART;TZID=America/New_York:20270121T193000
+DTEND;TZID=America/New_York:20270121T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204539632
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Composers-Series/E204539632
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Concentration Concerts | January 22 | 4:00 p.m.
+DTSTART;TZID=America/New_York:20270122T160000
+DTEND;TZID=America/New_York:20270122T200000
+DTSTAMP:20260715T093421Z
+UID:http://uid.trumba.com/event/205610638
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Concentration-Concerts-
+ January-22-400-pm/E205610638
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Concentration Concerts | January 22 | 7:30 p.m.
+DTSTART;TZID=America/New_York:20270122T193000
+DTEND;TZID=America/New_York:20270122T213000
+DTSTAMP:20260930T135001Z
+UID:http://uid.trumba.com/event/205610741
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Concentration-Concerts-
+ January-22-730-pm/E205610741
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: Harp Recital
+DTSTART;TZID=America/New_York:20270123T110000
+DTEND;TZID=America/New_York:20270123T120000
+DTSTAMP:20261002T100654Z
+UID:http://uid.trumba.com/event/205646803
+CATEGORIES:NEC Performances & Events
+LOCATION:Keller Room
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-Harp-Recital/E205646803
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Concentration Concerts | January 23 | 6:00 p.m.
+DTSTART;TZID=America/New_York:20270123T180000
+DTEND;TZID=America/New_York:20270123T220000
+DTSTAMP:20260715T093421Z
+UID:http://uid.trumba.com/event/205610639
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Concentration-Concerts-
+ January-23-600-pm/E205610639
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vivo Performing Arts Presents:  What Makes It Great? with Rob Kapi
+ low: Ella Fitzgerald & Oscar Peterson
+DTSTART;TZID=America/New_York:20270123T200000
+DTEND;TZID=America/New_York:20270123T220000
+DTSTAMP:20260720T114756Z
+UID:http://uid.trumba.com/event/205844967
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Various
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.vivo
+ performingarts.org/productions/what-makes-it-great-fitzgerald-peterson-202
+ 7
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Vivo-Performing-Arts-Presents-What-Ma
+ kes-It-Great-with-Rob-Kapilow-Ella-Fitzgerald-Oscar-Peterson/E205844967
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Symphony Chamber Players Presents: Tchaikovsky\, Souvenir o
+ f Florence
+DTSTART;TZID=America/New_York:20270124T150000
+DTEND;TZID=America/New_York:20270124T170000
+DTSTAMP:20260909T091933Z
+UID:http://uid.trumba.com/event/208269778
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$43.25 and up
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.bso.
+ org/events/jan-24-bso-chamber-players?performance=2027-01-24-15:00
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Boston-Symphony-Chamber-Players-Prese
+ nts-Tchaikovsky-Souvenir-of-Florence/E208269778
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Chamber Music Concentration Concerts | January 24th | 8:00 p.m.
+DTSTART;TZID=America/New_York:20270124T200000
+DTEND;TZID=America/New_York:20270124T220000
+DTSTAMP:20260930T135037Z
+UID:http://uid.trumba.com/event/205610742
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Chamber Music
+X-TRUMBA-LINK:https://nec.trumba.com/Chamber-Music-Concentration-Concerts-
+ January-24th-800-pm/E205610742
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Master Class: Richard Goode\, Piano
+DTSTART;TZID=America/New_York:20270125T150000
+DTEND;TZID=America/New_York:20270125T170000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/205129459
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Master clas
+ s
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Master-Class-Richard-Goode-Piano/E205
+ 129459
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Philharmonia + Hugh Wolff: Assad\, Rachmaninoff\, and Schumann
+DTSTART;TZID=America/New_York:20270127T193000
+DTEND;TZID=America/New_York:20270127T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204539675
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Philharmonia-Hugh-Wolff-Assad-Rac
+ hmaninoff-and-Schumann/E204539675
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Universal Design for Learning: Empowering Students and Transformin
+ g Instruction
+DTSTART;TZID=America/New_York:20270128T183000
+DTEND;TZID=America/New_York:20270128T200000
+DTSTAMP:20260930T171321Z
+UID:http://uid.trumba.com/event/209993406
+CATEGORIES:NEC Performances & Events
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free with Registra
+ tion
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://docs.goo
+ gle.com/forms/d/e/1FAIpQLScq1CaxEMyQ0-0B-b_S9L4M8eFeEi3nzdj-Tf8Z1kNDnFJihA
+ /viewform?usp=dialog
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Community P
+ erformances and Partnerships\,Workshop/Class/Seminar
+X-TRUMBA-LINK:https://nec.trumba.com/Universal-Design-for-Learning-Empower
+ ing-Students-and-Transforming-Instruction/E209993406
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:EE Faculty Recital: Konstantinos Papadakis\, Piano
+DTSTART;TZID=America/New_York:20270128T200000
+DTEND;TZID=America/New_York:20270128T213000
+DTSTAMP:20261009T101831Z
+UID:http://uid.trumba.com/event/210311550
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall\; https://necmusic.edu/on-campus/performances-event
+ s/streaming-performances/williams-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-LINK:https://nec.trumba.com/EE-Faculty-Recital-Konstantinos-Papad
+ akis-Piano/E210311550
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Warren Senders
+DTSTART;TZID=America/New_York:20270131T160000
+DTEND;TZID=America/New_York:20270131T180000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204539700
+CATEGORIES:NEC Performances & Events
+LOCATION:Burnes Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/burnes-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/burnes-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Warren-Senders/E20453
+ 9700
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Ethan Iverson\, Piano\, and Mark Zaleski\, Saxoph
+ one
+DTSTART;TZID=America/New_York:20270202T193000
+DTEND;TZID=America/New_York:20270202T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204540647
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz\,Piano
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Ethan-Iverson-Piano-a
+ nd-Mark-Zaleski-Saxophone/E204540647
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:EE Faculty Recital: Amy Galluzzo\, Violin/ Viola
+DTSTART;TZID=America/New_York:20270202T200000
+DTEND;TZID=America/New_York:20270202T213000
+DTSTAMP:20261009T102500Z
+UID:http://uid.trumba.com/event/210311556
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall\; https://necmusic.edu/on-campus/performances-events/s
+ treaming-performances/brown-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-LINK:https://nec.trumba.com/EE-Faculty-Recital-Amy-Galluzzo-Violi
+ n-Viola/E210311556
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Symphonic Winds
+DTSTART;TZID=America/New_York:20270204T193000
+DTEND;TZID=America/New_York:20270204T213000
+DTSTAMP:20260930T135322Z
+UID:http://uid.trumba.com/event/204580366
+CATEGORIES:NEC Performances & Events
+LOCATION:Plimpton Shattuck Black Box Theatre\; https://necmusic.edu/on-cam
+ pus/performances-events/streaming-performances/black-box-theatre/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No Ticket R
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Wind Ensemble
+ s
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Symphonic-Winds/E204580366
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:CMA Barn Dance
+DTSTART;TZID=America/New_York:20270207T150000
+DTEND;TZID=America/New_York:20270207T180000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204509884
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Special Eve
+ nt\,Workshop/Class/Seminar
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/CMA-Barn-Dance/E204509884
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vivo Performing Arts Presents:  Isidore String Quartet with Jeremy
+  Denk\, piano
+DTSTART;TZID=America/New_York:20270207T150000
+DTEND;TZID=America/New_York:20270207T170000
+DTSTAMP:20260720T114935Z
+UID:http://uid.trumba.com/event/205844969
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Various
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.vivo
+ performingarts.org/productions/isidore-string-quartet-jeremy-denk-2027
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Vivo-Performing-Arts-Presents-Isidore
+ -String-Quartet-with-Jeremy-Denk-piano/E205844969
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Prep: String Repertory Orchestra and Youth Repertory Orchestra
+DTSTART;TZID=America/New_York:20270207T193000
+DTEND;TZID=America/New_York:20270207T203000
+DTSTAMP:20261002T100826Z
+UID:http://uid.trumba.com/event/205646806
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - ticket requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Prep
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Prep-String-Repertory-Orchestra-a
+ nd-Youth-Repertory-Orchestra/E205646806
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Jazz Composers Workshop Orchestra
+DTSTART;TZID=America/New_York:20270209T193000
+DTEND;TZID=America/New_York:20270209T213000
+DTSTAMP:20260930T135548Z
+UID:http://uid.trumba.com/event/204514678
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Jazz
+X-TRUMBA-LINK:https://nec.trumba.com/Jazz-Composers-Workshop-Orchestra/E20
+ 4514678
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Tuesday Night New Music 7
+DTSTART;TZID=America/New_York:20270209T200000
+DTEND;TZID=America/New_York:20270209T220000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204577325
+CATEGORIES:NEC Performances & Events
+LOCATION:Brown Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Composition
+X-TRUMBA-LINK:https://nec.trumba.com/Tuesday-Night-New-Music-7/E204577325
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Liederabend LXXXVI
+DTSTART;TZID=America/New_York:20270210T180000
+DTEND;TZID=America/New_York:20270210T200000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204579315
+CATEGORIES:NEC Performances & Events
+LOCATION:Williams Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Collaborative
+  Piano\,Voice
+X-TRUMBA-LINK:https://nec.trumba.com/Liederabend-LXXXVI/E204579315
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Symphony
+DTSTART;TZID=America/New_York:20270210T193000
+DTEND;TZID=America/New_York:20270210T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204579354
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Symphony/E204579354
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:CMA Department Concert: Sounding Resilience
+DTSTART;TZID=America/New_York:20270211T193000
+DTEND;TZID=America/New_York:20270211T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204510949
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Contemporary 
+ Musical Arts
+X-TRUMBA-LINK:https://nec.trumba.com/CMA-Department-Concert-Sounding-Resil
+ ience/E204510949
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vivo Performing Arts Presents: Junction Trio
+DTSTART;TZID=America/New_York:20270213T200000
+DTEND;TZID=America/New_York:20270213T220000
+DTSTAMP:20260720T115115Z
+UID:http://uid.trumba.com/event/205844970
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Various
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.vivo
+ performingarts.org/productions/junction-trio-2027
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Vivo-Performing-Arts-Presents-Junctio
+ n-Trio/E205844970
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Boston Symphony Chamber Players Presents: Stravinsky\, Shaw\, Towe
+ r
+DTSTART;TZID=America/New_York:20270214T150000
+DTEND;TZID=America/New_York:20270214T170000
+DTSTAMP:20260909T092419Z
+UID:http://uid.trumba.com/event/208269787
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:$43.25 and up
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.bso.
+ org/events/feb-14-bso-chamber-players?performance=2027-02-14-15:00
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Boston-Symphony-Chamber-Players-Prese
+ nts-Stravinsky-Shaw-Tower/E208269787
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Vivo Performing Arts Presents: Zlata Chochieva\, piano
+DTSTART;TZID=America/New_York:20270220T200000
+DTEND;TZID=America/New_York:20270220T220000
+DTSTAMP:20260720T115352Z
+UID:http://uid.trumba.com/event/205844977
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Various
+X-TRUMBA-CUSTOMFIELD;ID=64488;NAME=Tickets;TYPE=MultiLine:https://www.vivo
+ performingarts.org/productions/zlata-chochieva-2027
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Non-NEC
+X-TRUMBA-LINK:https://nec.trumba.com/Vivo-Performing-Arts-Presents-Zlata-C
+ hochieva-piano/E205844977
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Piano Department Concert: Scarlatti Keyboard Sonatas | Februar
+ y 21st | 8:00 p.m.
+DTSTART;TZID=America/New_York:20270221T200000
+DTEND;TZID=America/New_York:20270221T220000
+DTSTAMP:20260903T105506Z
+UID:http://uid.trumba.com/event/193299574
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - No ticket r
+ equired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Piano
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Piano-Department-Concert-Scarlatt
+ i-Keyboard-Sonatas-February-21st-800-pm/E193299574
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:NEC Chamber Orchestra
+DTSTART;TZID=America/New_York:20270222T193000
+DTEND;TZID=America/New_York:20270222T213000
+DTSTAMP:20260715T093240Z
+UID:http://uid.trumba.com/event/204579378
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Concert
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Orchestra
+X-TRUMBA-LINK:https://nec.trumba.com/NEC-Chamber-Orchestra/E204579378
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Faculty Recital: Michael Dobrinski\, Trumpet
+DTSTART;TZID=America/New_York:20270223T193000
+DTEND;TZID=America/New_York:20270223T213000
+DTSTAMP:20260930T134815Z
+UID:http://uid.trumba.com/event/204538506
+CATEGORIES:NEC Performances & Events
+LOCATION:Jordan Hall\; https://necmusic.edu/on-campus/performances-events/
+ streaming-performances/jordan-hall/: \, https://necmusic.edu/on-campus/per
+ formances-events/streaming-performances/jordan-hall/
+X-TRUMBA-CUSTOMFIELD;ID=21;NAME=Event Type;TYPE=number:New England Conserv
+ atory Event Template
+X-TRUMBA-CUSTOMFIELD;ID=63733;NAME=Cost;TYPE=SingleLine:Free - Ticket Requ
+ ired
+X-TRUMBA-CUSTOMFIELD;ID=64489;NAME=Event Type;TYPE=CustomAsset:Recital
+X-TRUMBA-CUSTOMFIELD;ID=64490;NAME=Category;TYPE=CustomAsset:Brass and Per
+ cussion
+X-TRUMBA-LINK:https://nec.trumba.com/Faculty-Recital-Michael-Dobrinski-Tru
+ mpet/E204538506
+END:VEVENT
+END:VCALENDAR

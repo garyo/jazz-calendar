@@ -1,0 +1,3167 @@
+{
+ "events": [
+  {
+   "event": {
+    "id": 54054300793430,
+    "title": "Celebrating Neil Pappalardo",
+    "url": "",
+    "updated_at": "2026-10-14T08:00:07-04:00",
+    "created_at": "2026-09-23T11:40:31-04:00",
+    "facebook_id": null,
+    "first_date": "2026-10-15",
+    "last_date": "2026-10-15",
+    "hashtag": null,
+    "urlname": "celebrating-neil-pappalardo1",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": false,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Concert Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 397369,
+    "updated_by": 397369,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": "https://www.eventbrite.com/e/celebrating-neil-pappalardo-tickets-1994596831817?aff=oddtdtcreator",
+    "ticket_cost": "Free",
+    "has_register": false,
+    "keywords": [
+     "Papalardo",
+     "Pappalardo"
+    ],
+    "tags": [
+     "#pappalardo"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": false,
+    "feedback_goal_ids": [],
+    "detail_views": 163,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 11095,
+      "name": "Center for Theoretical Physics"
+     },
+     {
+      "id": 10342,
+      "name": "Department of Physics"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "MIT Community",
+       "id": 98748
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Science",
+       "id": 103366
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "ccoll28@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 54054300794455,
+       "event_id": 54054300793430,
+       "start": "2026-10-15T17:30:00-04:00",
+       "end": "2026-10-15T18:00:00-04:00",
+       "ranking": 0.21,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/celebrating-neil-pappalardo1",
+    "localist_ics_url": "https://calendar.mit.edu/event/celebrating-neil-pappalardo1.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  },
+  {
+   "event": {
+    "id": 54044682494880,
+    "title": "Celebrating Neil Pappalardo",
+    "url": "https://www.eventbrite.com/e/celebrating-neil-pappalardo-tickets-1994596831817?aff=oddtdtcreator",
+    "updated_at": "2026-10-14T07:59:19-04:00",
+    "created_at": "2026-09-22T09:35:02-04:00",
+    "facebook_id": null,
+    "first_date": "2026-10-15",
+    "last_date": "2026-10-15",
+    "hashtag": "MVP Pappalardo MITMTA",
+    "urlname": "celebrating-neil-pappalardo",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Concert Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 48904817502173,
+    "updated_by": 48904817502173,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": null,
+    "ticket_cost": "Free",
+    "has_register": false,
+    "keywords": [],
+    "tags": [
+     "mitmta"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 216,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "meta-request@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 54044682495905,
+       "event_id": 54044682494880,
+       "start": "2026-10-15T17:30:00-04:00",
+       "end": null,
+       "ranking": 0.21,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/celebrating-neil-pappalardo",
+    "localist_ics_url": "https://calendar.mit.edu/event/celebrating-neil-pappalardo.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  },
+  {
+   "event": {
+    "id": 53876423699196,
+    "title": "Stand Up Comedy Live! with Nataly Aukar",
+    "url": "https://www.eventbrite.com/e/stand-up-comedy-live-with-nataly-aukar-tickets-1998436284724?aff=oddtdtcreator&keep_tld=true",
+    "updated_at": "2026-10-15T07:52:36-04:00",
+    "created_at": "2026-09-03T09:09:10-04:00",
+    "facebook_id": null,
+    "first_date": "2026-10-17",
+    "last_date": "2026-10-17",
+    "hashtag": "SHASSSUCL2026",
+    "urlname": "stand-up-comedy-live-with-nataly-aukar",
+    "user_id": 41499231473027,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": null,
+    "location_name": "Building W16: Kresge Auditorium",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 41499231473027,
+    "updated_by": 54230535882081,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "48 MASSACHUSETTS AVE, Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 360534,
+    "ticket_url": "https://www.eventbrite.com/e/stand-up-comedy-live-with-nataly-aukar-tickets-1998436284724?aff=oddtdtcreator&keep_tld=true",
+    "ticket_cost": "FREE",
+    "has_register": false,
+    "keywords": [
+     "comedy",
+     "Comedian",
+     "performing arts",
+     "SHASS",
+     "MIT School of Humanities and Social Sciences",
+     "de Florez Fund for Humor",
+     "MIT SHASS",
+     "MIT humanities",
+     "MIT arts",
+     "Nataly Aukar",
+     "Kresge Auditorium"
+    ],
+    "tags": [
+     "Stand Up Comedy Live",
+     "comedy",
+     "SHASS",
+     "de Florez Fund for Humor",
+     "Nataly Aukar",
+     "Kresge Auditorium"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 406,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.358138",
+     "longitude": "-71.094977",
+     "street": "48 Massachusetts Avenue",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02139"
+    },
+    "departments": [
+     {
+      "id": 10890,
+      "name": "School of Humanities, Arts, and Social Sciences"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {},
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53876423700221,
+       "event_id": 53876423699196,
+       "start": "2026-10-17T19:00:00-04:00",
+       "end": "2026-10-17T20:00:00-04:00",
+       "ranking": 0.49,
+       "all_day": false,
+       "num_attending": 2
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/stand-up-comedy-live-with-nataly-aukar",
+    "localist_ics_url": "https://calendar.mit.edu/event/stand-up-comedy-live-with-nataly-aukar.ics",
+    "venue_url": "https://calendar.mit.edu/building_w16"
+   }
+  },
+  {
+   "event": {
+    "id": 53921302398202,
+    "title": "Radius Ensemble: Textures",
+    "url": "https://radiusensemble.org/products/textures",
+    "updated_at": "2026-10-15T07:54:25-04:00",
+    "created_at": "2026-09-08T10:53:38-04:00",
+    "facebook_id": null,
+    "first_date": "2026-10-17",
+    "last_date": "2026-10-17",
+    "hashtag": "mitmta",
+    "urlname": "radius-ensemble-textures",
+    "user_id": 43031695409816,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Concert Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 43031695409816,
+    "updated_by": 54204548766983,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": "https://radiusensemble.org/products/textures",
+    "ticket_cost": "$42 General Admission | Free Admission with MIT ID",
+    "has_register": false,
+    "keywords": [
+     "concert",
+     "composer",
+     "ensemble",
+     "New Music",
+     "Chamber Music"
+    ],
+    "tags": [
+     "chamber music",
+     "concert",
+     "composer",
+     "ensemble",
+     "New Music"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 270,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "radius@radiusensemble.org"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53921302399227,
+       "event_id": 53921302398202,
+       "start": "2026-10-17T20:00:00-04:00",
+       "end": "2026-10-17T21:30:00-04:00",
+       "ranking": 0.34,
+       "all_day": false,
+       "num_attending": 1
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/radius-ensemble-textures",
+    "localist_ics_url": "https://calendar.mit.edu/event/radius-ensemble-textures.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  },
+  {
+   "event": {
+    "id": 53736391492924,
+    "title": "Music Forum: Makoto Takao",
+    "url": "music.mit.edu",
+    "updated_at": "2026-10-15T07:41:27-04:00",
+    "created_at": "2026-08-18T13:17:28-04:00",
+    "facebook_id": null,
+    "first_date": "2026-10-22",
+    "last_date": "2026-10-22",
+    "hashtag": "mitmta",
+    "urlname": "music-forum-makoto-takao",
+    "user_id": 43031695409816,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "Lewis Music Library",
+    "room_number": "Lewis Music Library, 14E-109",
+    "location_name": "Lewis Music Library",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 43031695409816,
+    "updated_by": 44990430703569,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "160 Memorial Drive, Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": null,
+    "ticket_url": null,
+    "ticket_cost": "Free and Open to the Public",
+    "has_register": false,
+    "keywords": [
+     "music",
+     "forum",
+     "talk",
+     "Speaker",
+     "speaker series",
+     "musicology"
+    ],
+    "tags": [
+     "speaker",
+     "Forum",
+     "music",
+     "talk",
+     "musicology"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [],
+    "detail_views": 1049,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.359156",
+     "longitude": "-71.089192",
+     "street": "160 Memorial Drive",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     },
+     {
+      "id": 11497,
+      "name": "MIT Libraries"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "musicevents@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53736399832257,
+       "event_id": 53736391492924,
+       "start": "2026-10-22T17:00:00-04:00",
+       "end": "2026-10-22T18:30:00-04:00",
+       "ranking": 0.89,
+       "all_day": false,
+       "num_attending": 5
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/music-forum-makoto-takao",
+    "localist_ics_url": "https://calendar.mit.edu/event/music-forum-makoto-takao.ics"
+   }
+  },
+  {
+   "event": {
+    "id": 54197506802492,
+    "title": "Sound Performance: Eric Wong",
+    "url": "https://listart.mit.edu/calendar/sound-performance-eric-wong",
+    "updated_at": "2026-10-15T08:13:59-04:00",
+    "created_at": "2026-10-09T16:08:47-04:00",
+    "facebook_id": null,
+    "first_date": "2026-10-23",
+    "last_date": "2026-10-23",
+    "hashtag": null,
+    "urlname": "sound-performance-eric-wong",
+    "user_id": 43277909299894,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "MIT List Visual Arts Center, 20 Ames Street, Building E15, Cambridge, MA 02139",
+    "room_number": null,
+    "location_name": "MIT List Visual Arts Center, 20 Ames Street, Building E15, Cambridge, MA 02139",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 43277909299894,
+    "updated_by": 43277909299894,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "20 Ames Street, Building E15, Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": null,
+    "ticket_url": "https://listart.mit.edu/calendar/sound-performance-eric-wong",
+    "ticket_cost": "Free, but registration required.",
+    "has_register": false,
+    "keywords": [
+     "Performance",
+     "Sound",
+     "Sound Performance"
+    ],
+    "tags": [
+     "sound performance"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 184,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.36101",
+     "longitude": "-71.08783",
+     "street": "20 Ames Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10247,
+      "name": "MIT List Visual Arts Center"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "listprograms@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 54197506804541,
+       "event_id": 54197506802492,
+       "start": "2026-10-23T18:30:00-04:00",
+       "end": "2026-10-23T19:30:00-04:00",
+       "ranking": 0.15,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/sound-performance-eric-wong",
+    "localist_ics_url": "https://calendar.mit.edu/event/sound-performance-eric-wong.ics"
+   }
+  },
+  {
+   "event": {
+    "id": 53628941537837,
+    "title": "MIT\u2019s Annual Family Weekend Concert - Virtuosic Legacies",
+    "url": "",
+    "updated_at": "2026-10-15T07:36:50-04:00",
+    "created_at": "2026-08-06T09:48:52-04:00",
+    "facebook_id": null,
+    "first_date": "2026-10-23",
+    "last_date": "2026-10-23",
+    "hashtag": "MITMTA",
+    "urlname": "mits-annual-family-weekend-concert-virtuosic-legacies",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "",
+    "location_name": "Building W16: Kresge Auditorium",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 48904817502173,
+    "updated_by": 54133699814277,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "48 MASSACHUSETTS AVE, Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 360534,
+    "ticket_url": null,
+    "ticket_cost": "Free",
+    "has_register": false,
+    "keywords": [
+     "family weekend",
+     "wind ensemble"
+    ],
+    "tags": [
+     "Family Weekend Concert",
+     "MIT Wind Ensemble"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 2490,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.358138",
+     "longitude": "-71.094977",
+     "street": "48 Massachusetts Avenue",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02139"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Academic",
+       "id": 102751
+      },
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      },
+      {
+       "name": "Climate & Sustainability",
+       "id": 38872173453349
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "musicevents@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53628941538862,
+       "event_id": 53628941537837,
+       "start": "2026-10-23T20:00:00-04:00",
+       "end": null,
+       "ranking": 0.89,
+       "all_day": false,
+       "num_attending": 5
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/mits-annual-family-weekend-concert-virtuosic-legacies",
+    "localist_ics_url": "https://calendar.mit.edu/event/mits-annual-family-weekend-concert-virtuosic-legacies.ics",
+    "venue_url": "https://calendar.mit.edu/building_w16"
+   }
+  },
+  {
+   "event": {
+    "id": 54188615463942,
+    "title": "What is Your Light?",
+    "url": null,
+    "updated_at": "2026-10-14T14:35:48-04:00",
+    "created_at": "2026-10-08T16:01:37-04:00",
+    "facebook_id": null,
+    "first_date": "2026-11-03",
+    "last_date": "2026-11-03",
+    "hashtag": null,
+    "urlname": "what-is-your-light-2026",
+    "user_id": 400770,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "",
+    "location_name": "Building W15: MIT Chapel",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 400770,
+    "updated_by": 400770,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "48 MASSACHUSETTS AVE (REAR), Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": false,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 360533,
+    "ticket_url": "https://docs.google.com/forms/d/e/1FAIpQLSf_HtPrP41pnzKHE9kcCNxQW-PEHxR1UdM_snxC_s5qlrOaqg/viewform?usp=dialog",
+    "ticket_cost": null,
+    "has_register": false,
+    "keywords": [],
+    "tags": [],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [],
+    "detail_views": 501,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.358135",
+     "longitude": "-71.095031",
+     "street": "48 Massachusetts Avenue",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02139"
+    },
+    "departments": [
+     {
+      "id": 24195,
+      "name": "Office of Religious, Spiritual, and Ethical Life"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Religious/Spiritual",
+       "id": 102750
+      },
+      {
+       "name": "Health/Wellness",
+       "id": 102752
+      },
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "askachaplain@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 54188648303301,
+       "event_id": 54188615463942,
+       "start": "2026-11-03T18:30:00-05:00",
+       "end": "2026-11-03T19:30:00-05:00",
+       "ranking": 0.14,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/what-is-your-light-2026",
+    "localist_ics_url": "https://calendar.mit.edu/event/what-is-your-light-2026.ics",
+    "venue_url": "https://calendar.mit.edu/building_w15"
+   }
+  },
+  {
+   "event": {
+    "id": 47357721634674,
+    "title": "Concerts in the Chapel",
+    "url": "",
+    "updated_at": "2026-10-09T16:53:05-04:00",
+    "created_at": "2024-08-27T14:02:30-04:00",
+    "facebook_id": null,
+    "first_date": "2024-09-04",
+    "last_date": "2026-12-02",
+    "hashtag": "",
+    "urlname": "concerts-in-the-chapel",
+    "user_id": 400770,
+    "directions": "",
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "",
+    "location_name": "Building W15: MIT Chapel",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 400770,
+    "updated_by": 400770,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "48 MASSACHUSETTS AVE (REAR), Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": true,
+    "free": false,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 360533,
+    "ticket_url": "",
+    "ticket_cost": "",
+    "has_register": false,
+    "keywords": [
+     "music",
+     "concert",
+     "Meditation",
+     "chapel"
+    ],
+    "tags": [],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 5268,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.358135",
+     "longitude": "-71.095031",
+     "street": "48 Massachusetts Avenue",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02139"
+    },
+    "departments": [
+     {
+      "id": 24195,
+      "name": "Office of Religious, Spiritual, and Ethical Life"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Religious/Spiritual",
+       "id": 102750
+      },
+      {
+       "name": "Health/Wellness",
+       "id": 102752
+      },
+      {
+       "name": "Diversity/Inclusion",
+       "id": 102754
+      },
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Exhibits",
+       "id": 102763
+      },
+      {
+       "name": "Meetings/Gatherings",
+       "id": 103221
+      },
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {},
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53975636788662,
+       "event_id": 47357721634674,
+       "start": "2026-11-04T12:10:00-05:00",
+       "end": "2026-11-04T12:40:00-05:00",
+       "ranking": 0.0,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/concerts-in-the-chapel",
+    "localist_ics_url": "https://calendar.mit.edu/event/concerts-in-the-chapel.ics",
+    "venue_url": "https://calendar.mit.edu/building_w15"
+   }
+  },
+  {
+   "event": {
+    "id": 53629112649931,
+    "title": "Festival Jazz Ensemble's Fall Concert",
+    "url": "",
+    "updated_at": "2026-10-08T11:54:32-04:00",
+    "created_at": "2026-08-06T10:16:43-04:00",
+    "facebook_id": null,
+    "first_date": "2026-11-13",
+    "last_date": "2026-11-13",
+    "hashtag": "MITMTA",
+    "urlname": "festival-jazz-ensembles-fall-concert",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Concert Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 48904817502173,
+    "updated_by": 54137183653646,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": null,
+    "ticket_cost": "$20, free for MIT Community",
+    "has_register": false,
+    "keywords": [],
+    "tags": [
+     "Jazz Music",
+     "FJE",
+     "Fred Harris",
+     "Festival Jazz MIT"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 241,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "musicevents@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53629112649932,
+       "event_id": 53629112649931,
+       "start": "2026-11-13T20:00:00-05:00",
+       "end": null,
+       "ranking": 1.16,
+       "all_day": false,
+       "num_attending": 7
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/festival-jazz-ensembles-fall-concert",
+    "localist_ics_url": "https://calendar.mit.edu/event/festival-jazz-ensembles-fall-concert.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  },
+  {
+   "event": {
+    "id": 53629152661097,
+    "title": "FaMLE Fall Concert",
+    "url": "",
+    "updated_at": "2026-08-06T13:19:37-04:00",
+    "created_at": "2026-08-06T10:23:13-04:00",
+    "facebook_id": null,
+    "first_date": "2026-11-19",
+    "last_date": "2026-11-19",
+    "hashtag": "MITMTA",
+    "urlname": "famle-fall-concert-7563",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Killian Hall",
+    "location_name": "Building 14",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 48904817502173,
+    "updated_by": 48904817502173,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "160 MEMORIAL DR, Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 360419,
+    "ticket_url": null,
+    "ticket_cost": "Free and open to all",
+    "has_register": false,
+    "keywords": [],
+    "tags": [
+     "MIT",
+     "laptop ensemble",
+     "FaMLE"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 148,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.358576",
+     "longitude": "-71.089568",
+     "street": "474-160 Memorial Drive",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02139"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Academic",
+       "id": 102751
+      },
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "musicevents@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53629152661098,
+       "event_id": 53629152661097,
+       "start": "2026-11-19T20:00:00-05:00",
+       "end": null,
+       "ranking": 0.14,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/famle-fall-concert-7563",
+    "localist_ics_url": "https://calendar.mit.edu/event/famle-fall-concert-7563.ics",
+    "venue_url": "https://calendar.mit.edu/building_14"
+   }
+  },
+  {
+   "event": {
+    "id": 54018307081910,
+    "title": "Boulez at 100",
+    "url": "https://arts.mit.edu/projects/boulez-at-100/",
+    "updated_at": "2026-09-19T16:42:09-04:00",
+    "created_at": "2026-09-19T10:02:10-04:00",
+    "facebook_id": null,
+    "first_date": "2026-11-23",
+    "last_date": "2026-11-23",
+    "hashtag": null,
+    "urlname": "boulez-at-100",
+    "user_id": 45754596593317,
+    "directions": null,
+    "allows_reviews": false,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Concert Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 45754596593317,
+    "updated_by": 45754596593317,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": false,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": "https://www.eventbrite.com/e/boulez-at-100-tickets-2001400306192",
+    "ticket_cost": "$0 MIT Community. $5 General Admission. ",
+    "has_register": false,
+    "keywords": [
+     "music",
+     "piano",
+     "classical music",
+     "pianist"
+    ],
+    "tags": [],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 138,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10821,
+      "name": "Arts at MIT"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "raynac@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 54018307082935,
+       "event_id": 54018307081910,
+       "start": "2026-11-23T19:30:00-05:00",
+       "end": "2026-11-23T21:00:00-05:00",
+       "ranking": 0.14,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/boulez-at-100",
+    "localist_ics_url": "https://calendar.mit.edu/event/boulez-at-100.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  },
+  {
+   "event": {
+    "id": 53629205479897,
+    "title": "Jazz Combos Fall Concert 1 ",
+    "url": null,
+    "updated_at": "2026-08-22T12:54:16-04:00",
+    "created_at": "2026-08-06T10:31:49-04:00",
+    "facebook_id": null,
+    "first_date": "2026-11-24",
+    "last_date": "2026-11-24",
+    "hashtag": "mitt",
+    "urlname": "jazz-combos-fall-concert-1",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Killian hall",
+    "location_name": "Building 14",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 48904817502173,
+    "updated_by": 53771533682763,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "160 MEMORIAL DR, Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 360419,
+    "ticket_url": null,
+    "ticket_cost": "Free and Open to All",
+    "has_register": false,
+    "keywords": [
+     "jazz",
+     "MIT jazz combos spring concert",
+     "kazz"
+    ],
+    "tags": [
+     "Jazz Music",
+     "Jazz Combos"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 149,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.358576",
+     "longitude": "-71.089568",
+     "street": "474-160 Memorial Drive",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02139"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "musicevents@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53629205479898,
+       "event_id": 53629205479897,
+       "start": "2026-11-24T19:30:00-05:00",
+       "end": null,
+       "ranking": 0.29,
+       "all_day": false,
+       "num_attending": 1
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/jazz-combos-fall-concert-1",
+    "localist_ics_url": "https://calendar.mit.edu/event/jazz-combos-fall-concert-1.ics",
+    "venue_url": "https://calendar.mit.edu/building_14"
+   }
+  },
+  {
+   "event": {
+    "id": 53629326082481,
+    "title": "Jazz Combos Fall Concert 2 ",
+    "url": null,
+    "updated_at": "2026-10-13T05:25:03-04:00",
+    "created_at": "2026-08-06T10:51:27-04:00",
+    "facebook_id": null,
+    "first_date": "2026-12-01",
+    "last_date": "2026-12-01",
+    "hashtag": "MITMTA",
+    "urlname": "jazz-combos-fall-concert-2",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Killian Hall",
+    "location_name": "Building 14",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 48904817502173,
+    "updated_by": 54133699814277,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "160 MEMORIAL DR, Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 360419,
+    "ticket_url": null,
+    "ticket_cost": "Free and Open to All",
+    "has_register": false,
+    "keywords": [
+     "jazz combos"
+    ],
+    "tags": [
+     "MIT Jazz",
+     "MIT Jazz Combos"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 146,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.358576",
+     "longitude": "-71.089568",
+     "street": "474-160 Memorial Drive",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02139"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "musicevents@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53629326082482,
+       "event_id": 53629326082481,
+       "start": "2026-12-01T19:30:00-05:00",
+       "end": null,
+       "ranking": 0.43,
+       "all_day": false,
+       "num_attending": 2
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/jazz-combos-fall-concert-2",
+    "localist_ics_url": "https://calendar.mit.edu/event/jazz-combos-fall-concert-2.ics",
+    "venue_url": "https://calendar.mit.edu/building_14"
+   }
+  },
+  {
+   "event": {
+    "id": 47357721634674,
+    "title": "Concerts in the Chapel",
+    "url": "",
+    "updated_at": "2026-10-09T16:53:05-04:00",
+    "created_at": "2024-08-27T14:02:30-04:00",
+    "facebook_id": null,
+    "first_date": "2024-09-04",
+    "last_date": "2026-12-02",
+    "hashtag": "",
+    "urlname": "concerts-in-the-chapel",
+    "user_id": 400770,
+    "directions": "",
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "",
+    "location_name": "Building W15: MIT Chapel",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 400770,
+    "updated_by": 400770,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "48 MASSACHUSETTS AVE (REAR), Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": true,
+    "free": false,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 360533,
+    "ticket_url": "",
+    "ticket_cost": "",
+    "has_register": false,
+    "keywords": [
+     "music",
+     "concert",
+     "Meditation",
+     "chapel"
+    ],
+    "tags": [],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 5268,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.358135",
+     "longitude": "-71.095031",
+     "street": "48 Massachusetts Avenue",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02139"
+    },
+    "departments": [
+     {
+      "id": 24195,
+      "name": "Office of Religious, Spiritual, and Ethical Life"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Religious/Spiritual",
+       "id": 102750
+      },
+      {
+       "name": "Health/Wellness",
+       "id": 102752
+      },
+      {
+       "name": "Diversity/Inclusion",
+       "id": 102754
+      },
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Exhibits",
+       "id": 102763
+      },
+      {
+       "name": "Meetings/Gatherings",
+       "id": 103221
+      },
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {},
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53975636792759,
+       "event_id": 47357721634674,
+       "start": "2026-12-02T12:10:00-05:00",
+       "end": "2026-12-02T12:40:00-05:00",
+       "ranking": 0.0,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/concerts-in-the-chapel",
+    "localist_ics_url": "https://calendar.mit.edu/event/concerts-in-the-chapel.ics",
+    "venue_url": "https://calendar.mit.edu/building_w15"
+   }
+  },
+  {
+   "event": {
+    "id": 53629395443858,
+    "title": "MIrahTangi Gamelan Fall Concert",
+    "url": null,
+    "updated_at": "2026-08-22T20:24:16-04:00",
+    "created_at": "2026-08-06T11:02:44-04:00",
+    "facebook_id": null,
+    "first_date": "2026-12-02",
+    "last_date": "2026-12-02",
+    "hashtag": "MITMTA",
+    "urlname": "mirahtangi-gamelan-fall-concert",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Concert Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 48904817502173,
+    "updated_by": 53774306599276,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": null,
+    "ticket_cost": "Free and open to all",
+    "has_register": false,
+    "keywords": [],
+    "tags": [
+     "gamelan",
+     "Bali",
+     "MIT Gamelan"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 185,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "musicevents@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53629395443859,
+       "event_id": 53629395443858,
+       "start": "2026-12-02T20:00:00-05:00",
+       "end": null,
+       "ranking": 0.29,
+       "all_day": false,
+       "num_attending": 1
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/mirahtangi-gamelan-fall-concert",
+    "localist_ics_url": "https://calendar.mit.edu/event/mirahtangi-gamelan-fall-concert.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  },
+  {
+   "event": {
+    "id": 53629433634738,
+    "title": "12th Annual PRISM Concert Spectacular! - MIT Wind Ensemble",
+    "url": null,
+    "updated_at": "2026-10-13T05:25:03-04:00",
+    "created_at": "2026-08-06T11:08:57-04:00",
+    "facebook_id": null,
+    "first_date": "2026-12-04",
+    "last_date": "2026-12-04",
+    "hashtag": "MITMTA",
+    "urlname": "12th-annual-prism-concert-spectacular",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "",
+    "location_name": "Building W16: Kresge Auditorium",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 48904817502173,
+    "updated_by": 54133699814277,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "48 MASSACHUSETTS AVE, Cambridge, MA 02139",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": false,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 360534,
+    "ticket_url": null,
+    "ticket_cost": "",
+    "has_register": false,
+    "keywords": [
+     "MITWE PRISM"
+    ],
+    "tags": [
+     "PRISM",
+     "Fred Harris",
+     "MIT Wind Ensemble"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 228,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.358138",
+     "longitude": "-71.094977",
+     "street": "48 Massachusetts Avenue",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02139"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "musicevents@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53629433635763,
+       "event_id": 53629433634738,
+       "start": "2026-12-04T20:00:00-05:00",
+       "end": null,
+       "ranking": 0.43,
+       "all_day": false,
+       "num_attending": 2
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/12th-annual-prism-concert-spectacular",
+    "localist_ics_url": "https://calendar.mit.edu/event/12th-annual-prism-concert-spectacular.ics",
+    "venue_url": "https://calendar.mit.edu/building_w16"
+   }
+  },
+  {
+   "event": {
+    "id": 53629519461014,
+    "title": "Rambax MIT Fall Show",
+    "url": null,
+    "updated_at": "2026-10-13T05:25:03-04:00",
+    "created_at": "2026-08-06T11:22:55-04:00",
+    "facebook_id": null,
+    "first_date": "2026-12-04",
+    "last_date": "2026-12-04",
+    "hashtag": "MITMTA",
+    "urlname": "rambax-mit-fall-show",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Concert Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 48904817502173,
+    "updated_by": 54133699814277,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": "",
+    "ticket_cost": "Free",
+    "has_register": false,
+    "keywords": [],
+    "tags": [
+     "drumming",
+     "rambax",
+     "senagal"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 167,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Diversity/Inclusion",
+       "id": 102754
+      },
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "musicevents@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53629519462039,
+       "event_id": 53629519461014,
+       "start": "2026-12-04T20:00:00-05:00",
+       "end": null,
+       "ranking": 0.29,
+       "all_day": false,
+       "num_attending": 1
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/rambax-mit-fall-show",
+    "localist_ics_url": "https://calendar.mit.edu/event/rambax-mit-fall-show.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  },
+  {
+   "event": {
+    "id": 53629566419160,
+    "title": "MIT Vocal Jazz Ensemble's Fall Concert",
+    "url": null,
+    "updated_at": "2026-10-13T05:25:03-04:00",
+    "created_at": "2026-08-06T11:30:34-04:00",
+    "facebook_id": null,
+    "first_date": "2026-12-06",
+    "last_date": "2026-12-06",
+    "hashtag": "MITMTA",
+    "urlname": "mit-vocal-jazz-ensembles-fall-concert",
+    "user_id": 48904817502173,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Concert Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 48904817502173,
+    "updated_by": 54133699814277,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": false,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": null,
+    "ticket_cost": "$15",
+    "has_register": false,
+    "keywords": [],
+    "tags": [
+     "singing",
+     "Vocal Jazz Ensemble"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 145,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      },
+      {
+       "name": "General",
+       "id": 109266
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Community Event",
+       "id": 103223
+      },
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "musicevents@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53629566420185,
+       "event_id": 53629566419160,
+       "start": "2026-12-06T19:00:00-05:00",
+       "end": null,
+       "ranking": 0.43,
+       "all_day": false,
+       "num_attending": 2
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/mit-vocal-jazz-ensembles-fall-concert",
+    "localist_ics_url": "https://calendar.mit.edu/event/mit-vocal-jazz-ensembles-fall-concert.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  },
+  {
+   "event": {
+    "id": 54179742336075,
+    "title": "Chorale Winter Concert",
+    "url": "https://web.mit.edu/womensleague/womenschorale/",
+    "updated_at": "2026-10-07T16:24:28-04:00",
+    "created_at": "2026-10-07T15:57:26-04:00",
+    "facebook_id": null,
+    "first_date": "2026-12-12",
+    "last_date": "2026-12-12",
+    "hashtag": null,
+    "urlname": "chorale-winter-concert",
+    "user_id": 397755,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 397755,
+    "updated_by": 397755,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": null,
+    "ticket_cost": "0",
+    "has_register": false,
+    "keywords": [],
+    "tags": [],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [
+     36157712329674,
+     36157732300761,
+     36157741711873,
+     36157754951232
+    ],
+    "detail_views": 63,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10870,
+      "name": "MIT Women's League"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "mitwc@mit.edu"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 54179742337100,
+       "event_id": 54179742336075,
+       "start": "2026-12-12T18:00:00-05:00",
+       "end": null,
+       "ranking": 0.14,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/chorale-winter-concert",
+    "localist_ics_url": "https://calendar.mit.edu/event/chorale-winter-concert.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  },
+  {
+   "event": {
+    "id": 53921340615384,
+    "title": "Radius Ensemble: Postcards",
+    "url": "https://radiusensemble.org/products/postcards",
+    "updated_at": "2026-09-10T00:39:31-04:00",
+    "created_at": "2026-09-08T10:59:51-04:00",
+    "facebook_id": null,
+    "first_date": "2027-02-27",
+    "last_date": "2027-02-27",
+    "hashtag": "mitmta",
+    "urlname": "radius-ensemble-postcards",
+    "user_id": 43031695409816,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Concert Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 43031695409816,
+    "updated_by": 43031695409816,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": "https://radiusensemble.org/products/postcards",
+    "ticket_cost": "$42 General Admission | Free Admission with MIT ID",
+    "has_register": false,
+    "keywords": [
+     "concert",
+     "composer",
+     "ensemble",
+     "New Music",
+     "Chamber Music"
+    ],
+    "tags": [
+     "chamber music",
+     "concert",
+     "composer",
+     "ensemble",
+     "New Music"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [],
+    "detail_views": 98,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "radius@radiusensemble.org"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53921345606682,
+       "event_id": 53921340615384,
+       "start": "2027-02-27T20:00:00-05:00",
+       "end": "2027-02-27T21:30:00-05:00",
+       "ranking": 0.14,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/radius-ensemble-postcards",
+    "localist_ics_url": "https://calendar.mit.edu/event/radius-ensemble-postcards.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  },
+  {
+   "event": {
+    "id": 53921356832086,
+    "title": "Radius Ensemble: Crossroads",
+    "url": "https://radiusensemble.org/products/crossroads",
+    "updated_at": "2026-09-10T00:39:09-04:00",
+    "created_at": "2026-09-08T11:02:30-04:00",
+    "facebook_id": null,
+    "first_date": "2027-04-10",
+    "last_date": "2027-04-10",
+    "hashtag": "mitmta",
+    "urlname": "radius-ensemble-crossroads",
+    "user_id": 43031695409816,
+    "directions": null,
+    "allows_reviews": true,
+    "allows_attendance": true,
+    "location": "",
+    "room_number": "Thomas Tull Concert Hall",
+    "location_name": "Building W18",
+    "status": "live",
+    "experience": "inperson",
+    "stream_url": null,
+    "stream_info": null,
+    "stream_embed_code": null,
+    "created_by": 43031695409816,
+    "updated_by": 43031695409816,
+    "conference_event_id": null,
+    "kind": "standalone",
+    "address": "201 Amherst Street, Cambridge, MA 02142",
+    "school_id": 179,
+    "campus_id": null,
+    "recurring": false,
+    "free": true,
+    "private": false,
+    "verified": true,
+    "rejected": false,
+    "sponsored": false,
+    "venue_id": 48669153833130,
+    "ticket_url": "https://radiusensemble.org/products/crossroads",
+    "ticket_cost": "$42 General Admission | Free Admission with MIT ID",
+    "has_register": false,
+    "keywords": [
+     "concert",
+     "composer",
+     "ensemble",
+     "New Music",
+     "Chamber Music"
+    ],
+    "tags": [
+     "chamber music",
+     "concert",
+     "composer",
+     "ensemble",
+     "New Music"
+    ],
+    "speaker_ids": [],
+    "feedback_enabled": true,
+    "feedback_goal_ids": [],
+    "detail_views": 70,
+    "publish_status": "published",
+    "geo": {
+     "latitude": "42.357869",
+     "longitude": "-71.095941",
+     "street": "201 Amherst Street",
+     "city": "Cambridge",
+     "state": "MA",
+     "country": "US",
+     "zip": "02142"
+    },
+    "departments": [
+     {
+      "id": 10891,
+      "name": "MIT Music and Theater Arts"
+     }
+    ],
+    "filters": {
+     "event_audience": [
+      {
+       "name": "Public",
+       "id": 98747
+      },
+      {
+       "name": "MIT Community",
+       "id": 98748
+      },
+      {
+       "name": "Students",
+       "id": 98749
+      },
+      {
+       "name": "Alumni",
+       "id": 98750
+      },
+      {
+       "name": "Faculty",
+       "id": 98751
+      },
+      {
+       "name": "Staff",
+       "id": 98752
+      }
+     ],
+     "event_events_by_interest": [
+      {
+       "name": "Arts/Music/Film",
+       "id": 102755
+      }
+     ],
+     "event_events_by_school": [
+      {
+       "name": "School of Humanities, Arts, and Social Sciences (SHASS)",
+       "id": 103364
+      }
+     ],
+     "event_types": [
+      {
+       "name": "Performing Arts",
+       "id": 103224
+      }
+     ]
+    },
+    "custom_fields": {
+     "contact_email": "radius@radiusensemble.org"
+    },
+    "event_instances": [
+     {
+      "event_instance": {
+       "id": 53921361372257,
+       "event_id": 53921356832086,
+       "start": "2027-04-10T20:00:00-04:00",
+       "end": "2027-04-10T21:30:00-04:00",
+       "ranking": 0.14,
+       "all_day": false,
+       "num_attending": 0
+      }
+     }
+    ],
+    "localist_url": "https://calendar.mit.edu/event/radius-ensemble-crossroads",
+    "localist_ics_url": "https://calendar.mit.edu/event/radius-ensemble-crossroads.ics",
+    "venue_url": "https://calendar.mit.edu/building-w18"
+   }
+  }
+ ],
+ "page": {
+  "current": 1,
+  "size": 100,
+  "total": 1,
+  "total_items": 22,
+  "next_page": null,
+  "previous_page": null
+ },
+ "date": {
+  "first": "2026-10-15",
+  "last": "2027-04-13"
+ }
+}

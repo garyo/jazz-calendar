@@ -1,0 +1,491 @@
+# Venue registry. See research/venues.md for sources and status notes.
+#
+# id:         stable slug used by sources.yaml and the published feed
+# jazz_level: dedicated (everything there is jazz) | regular | occasional
+# aliases:    other names sources use; street addresses are matched automatically
+
+# --- Boston ---------------------------------------------------------------
+
+- id: wallys
+  name: Wally's Café
+  address: 427 Massachusetts Ave
+  town: Boston
+  neighborhood: South End
+  url: https://www.wallyscafe.com
+  jazz_level: dedicated
+  aliases: [Wally's Cafe Jazz Club, Wally's]
+
+- id: scullers
+  name: Scullers Jazz Club
+  address: 400 Soldiers Field Rd
+  town: Boston
+  neighborhood: Allston
+  url: https://www.scullersjazz.com
+  jazz_level: dedicated
+  aliases: [Scullers]
+
+- id: beehive
+  name: The Beehive
+  address: 541 Tremont St
+  town: Boston
+  neighborhood: South End
+  url: https://www.beehiveboston.com
+  jazz_level: regular
+
+- id: long-live-roxbury
+  name: Long Live Roxbury
+  address: 152 Hampden St
+  town: Boston
+  neighborhood: Roxbury
+  url: https://www.longlivebeerworks.com/boston
+  jazz_level: regular
+  aliases: [Long Live Beerworks]
+
+- id: square-root
+  name: The Square Root
+  address: 2 Corinth St
+  town: Boston
+  neighborhood: Roslindale
+  url: https://squarerootrozzie.com
+  jazz_level: regular
+
+- id: midway-cafe
+  name: Midway Café
+  address: 3496 Washington St
+  town: Boston
+  neighborhood: Jamaica Plain
+  url: https://www.midwaycafe.com
+  jazz_level: regular
+  aliases: [Midway Cafe]
+
+- id: hobgoblin
+  name: HobGoblin
+  address: 48 Temple Pl
+  town: Boston
+  neighborhood: Downtown Crossing
+  url: https://www.hobgoblinbar.com
+  jazz_level: regular
+
+- id: grace-by-nia
+  name: Grace by Nia
+  address: 60 Seaport Blvd
+  town: Boston
+  neighborhood: Seaport
+  url: https://www.gracebynia.com
+  jazz_level: regular
+
+- id: the-fed
+  name: The Fed at The Langham
+  address: 250 Franklin St
+  town: Boston
+  neighborhood: Financial District
+  url: https://www.langhamhotels.com/en/the-langham/boston/dine/the-fed/
+  jazz_level: regular
+  aliases: [The Fed]
+
+- id: jazz-urbane-cafe
+  name: Jazz Urbane Café
+  address: 2300 Washington St
+  town: Boston
+  neighborhood: Roxbury
+  url: https://www.jazzurbanecafe.com
+  jazz_level: dedicated
+
+- id: club-cafe
+  name: Club Café
+  address: 209 Columbus Ave
+  town: Boston
+  neighborhood: Back Bay
+  url: https://www.clubcafe.com
+  jazz_level: occasional
+
+- id: city-winery
+  name: City Winery Boston
+  address: 80 Beverly St
+  town: Boston
+  neighborhood: West End
+  url: https://citywinery.com/pages/locations/boston
+  jazz_level: occasional
+
+- id: berklee-performance-center
+  name: Berklee Performance Center
+  address: 136 Massachusetts Ave
+  town: Boston
+  neighborhood: Back Bay
+  url: https://www.berklee.edu/bpc
+  jazz_level: regular
+  aliases: [BPC]
+
+- id: berklee-red-room
+  name: Red Room @ Café 939
+  address: 939 Boylston St
+  town: Boston
+  neighborhood: Back Bay
+  url: https://www.berklee.edu/red-room-cafe-939
+  jazz_level: occasional
+  aliases: [Café 939, Cafe 939, Red Room at Cafe 939]
+
+- id: nec
+  name: New England Conservatory
+  address: 30 Gainsborough St
+  town: Boston
+  neighborhood: Fenway
+  url: https://necmusic.edu
+  jazz_level: regular
+  aliases: [NEC, NEC's Jordan Hall, Jordan Hall]
+
+- id: symphony-hall
+  name: Symphony Hall
+  address: 301 Massachusetts Ave
+  town: Boston
+  neighborhood: Back Bay
+  url: https://www.bso.org
+  jazz_level: occasional
+
+- id: cutler-majestic
+  name: Emerson Cutler Majestic Theatre
+  address: 219 Tremont St
+  town: Boston
+  neighborhood: Theatre District
+  url: https://artsemerson.org
+  jazz_level: occasional
+  aliases: [Cutler Majestic Theatre]
+
+- id: union-church
+  name: Union Church in Boston
+  address: 485 Columbus Ave
+  town: Boston
+  neighborhood: South End
+  url: https://www.bostonjazzfoundation.org
+  jazz_level: occasional
+
+- id: first-church-roxbury
+  name: First Church in Roxbury
+  address: 10 Putnam St
+  town: Boston
+  neighborhood: Roxbury
+  jazz_level: occasional
+
+- id: northeastern
+  name: Northeastern University
+  address: 360 Huntington Ave
+  town: Boston
+  neighborhood: Fenway
+  url: https://calendar.northeastern.edu
+  jazz_level: occasional
+  aliases: [Fenway Center]
+
+- id: bpl
+  name: Boston Public Library
+  town: Boston
+  url: https://bpl.bibliocommons.com/events
+  jazz_level: occasional
+  aliases: [BPL]
+
+# --- Cambridge ------------------------------------------------------------
+
+- id: regattabar
+  name: Regattabar
+  address: 1 Bennett St
+  town: Cambridge
+  neighborhood: Harvard Square
+  url: https://www.regattabarjazz.com
+  jazz_level: dedicated
+  aliases: [Regattabar at the Charles Hotel, Regattabar Jazz Club]
+
+- id: lilypad
+  name: The Lilypad
+  address: 1353 Cambridge St
+  town: Cambridge
+  neighborhood: Inman Square
+  url: https://www.lilypadinman.com
+  jazz_level: regular
+  aliases: [Lilypad, Lily Pad, Lillypad]
+
+- id: mad-monkfish
+  name: The Mad Monkfish
+  address: 524 Massachusetts Ave
+  town: Cambridge
+  neighborhood: Central Square
+  url: https://www.themadmonkfish.com
+  jazz_level: dedicated
+  aliases: [Mad Monkfish, Jazz Baroness Room]
+
+- id: plough-and-stars
+  name: The Plough & Stars
+  address: 912 Massachusetts Ave
+  town: Cambridge
+  neighborhood: Central Square
+  url: https://www.ploughandstars.com
+  jazz_level: regular
+  aliases: [Plough and Stars]
+
+- id: phoenix-landing
+  name: Phoenix Landing
+  address: 512 Massachusetts Ave
+  town: Cambridge
+  neighborhood: Central Square
+  jazz_level: occasional
+
+- id: middle-east
+  name: The Middle East / Sonia
+  address: 472 Massachusetts Ave
+  town: Cambridge
+  neighborhood: Central Square
+  url: https://www.mideastclub.com
+  jazz_level: occasional
+  aliases: [Sonia, The Middle East, Middle East Upstairs, Middle East Downstairs, Zuzu]
+
+- id: arrow-street-arts
+  name: Arrow Street Arts
+  address: 2 Arrow St
+  town: Cambridge
+  neighborhood: Harvard Square
+  url: https://www.arrowstarts.org
+  jazz_level: occasional
+
+- id: lizard-lounge
+  name: Lizard Lounge
+  address: 1667 Massachusetts Ave
+  town: Cambridge
+  neighborhood: Porter Square
+  url: https://lizardloungeclub.com
+  jazz_level: occasional
+
+- id: mccarthys-toad
+  name: McCarthy's & Toad
+  address: 1920 Massachusetts Ave
+  town: Cambridge
+  neighborhood: Porter Square
+  url: https://www.mccarthystoad.com
+  jazz_level: occasional
+  aliases: [Toad]
+
+- id: club-passim
+  name: Club Passim
+  address: 47 Palmer St
+  town: Cambridge
+  neighborhood: Harvard Square
+  url: https://www.passim.org
+  jazz_level: occasional
+  aliases: [Passim]
+
+- id: the-sinclair
+  name: The Sinclair
+  address: 52 Church St
+  town: Cambridge
+  neighborhood: Harvard Square
+  url: https://www.sinclaircambridge.com
+  jazz_level: occasional
+
+- id: cantab-lounge
+  name: The Cantab Lounge
+  address: 738 Massachusetts Ave
+  town: Cambridge
+  neighborhood: Central Square
+  url: https://www.thecantablounge.com
+  jazz_level: occasional
+
+- id: longy
+  name: Longy School of Music
+  address: 27 Garden St
+  town: Cambridge
+  neighborhood: Harvard Square
+  url: https://longy.edu
+  jazz_level: occasional
+  aliases: [Edward M. Pickman Concert Hall, Pickman Hall, Wolfinsohn Recital Room]
+
+- id: mit
+  name: MIT
+  address: 77 Massachusetts Ave
+  town: Cambridge
+  url: https://arts.mit.edu
+  jazz_level: occasional
+  aliases: [Kresge Auditorium, MIT Kresge Auditorium, Wong Auditorium]
+
+- id: sanders-theatre
+  name: Sanders Theatre
+  address: 45 Quincy St
+  town: Cambridge
+  neighborhood: Harvard Square
+  jazz_level: occasional
+
+- id: 585-arts
+  name: 585 Arts
+  address: 585 Kendall St
+  town: Cambridge
+  neighborhood: Kendall Square
+  url: https://www.globalartslive.org
+  jazz_level: occasional
+
+- id: the-platform
+  name: The Platform
+  address: 315 Kendall St
+  town: Cambridge
+  neighborhood: Kendall Square
+  url: https://www.globalartslive.org
+  jazz_level: occasional
+  aliases: [Takeda Theater at The Platform, Tempo Stage at The Platform]
+
+- id: cambridge-multicultural-arts-center
+  name: Multicultural Arts Center
+  address: 41 Second St
+  town: Cambridge
+  neighborhood: East Cambridge
+  jazz_level: occasional
+  aliases: [Cambridge Multicultural Arts Center, CMAC]
+
+# --- Somerville and Medford ----------------------------------------------
+
+- id: sally-obriens
+  name: Sally O'Brien's
+  address: 335 Somerville Ave
+  town: Somerville
+  neighborhood: Union Square
+  url: https://www.sallyobriensbar.com
+  jazz_level: regular
+
+- id: the-burren
+  name: The Burren
+  address: 247 Elm St
+  town: Somerville
+  neighborhood: Davis Square
+  url: https://www.burren.com
+  jazz_level: occasional
+
+- id: arts-at-the-armory
+  name: Arts at the Armory
+  address: 191 Highland Ave
+  town: Somerville
+  url: https://artsatthearmory.org
+  jazz_level: occasional
+
+- id: somerville-theatre
+  name: Somerville Theatre
+  address: 55 Davis Sq
+  town: Somerville
+  neighborhood: Davis Square
+  url: https://www.somervilletheatre.com
+  jazz_level: occasional
+  aliases: [Crystal Ballroom]
+
+- id: tufts-granoff
+  name: Granoff Music Center, Tufts
+  address: 20 Talbot Ave
+  town: Medford
+  url: https://as.tufts.edu/music
+  jazz_level: occasional
+  aliases: [Perry and Marty Granoff Music Center, Medford/Somerville campus]
+
+# --- Suburbs -----------------------------------------------------------
+
+- id: tryst
+  name: Tryst
+  address: 689 Massachusetts Ave
+  town: Arlington
+  url: https://www.trystrestaurant.com
+  jazz_level: regular
+
+- id: regent-theatre
+  name: Regent Theatre
+  address: 7 Medford St
+  town: Arlington
+  url: https://www.regenttheatre.com
+  jazz_level: occasional
+
+- id: morningside-music
+  name: Morningside Music Studio
+  address: 108 Summer St
+  town: Arlington
+  url: https://www.morningsidemusic.org
+  jazz_level: regular
+
+- id: wellington-belmont
+  name: The Wellington
+  address: 75 Leonard St
+  town: Belmont
+  neighborhood: Belmont Center
+  url: https://www.thewellingtonbelmont.com
+  jazz_level: regular
+
+- id: postunderground
+  name: POSTunderground
+  address: 386 Washington St
+  town: Brookline
+  url: https://www.postunderground.com
+  jazz_level: dedicated
+  aliases: [Post Underground, PostUnderground]
+
+- id: bluebird-bar
+  name: The Bluebird Bar
+  address: 1293 Washington St
+  town: Newton
+  neighborhood: West Newton
+  url: https://www.thebluebirdbar.com
+  jazz_level: regular
+  aliases: [Bluebird Bar]
+
+- id: mosesian-center
+  name: Mosesian Center for the Arts
+  address: 321 Arsenal St
+  town: Watertown
+  url: https://www.mosesianarts.org
+  jazz_level: regular
+
+- id: concord-conservatory
+  name: Concord Conservatory of Music
+  address: 1317 Main St
+  town: Concord
+  url: https://www.concordconservatory.org
+  jazz_level: regular
+
+- id: arts-wayland
+  name: Arts Wayland at First Parish
+  address: 225 Boston Post Rd
+  town: Wayland
+  url: https://www.artswayland.com
+  jazz_level: regular
+
+- id: tcan
+  name: TCAN
+  address: 14 Summer St
+  town: Natick
+  url: https://www.tcan.org
+  jazz_level: occasional
+  aliases: [The Center for Arts in Natick]
+
+- id: qarts
+  name: QArts Gallery
+  address: 1229 Hancock St
+  town: Quincy
+  jazz_level: regular
+
+- id: the-cabot
+  name: The Cabot
+  address: 286 Cabot St
+  town: Beverly
+  url: https://www.thecabot.org
+  jazz_level: occasional
+  aliases: [Off Cabot]
+
+- id: marblehead-arts
+  name: Marblehead Arts Association
+  address: 8 Hooper St
+  town: Marblehead
+  url: https://www.marbleheadarts.org
+  jazz_level: regular
+
+- id: shalin-liu
+  name: Shalin Liu Performance Center
+  address: 37 Main St
+  town: Rockport
+  url: https://www.rockportmusic.org
+  jazz_level: occasional
+
+- id: spire-center
+  name: Spire Center
+  address: 25 1/2 Court St
+  town: Plymouth
+  url: https://www.spirecenter.org
+  jazz_level: occasional
+  aliases: [25 1/2 Court Street, Plymouth, MA 02360]

@@ -1,0 +1,22 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "bostonjazzcalendar"
+# account_id set via CLOUDFLARE_ACCOUNT_ID env var
+compatibility_date = "2026-09-01"
+main = "src/worker.ts"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+# Only these paths invoke the worker; everything else is answered by the
+# asset layer directly, which costs no worker CPU or request quota.
+run_worker_first = ["/data/*", "/calendar.ics", "/api/*"]
+
+# Scraper output (events.json, status.json, calendar.ics), uploaded through
+# PUT /api/publish/:key. The bearer token is the PUBLISH_TOKEN secret.
+[[r2_buckets]]
+binding = "DATA"
+bucket_name = "bostonjazzcalendar-data"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
