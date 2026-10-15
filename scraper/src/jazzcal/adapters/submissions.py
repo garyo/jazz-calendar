@@ -32,9 +32,7 @@ def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
         max_age=timedelta(0),
         headers={"Authorization": f"Bearer {token}"},
     )
-    data = response.json()
-    assert isinstance(data, dict)
-    return parse(data)
+    return parse(response.json_dict())
 
 
 def parse(data: dict) -> list[ScrapedEvent]:

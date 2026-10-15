@@ -22,8 +22,7 @@ def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
     events = []
     for page in range(1, MAX_PAGES + 1):
         query = urlencode({**params, "page": page}, doseq=True)
-        data = http.get(f"{source.url.rstrip('/')}/api/2/events?{query}").json()
-        assert isinstance(data, dict)
+        data = http.get(f"{source.url.rstrip('/')}/api/2/events?{query}").json_dict()
         events += parse_page(data)
         if not data.get("page", {}).get("next_page"):
             break

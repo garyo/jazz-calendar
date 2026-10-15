@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from email.utils import parsedate_to_datetime
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlsplit
 
 import httpx
@@ -70,6 +71,23 @@ class Response:
 
     def json(self) -> object:
         return json.loads(self.text)
+
+    def json_dict(self) -> dict[str, Any]:
+        """The body as a JSON object; FetchError when it's anything else."""
+        return self._json_as(dict, "a JSON object")
+
+    def json_list(self) -> list[Any]:
+        """The body as a JSON array; FetchError when it's anything else."""
+        return self._json_as(list, "a JSON array")
+
+    def _json_as[T](self, kind: type[T], expected: str) -> T:
+        try:
+            data = self.json()
+        except json.JSONDecodeError as e:
+            raise FetchError(f"not JSON from {redact(self.url)}: {e}") from e
+        if not isinstance(data, kind):
+            raise FetchError(f"expected {expected} from {redact(self.url)}")
+        return data
 
 
 @dataclass

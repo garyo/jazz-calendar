@@ -8,7 +8,7 @@ import httpx
 import pytest
 
 from jazzcal import http as http_module
-from jazzcal.http import Disallowed, FetchError, Http
+from jazzcal.http import Disallowed, FetchError, Http, Response
 
 Handler = Callable[[httpx.Request], httpx.Response]
 
@@ -359,3 +359,17 @@ def test_responses_are_capped(
         assert len(http.get("https://club.example/small").text) == 100
         with pytest.raises(FetchError, match="over 100 bytes"):
             http.get("https://club.example/huge")
+
+
+def test_json_of_the_expected_kind() -> None:
+    def response(text: str) -> Response:
+        return Response("https://api.example/events?apikey=s3cret", text, from_cache=False)
+
+    assert response('{"events": []}').json_dict() == {"events": []}
+    assert response("[1, 2]").json_list() == [1, 2]
+    with pytest.raises(FetchError, match=r"expected a JSON object from .*apikey=REDACTED"):
+        response("[1, 2]").json_dict()
+    with pytest.raises(FetchError, match="expected a JSON array"):
+        response("{}").json_list()
+    with pytest.raises(FetchError, match="not JSON"):
+        response("<html>").json_dict()

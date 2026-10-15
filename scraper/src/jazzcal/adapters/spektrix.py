@@ -28,15 +28,12 @@ GENRE_ATTRIBUTES = (
 def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
     root = source.url.rstrip("/")
     today = datetime.now(TZ).date().isoformat()
-    events = http.get(f"{root}/events?instanceStart_from={today}").json()
-    assert isinstance(events, list)
+    events = http.get(f"{root}/events?instanceStart_from={today}").json_list()
     # Most events have one performance; fetch the instance list only for runs.
     instances: dict[str, list[dict]] = {}
     for e in events:
         if e["firstInstanceDateTime"] != e["lastInstanceDateTime"]:
-            runs = http.get(f"{root}/events/{e['id']}/instances").json()
-            assert isinstance(runs, list)
-            instances[e["id"]] = runs
+            instances[e["id"]] = http.get(f"{root}/events/{e['id']}/instances").json_list()
     return parse(
         events,
         instances,

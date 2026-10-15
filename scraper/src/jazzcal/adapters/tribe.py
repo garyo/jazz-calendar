@@ -29,8 +29,7 @@ def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
     for _ in range(MAX_PAGES):
         if not url:
             break
-        page = http.get(url).json()
-        assert isinstance(page, dict)
+        page = http.get(url).json_dict()
         events += parse_page(page)
         url = page.get("next_rest_url")
     return events

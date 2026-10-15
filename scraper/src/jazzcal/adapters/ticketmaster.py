@@ -40,8 +40,7 @@ def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
             "endDateTime": f"{(now + HORIZON):%Y-%m-%dT%H:%M:%SZ}",
             "apikey": key,
         })  # fmt: skip
-        data = http.get(f"{API}?{query}").json()
-        assert isinstance(data, dict)
+        data = http.get(f"{API}?{query}").json_dict()
         events += parse(data)
         if page + 1 >= data.get("page", {}).get("totalPages", 0):
             break
