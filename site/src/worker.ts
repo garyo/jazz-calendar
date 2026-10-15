@@ -5,7 +5,8 @@
  * /calendar.ics) and accepts fresh copies from the scraper via
  * PUT /api/publish/:key. /calendar.ics with venue, town or adjacent
  * parameters is a feed of just that selection, built from events.json.
- * Gig submissions and their review live in worker-submissions.ts.
+ * Gig submissions and their review live in worker-submissions.ts; the
+ * hourly cron's stale-data check in worker-freshness.ts.
  * Static assets never reach this code unless a run_worker_first path falls
  * through (see wrangler.toml).
  */
@@ -21,6 +22,7 @@ import {
   type Selection,
 } from "./selection";
 import type { EventsFile } from "./types";
+import { checkFreshness } from "./worker-freshness";
 import {
   hasBearer,
   methodNotAllowed,
@@ -221,5 +223,9 @@ export default {
     const submissions = routeSubmissions(request, env, url, ctx);
     if (submissions) return submissions;
     return env.ASSETS.fetch(request);
+  },
+
+  async scheduled(controller, env, ctx): Promise<void> {
+    ctx.waitUntil(checkFreshness(env, controller.scheduledTime));
   },
 } satisfies ExportedHandler<Env>;

@@ -23,6 +23,7 @@ src/url-state.ts view state <-> query string
 src/types.ts     TS mirror of ../schema/events.schema.json
 src/worker.ts    the Worker: R2-backed data routes, filtered feeds, the publish API
 src/worker-submissions.ts  the Worker's gig submission and review API (D1)
+src/worker-freshness.ts    the hourly cron: alerts when events.json goes stale
 src/worker-http.ts         response and bearer-token helpers for the Worker
 src/worker-notify.ts       ntfy notices to the owner (submissions, stale data)
 src/submission.ts  submission records, limits and validation (shared)
@@ -179,6 +180,27 @@ curl -X PUT \
     token is compared in constant time.
   - `400`: unknown key.
   - `405`: method other than `PUT`.
+
+## Stale-data alerts
+
+A Cron Trigger (`[triggers]` in `wrangler.toml`) runs the Worker's
+`scheduled` handler (`src/worker-freshness.ts`) at the top of every hour. It
+reads only the metadata of R2's `events.json` (one `head`, no body) and posts
+a high-priority ntfy notice, "Boston Jazz Calendar: no fresh data", when the
+upload is 30 or more hours old. That's one missed daily run plus a few hours.
+The notice gives the age and points at the scraper on the Mac and
+`~/Library/Logs/jazzcal.log`.
+
+The check keeps no state. It alerts in the hour after the data turns 30 hours
+old, then in the same hour each day (54 h, 78 h, …) until an upload resets
+the clock. Cron ticks are scheduled exactly an hour apart, and the age is
+measured from the scheduled time, so exactly one tick falls in each of those
+hours. A missing `events.json` alerts daily at 13:00 UTC. Notices use the
+same `NTFY_URL`, `NTFY_TOPIC` and `NTFY_TOKEN` as new submissions; without
+them the check does nothing.
+
+To try it locally: `bun run build && bunx wrangler dev --test-scheduled`,
+then `curl 'http://localhost:8787/__scheduled?cron=0+*+*+*+*'`.
 
 ## Gig submissions
 
