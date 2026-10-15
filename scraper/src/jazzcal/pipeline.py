@@ -4,11 +4,14 @@ import hashlib
 import logging
 import re
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from textwrap import shorten
 
 from rapidfuzz import fuzz
 
+from jazzcal import notify
 from jazzcal.adapters import get_adapter
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry
@@ -36,6 +39,10 @@ VENUE_PROFILES = {
     "regular": "books jazz regularly among other music",
     "occasional": "mostly non-jazz; books jazz occasionally",
 }
+ALERT_AFTER = 2
+"""Consecutive failed runs after which a source is worth a notification..."""
+ALERT_EVERY = timedelta(days=7)
+"""...and how often to repeat it while the source keeps failing."""
 
 
 def scrape(
@@ -74,6 +81,25 @@ def scrape(
 
 def _past(event: ScrapedEvent, now: datetime) -> bool:
     return (event.end or event.start + PAST_GRACE) < now
+
+
+def alert_failing(
+    registry: Registry,
+    store: Store,
+    now: datetime,
+    send: Callable[[str, str], bool] = notify.send,
+) -> None:
+    """Send one notification listing every enabled source that has failed ALERT_AFTER runs in
+    a row, when one of them has just got there or hasn't been mentioned for ALERT_EVERY."""
+    enabled = {s.id for s in registry.sources if s.enabled}
+    failing = [f for f in store.failing(ALERT_AFTER) if f.source in enabled]
+    if not any(f.notified is None or now - f.notified >= ALERT_EVERY for f in failing):
+        return
+    lines = [f"{f.source} ({f.runs} runs): {shorten(redact(f.error), 120)}" for f in failing]
+    sources = "source" if len(failing) == 1 else "sources"
+    title = f"Boston Jazz Calendar: {len(failing)} {sources} failing"
+    if send(title, "\n".join(lines)):
+        store.mark_notified([f.source for f in failing], now)
 
 
 @dataclass

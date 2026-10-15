@@ -61,6 +61,8 @@ def main() -> None:
             store = Store(VAR_DIR / "jazzcal.db")
             with _http(args.offline, args.max_age) as http:
                 pipeline.scrape(registry, store, http, set(args.source or []) or None)
+            if not args.offline:
+                pipeline.alert_failing(registry, store, datetime.now(TZ))
             if args.command == "run":
                 _build(registry, store, _classifier(args.classifier))
                 if args.publish:
