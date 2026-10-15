@@ -134,7 +134,7 @@
   options:
     follow: a[href*="/event-details/"]
     max_follow: 30
-  notes: Wix detail pages are ~1.5 MB each; cached for 24 h.
+  notes: Wix detail pages are ~1.5 MB each; cached for 5 days.
 
 - id: berklee-bpc
   adapter: jsonld

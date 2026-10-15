@@ -8,10 +8,10 @@ blurbs are about the act), since bios elsewhere mention jazz in passing. At regu
 trio, quartet, etc. or a jam is jazz too.
 
 A ruling is *certain* when it rests on something decisive: the event's or source's word, an
-include or exclude pattern, an explicit genre in the title or tags, or a dedicated jazz room. The
-rest are best guesses that a language model may overrule (see llm.py). A source's `unknown`
-option sets the guess for listings nothing else settles, for rooms where unfamiliar acts are
-usually jazz.
+include or exclude pattern, an explicit jazz genre in the title or tags, or a dedicated jazz
+room. The rest are best guesses that a language model may overrule (see llm.py). A source's
+`unknown` setting gives the guess for listings nothing else settles, for rooms where
+unfamiliar acts are usually jazz.
 """
 
 import re
