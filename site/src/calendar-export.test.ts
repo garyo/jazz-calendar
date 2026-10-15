@@ -6,7 +6,7 @@ import {
   googleEventUrl,
   utcStamp,
 } from "./calendar-export";
-import type { CalendarEvent, Venue } from "./types";
+import type { CalendarEvent, SourceCredit, Venue } from "./types";
 
 // Output must not depend on the host's zone.
 process.env.TZ = "Asia/Tokyo";
@@ -31,6 +31,12 @@ const show: CalendarEvent = {
   price: "$15-25",
   relevance: "jazz",
   sources: ["test"],
+};
+const ticketmaster: SourceCredit = {
+  id: "tm",
+  name: "Ticketmaster",
+  url: "https://www.ticketmaster.com",
+  via: true,
 };
 const stamp = new Date("2026-10-15T10:00:00Z");
 const options = { name: "x", stamp };
@@ -135,6 +141,35 @@ describe("buildCalendar", () => {
     ]);
   });
 
+  test("credits a third party in the description, keeping the UID", () => {
+    const own: SourceCredit = {
+      id: "own",
+      name: "Own",
+      url: "https://own.example",
+    };
+    const credits = new Map([
+      [own.id, own],
+      [ticketmaster.id, ticketmaster],
+    ]);
+    const [lines] = vevents(
+      buildCalendar([{ ...show, sources: ["own", "tm"] }], venues, {
+        ...options,
+        credits,
+      }),
+    );
+    expect(lines).toContain("UID:abc123@bostonjazzcalendar.com");
+    expect(lines?.find((line) => line.startsWith("DESCRIPTION:"))).toEndWith(
+      String.raw`\nTickets: https://tickets.example.com/x\nListing via Ticketmaster: https://www.ticketmaster.com`,
+    );
+    const ownOnly = vevents(
+      buildCalendar([{ ...show, sources: ["own"] }], venues, {
+        ...options,
+        credits,
+      }),
+    );
+    expect(ownOnly.flat().join("\n")).not.toContain("via");
+  });
+
   test("UTC conversion across the end and start of DST", () => {
     const dtstart = (start: string) =>
       only([{ ...show, start, end: null }])[0].find((line) =>
@@ -211,6 +246,13 @@ describe("googleEventUrl", () => {
       "Tickets: https://tickets.example.com/x",
     );
     expect(p.get("ctz")).toBe("America/New_York");
+  });
+
+  test("credits a third party in the details", () => {
+    const p = params(googleEventUrl(show, lilypad, HOUR, [ticketmaster]));
+    expect(p.get("details")).toEndWith(
+      "Listing via Ticketmaster: https://www.ticketmaster.com",
+    );
   });
 
   test("no end: the assumed duration", () => {

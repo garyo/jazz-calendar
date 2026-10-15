@@ -73,6 +73,8 @@ class Registry:
             if r.venue not in registry.venues:
                 raise ValueError(f"regular {r.title!r} refers to unknown venue {r.venue!r}")
         for s in sources:
+            if s.enabled and not s.credit:
+                raise ValueError(f"source {s.id!r} needs a credit: a name and an https url")
             if s.venue and s.venue not in registry.venues:
                 raise ValueError(f"source {s.id!r} refers to unknown venue {s.venue!r}")
             if s.options.get("unknown", "other") not in ("jazz", "adjacent", "other"):

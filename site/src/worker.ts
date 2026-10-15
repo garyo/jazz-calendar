@@ -11,6 +11,7 @@
  */
 
 import { buildCalendar } from "./calendar-export";
+import { creditsById } from "./credits";
 import {
   calendarName,
   feedQuery,
@@ -123,6 +124,7 @@ function filteredCalendar(feed: EventsFile, selection: Selection): string {
     name: known ? calendarName(known, venues) : "Boston Jazz Calendar",
     stamp: Number.isNaN(generated.getTime()) ? new Date() : generated,
     refreshHours: FEED_REFRESH_HOURS,
+    credits: creditsById(feed.sources),
   });
 }
 

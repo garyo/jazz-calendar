@@ -4,8 +4,9 @@
  * front end (one-show downloads), and kept free of DOM and Worker APIs.
  */
 
+import { type Credits, viaCredits, viaLine } from "./credits";
 import { addDays, dayKey, TIME_ZONE } from "./time";
-import type { CalendarEvent, Venue } from "./types";
+import type { CalendarEvent, SourceCredit, Venue } from "./types";
 
 export const UID_DOMAIN = "bostonjazzcalendar.com";
 const PRODID = "-//bostonjazzcalendar.com//site//EN";
@@ -90,12 +91,19 @@ export function eventLocation(venue?: Venue): string {
   return [venue.name, venue.address, venue.town].filter(Boolean).join(", ");
 }
 
-/** Price, then the details and ticket links, one per line. */
-export function eventDescription(event: CalendarEvent): string {
+/**
+ * Price, the details and ticket links, then the third parties the listing
+ * came through, one per line.
+ */
+export function eventDescription(
+  event: CalendarEvent,
+  via: readonly SourceCredit[] = [],
+): string {
   return [
     event.price,
     `Details: ${event.url}`,
     event.ticket_url && `Tickets: ${event.ticket_url}`,
+    ...via.map(viaLine),
   ]
     .filter(Boolean)
     .join("\n");
@@ -104,6 +112,7 @@ export function eventDescription(event: CalendarEvent): string {
 function veventLines(
   event: CalendarEvent,
   venue: Venue | undefined,
+  via: readonly SourceCredit[],
   stamp: string,
 ): string[] {
   const lines = [
@@ -124,7 +133,7 @@ function veventLines(
   if (location) lines.push(`LOCATION:${escapeText(location)}`);
   lines.push(
     `URL:${event.url.replace(/\p{Cc}/gu, "")}`,
-    `DESCRIPTION:${escapeText(eventDescription(event))}`,
+    `DESCRIPTION:${escapeText(eventDescription(event, via))}`,
   );
   if (event.cancelled) lines.push("STATUS:CANCELLED");
   lines.push("END:VEVENT");
@@ -138,13 +147,15 @@ export interface CalendarOptions {
   stamp: Date;
   /** For subscriptions: how often clients should refetch. */
   refreshHours?: number;
+  /** The feed's source credits, for "Listing via" lines. */
+  credits?: Credits;
 }
 
 /** A complete VCALENDAR with CRLF line endings and folded lines. */
 export function buildCalendar(
   events: readonly CalendarEvent[],
   venues: ReadonlyMap<string, Venue>,
-  { name, stamp, refreshHours }: CalendarOptions,
+  { name, stamp, refreshHours, credits = new Map() }: CalendarOptions,
 ): string {
   const lines = [
     "BEGIN:VCALENDAR",
@@ -166,7 +177,14 @@ export function buildCalendar(
   for (const event of events) {
     // A malformed date would otherwise throw and lose the whole feed.
     if (Number.isNaN(Date.parse(event.start))) continue;
-    lines.push(...veventLines(event, venues.get(event.venue), dtstamp));
+    lines.push(
+      ...veventLines(
+        event,
+        venues.get(event.venue),
+        viaCredits(event, credits),
+        dtstamp,
+      ),
+    );
   }
   lines.push("END:VCALENDAR");
   return `${lines.map(foldLine).join("\r\n")}\r\n`;
@@ -180,6 +198,7 @@ export function googleEventUrl(
   event: CalendarEvent,
   venue: Venue | undefined,
   assumedDurationMs: number,
+  via: readonly SourceCredit[] = [],
 ): string {
   let dates: string;
   if (event.all_day) {
@@ -194,7 +213,7 @@ export function googleEventUrl(
     text: eventSummary(event, venue),
     dates,
     location: eventLocation(venue),
-    details: eventDescription(event),
+    details: eventDescription(event, via),
     ctz: TIME_ZONE,
   });
   return `${GOOGLE_TEMPLATE}?${params}`;

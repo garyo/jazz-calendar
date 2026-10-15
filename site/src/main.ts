@@ -1,6 +1,7 @@
 /** Front-end entry point: loads the feed, wires the controls, renders. */
 
 import { startAnalytics } from "./analytics";
+import { type Credits, creditsById, sourceList } from "./credits";
 import { disclosure } from "./disclosure";
 import {
   filterEvents,
@@ -20,6 +21,7 @@ import {
   renderMonth,
   renderNotice,
   renderRegulars,
+  renderSourceList,
   showCount,
 } from "./render";
 import { feedQuery, selectionLabel } from "./selection";
@@ -70,6 +72,7 @@ const regularsList = byId<HTMLUListElement>("regulars-list");
 const listings = byId<HTMLElement>("listings");
 const dayStrip = byId<HTMLElement>("day-strip");
 const dayStripList = byId<HTMLOListElement>("day-strip-list");
+const sourcesList = byId<HTMLElement>("sources-list");
 const filterBar = document.querySelector<HTMLElement>("search.filter-bar");
 const subscribe = {
   scope: byId<HTMLElement>("subscribe-scope"),
@@ -90,6 +93,7 @@ let feed: {
   events: CalendarEvent[];
   regulars: Regular[];
   venues: Map<string, Venue>;
+  credits: Credits;
 } | null = null;
 let state = parseState(location.search);
 const submit = submitDialog();
@@ -293,7 +297,7 @@ function renderList(now: Date, today: DayKey): void {
   dayStrip.hidden = strip.length === 0;
   let body: Node;
   if (shown.length > 0) {
-    body = renderDays(groups, feed.venues, now, today);
+    body = renderDays(groups, feed.venues, feed.credits, now, today);
   } else if (isFiltered()) {
     body = renderNotice(
       "Nothing matches those filters.",
@@ -334,7 +338,7 @@ function renderMonthView(now: Date, today: DayKey): void {
   const selected = days.find((day) => day.day === state.day);
   const agenda =
     selected && selected.events.length > 0
-      ? renderDays([selected], feed.venues, now, today)
+      ? renderDays([selected], feed.venues, feed.credits, now, today)
       : null;
   results.replaceChildren(grid, ...(agenda ? [agenda] : []));
   regularsSection.hidden = true;
@@ -447,7 +451,13 @@ async function load(): Promise<void> {
     const file: EventsFile = await response.json();
     const venues = new Map(file.venues.map((venue) => [venue.id, venue]));
     const regulars = file.regulars ?? [];
-    feed = { events: file.events, regulars, venues };
+    const sources = file.sources ?? [];
+    feed = {
+      events: file.events,
+      regulars,
+      venues,
+      credits: creditsById(sources),
+    };
     submit.setVenues(file.venues);
     populatePickers(
       venuesWithListings([...file.events, ...regulars], venues),
@@ -455,6 +465,9 @@ async function load(): Promise<void> {
     );
     writeControls(state);
     showUpdated(file.generated_at);
+    sourcesList.replaceChildren(
+      ...renderSourceList(sourceList(sources, file.events, venues)),
+    );
     render();
   } catch (error) {
     console.error("Failed to load listings:", error);

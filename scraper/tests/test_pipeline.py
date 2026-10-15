@@ -1,14 +1,17 @@
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
+import icalendar
 import pytest
+import yaml
+from pydantic import ValidationError
 
 from jazzcal import pipeline
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key
 from jazzcal.export import to_ics
 from jazzcal.llm import Question, Verdict
-from jazzcal.models import EventsFile, Regular, ScrapedEvent, Source
+from jazzcal.models import Credit, EventsFile, Regular, ScrapedEvent, Source
 from jazzcal.store import Store
 
 NOW = datetime(2026, 10, 15, 12, tzinfo=TZ)
@@ -258,3 +261,74 @@ def test_ics_uses_named_timezone(store: Store) -> None:
     ics = to_ics(roundtripped).decode()
     assert "DTSTART;TZID=America/New_York:20261015T200000" in ics
     assert "BEGIN:VTIMEZONE" in ics
+
+
+def write_registry(data_dir: Path, sources: list[dict]) -> None:
+    venues = [{"id": "club", "name": "Club", "town": "Cambridge", "jazz_level": "dedicated"}]
+    for name, items in (("venues", venues), ("sources", sources), ("regulars", [])):
+        (data_dir / f"{name}.yaml").write_text(yaml.safe_dump(items))
+
+
+def test_enabled_sources_need_a_credit(tmp_path: Path) -> None:
+    write_registry(
+        tmp_path,
+        [
+            {"id": "off", "adapter": "ics", "url": "https://a", "enabled": False},
+            {"id": "on", "adapter": "ics", "url": "https://b", "credit": {"name": "B", "url": "https://b"}},
+        ],
+    )  # fmt: skip
+    assert Registry.load(tmp_path).source("on").credit == Credit(name="B", url="https://b")
+    write_registry(tmp_path, [{"id": "on", "adapter": "ics", "url": "https://b"}])
+    with pytest.raises(ValueError, match="needs a credit"):
+        Registry.load(tmp_path)
+
+
+@pytest.mark.parametrize(
+    "credit", [{"name": "", "url": "https://b"}, {"name": "B", "url": "http://b"}, {"name": "B"}]
+)
+def test_credit_needs_a_name_and_https_url(credit: dict) -> None:
+    with pytest.raises(ValidationError):
+        Credit.model_validate(credit)
+
+
+def credited_sources() -> list[Source]:
+    return [
+        Source(id="own", adapter="ics", url="https://a", venue="club",
+               credit=Credit(name="Club calendar", url="https://club.example/")),
+        Source(id="tm", adapter="ticketmaster", url="https://api", venue="club",
+               credit=Credit(name="Ticketmaster", url="https://www.ticketmaster.com", via=True)),
+        Source(id="idle", adapter="ics", url="https://c", venue="club",
+               credit=Credit(name="Idle", url="https://idle.example/")),
+    ]  # fmt: skip
+
+
+def test_feed_credits_the_sources_it_lists(store: Store) -> None:
+    registry = Registry({"club": venue("club", "dedicated")}, credited_sources())
+    store.record_success("own", [event("1", "Pat Doe Quartet")])
+    store.record_success("tm", [event("2", "Pat Doe Quartet"), event("3", "Lee Roe Trio")])
+    store.record_success("idle", [])
+    feed, _ = pipeline.build(registry, store, NOW)
+    assert {e.title: e.sources for e in feed.events} == {
+        "Pat Doe Quartet": ["own", "tm"],
+        "Lee Roe Trio": ["tm"],
+    }
+    assert [(s.id, s.name, s.via) for s in feed.sources] == [
+        ("own", "Club calendar", False),
+        ("tm", "Ticketmaster", True),
+    ]
+
+
+def test_ics_credits_third_party_sources(store: Store) -> None:
+    registry = Registry({"club": venue("club", "dedicated")}, credited_sources())
+    store.record_success("own", [event("1", "Pat Doe Quartet")])
+    store.record_success("tm", [event("2", "Lee Roe Trio", hours=30)])
+    feed, _ = pipeline.build(registry, store, NOW)
+    ics = icalendar.Calendar.from_ical(to_ics(feed))
+    described = {
+        str(v["summary"]): (str(v["uid"]), str(v["description"])) for v in ics.walk("VEVENT")
+    }
+    by_title = {e.title: e for e in feed.events}
+    uid, description = described["Lee Roe Trio @ Club"]
+    assert uid == f"{by_title['Lee Roe Trio'].id}@bostonjazzcalendar.com"
+    assert description.endswith("Listing via Ticketmaster: https://www.ticketmaster.com")
+    assert "via" not in described["Pat Doe Quartet @ Club"][1]

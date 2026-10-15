@@ -14,7 +14,7 @@ from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry
 from jazzcal.http import Http
 from jazzcal.llm import Classifier, Question
-from jazzcal.models import Event, EventsFile, ScrapedEvent, Source, StatusFile
+from jazzcal.models import Event, EventsFile, ScrapedEvent, Source, SourceCredit, StatusFile
 from jazzcal.store import Store
 
 log = logging.getLogger(__name__)
@@ -107,12 +107,18 @@ def build(
 
     listed = [c for c in candidates if c.ruling.relevance != "other"]
     events = sorted((_publish(c, registry) for c in _dedup(listed)), key=lambda e: e.start)
+    used = {source_id for e in events for source_id in e.sources}
     return (
         EventsFile(
             generated_at=now,
             venues=[v.public() for v in registry.venues.values()],
             events=events,
             regulars=registry.regulars,
+            sources=[
+                SourceCredit(id=s.id, **s.credit.model_dump())
+                for s in registry.sources
+                if s.id in used and s.credit
+            ],
         ),
         StatusFile(generated_at=now, sources=statuses),
     )

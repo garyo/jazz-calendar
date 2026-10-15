@@ -36,6 +36,19 @@ class Venue(Model):
     lng: float | None = None
 
 
+class Credit(Model):
+    """How the site credits a source, with its listings and in the list of sources."""
+
+    name: str = Field(min_length=1, description="For people, e.g. 'MIT Events Calendar'")
+    url: str = Field(
+        pattern=r"^https://\S+$", description="A public page for people, never an API or feed"
+    )
+    via: bool = Field(
+        False,
+        description="A third party to the venue, such as a ticket seller; listings say 'via' it",
+    )
+
+
 class Source(Model):
     """One place we harvest events from, handled by a named adapter."""
 
@@ -43,6 +56,7 @@ class Source(Model):
     adapter: str = Field(description="Adapter name, see jazzcal.adapters")
     url: str
     venue: str | None = Field(None, description="Venue id for single-venue sources")
+    credit: Credit | None = Field(None, description="Required for enabled sources")
     enabled: bool = True
     relevance: Relevance | None = Field(
         None, description="Relevance of every event from this source; None means classify each"
@@ -104,6 +118,12 @@ class Regular(Model):
     checked: date = Field(description="When we last confirmed the schedule there")
 
 
+class SourceCredit(Credit):
+    """A source of the published listings, credited."""
+
+    id: str = Field(description="Source id, as in Event.sources")
+
+
 class EventsFile(Model):
     """The published feed, served as /data/events.json."""
 
@@ -112,6 +132,10 @@ class EventsFile(Model):
     venues: list[Venue]
     events: list[Event] = Field(description="Sorted by start")
     regulars: list[Regular] = Field(default_factory=list)
+    sources: list[SourceCredit] = Field(
+        default_factory=list,
+        description="Every source some event lists, in priority order",
+    )
 
 
 class SourceStatus(Model):

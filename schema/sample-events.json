@@ -180,7 +180,7 @@
    "tags": [],
    "cancelled": false,
    "sources": [
-    "scullers"
+    "scullers-tm"
    ]
   },
   {
@@ -243,7 +243,7 @@
    "tags": [],
    "cancelled": false,
    "sources": [
-    "square-root"
+    "submissions"
    ]
   },
   {
@@ -326,6 +326,62 @@
    "relevance": "adjacent",
    "url": "https://thewellingtonbelmont.com/live-music/",
    "checked": "2026-10-15"
+  }
+ ],
+ "sources": [
+  {
+   "name": "Wally’s Café’s calendar",
+   "url": "https://www.wallyscafe.com",
+   "via": false,
+   "id": "wallys"
+  },
+  {
+   "name": "The Lilypad’s calendar",
+   "url": "https://www.lilypadinman.com/home",
+   "via": false,
+   "id": "lilypad"
+  },
+  {
+   "name": "The Mad Monkfish’s jazz schedule",
+   "url": "https://www.themadmonkfish.com/jazz-schedule/",
+   "via": false,
+   "id": "mad-monkfish"
+  },
+  {
+   "name": "New England Conservatory’s calendar",
+   "url": "https://necmusic.edu",
+   "via": false,
+   "id": "nec"
+  },
+  {
+   "name": "Lizard Lounge’s calendar",
+   "url": "https://lizardloungeclub.com/calendar",
+   "via": false,
+   "id": "lizard-lounge"
+  },
+  {
+   "name": "The Wellington’s calendar",
+   "url": "https://www.thewellingtonbelmont.com",
+   "via": false,
+   "id": "wellington"
+  },
+  {
+   "name": "Vivo Performing Arts",
+   "url": "https://www.vivoperformingarts.org",
+   "via": false,
+   "id": "vivo"
+  },
+  {
+   "name": "Ticketmaster",
+   "url": "https://www.ticketmaster.com",
+   "via": true,
+   "id": "scullers-tm"
+  },
+  {
+   "name": "gig submission",
+   "url": "https://bostonjazzcalendar.com/#submit",
+   "via": true,
+   "id": "submissions"
   }
  ]
 }

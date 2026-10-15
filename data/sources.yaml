@@ -5,6 +5,10 @@
 #            musicidb | ploughandstars | burren | bentobox | textschedule | ticketmaster |
 #            submissions   (see scraper/src/jazzcal/adapters/)
 # venue:     venue id, for single-venue sources
+# credit:    how the site credits the source, required when enabled:
+#            name — for people ("The Lilypad’s calendar"); url — a public page, never an API
+#            or feed; via: true when the source is a third party to the venue (a ticket
+#            seller, an aggregator, submissions), so each listing says "via <name>"
 # relevance: jazz | adjacent, to skip classification
 # options:   include / exclude — regexes matched against title + source categories;
 #            trust_text — let a description mentioning jazz count at any venue;
@@ -15,6 +19,7 @@
 - id: nec
   adapter: ics
   url: https://www.trumba.com/calendars/nec.ics
+  credit: {name: "New England Conservatory’s calendar", url: https://necmusic.edu}
   venue: nec
   options:
     include: \b(Jazz|Contemporary Musical Arts)\b
@@ -26,6 +31,7 @@
 - id: longy
   adapter: tribe
   url: https://longy.edu
+  credit: {name: "Longy’s calendar", url: https://longy.edu/calendar/}
   venue: longy
   options:
     title_strip: ^(MAIN|STUDIO|BACK) STAGE\s*[|:]\s*
@@ -33,6 +39,7 @@
 - id: tufts
   adapter: ics
   url: https://www.trumba.com/calendars/tts-wms-managed-music.ics
+  credit: {name: "Tufts Music’s calendar", url: https://as.tufts.edu/music/news-events/events/calendar}
   venue: tufts-granoff
   enabled: false
   notes: >-
@@ -41,16 +48,19 @@
 - id: lizard-lounge
   adapter: tribe
   url: https://lizardloungeclub.com
+  credit: {name: "Lizard Lounge’s calendar", url: https://lizardloungeclub.com/calendar}
   venue: lizard-lounge
 
 - id: arts-at-the-armory
   adapter: ics
   url: https://artsatthearmory.org/events.ics
+  credit: {name: "Arts at the Armory’s calendar", url: https://artsatthearmory.org/events-calendar/}
   venue: arts-at-the-armory
 
 - id: mad-monkfish
   adapter: bentobox
   url: https://www.themadmonkfish.com/jazz-schedule/
+  credit: {name: "The Mad Monkfish’s jazz schedule", url: https://www.themadmonkfish.com/jazz-schedule/}
   venue: mad-monkfish
   relevance: jazz
   options:
@@ -61,6 +71,7 @@
 - id: mit
   adapter: localist
   url: https://calendar.mit.edu
+  credit: {name: "MIT Events Calendar", url: https://calendar.mit.edu}
   venue: mit
   options:
     params: {"type[]": [103224]}
@@ -70,6 +81,7 @@
 - id: northeastern
   adapter: localist
   url: https://calendar.northeastern.edu
+  credit: {name: "Northeastern University’s calendar", url: https://calendar.northeastern.edu}
   venue: northeastern
   options:
     params: {"type[]": [12879, 12887, 12888]}
@@ -78,6 +90,7 @@
 - id: the-cabot
   adapter: spektrix
   url: https://tickets.thecabot.org/thecabot/api/v3
+  credit: {name: "The Cabot’s calendar", url: https://thecabot.org/whats-on/}
   venue: the-cabot
   options:
     page_url: https://thecabot.org/whats-on/
@@ -88,6 +101,7 @@
 - id: bpl
   adapter: bibliocommons
   url: https://gateway.bibliocommons.com/v2/libraries/bpl/rss/events
+  credit: {name: "Boston Public Library events", url: https://bpl.bibliocommons.com/events}
   venue: bpl
   options:
     query: jazz
@@ -95,6 +109,7 @@
 - id: hobgoblin
   adapter: jsonld
   url: https://www.hobgoblinbar.com/events/
+  credit: {name: "HobGoblin’s calendar", url: https://www.hobgoblinbar.com/events/}
   venue: hobgoblin
   options:
     unknown: jazz
@@ -107,6 +122,7 @@
 - id: beehive
   adapter: jsonld
   url: https://www.beehiveboston.com/musiccalendar
+  credit: {name: "The Beehive’s music calendar", url: https://www.beehiveboston.com/musiccalendar}
   venue: beehive
   options:
     unknown: adjacent
@@ -118,6 +134,7 @@
 - id: berklee-bpc
   adapter: jsonld
   url: https://www.berklee.edu/events/department/BPC
+  credit: {name: "Berklee Performance Center’s calendar", url: https://www.berklee.edu/events/department/BPC}
   venue: berklee-performance-center
   options:
     follow: a[href*="/BPC/events/"]
@@ -130,6 +147,7 @@
 - id: berklee-red-room
   adapter: jsonld
   url: https://www.berklee.edu/red-room-cafe-939/events
+  credit: {name: "Red Room @ Café 939’s calendar", url: https://www.berklee.edu/red-room-cafe-939/events}
   venue: berklee-red-room
   options:
     follow: a[href*="/red-room-cafe-939/events/"]
@@ -141,6 +159,7 @@
 - id: vivo
   adapter: jsonld
   url: https://www.vivoperformingarts.org/live-performances/performance-event-calendar/?genre=jazz
+  credit: {name: "Vivo Performing Arts", url: https://www.vivoperformingarts.org}
   relevance: jazz
   options:
     follow: a[href*="/productions/"]
@@ -152,6 +171,7 @@
 - id: global-arts-live
   adapter: jsonld
   url: https://www.globalartslive.org/events/list-events
+  credit: {name: "Global Arts Live", url: https://www.globalartslive.org/events/list-events}
   options:
     follow: a[href^="/content/event_page/"]
     max_follow: 60
@@ -166,6 +186,7 @@
 - id: regattabar
   adapter: ticketmaster
   url: https://app.ticketmaster.com/discovery/v2/events.json
+  credit: {name: "Ticketmaster", url: https://www.ticketmaster.com, via: true}
   venue: regattabar
   options:
     venue_id: KovZ917AYuX
@@ -177,6 +198,7 @@
 - id: scullers-tm
   adapter: ticketmaster
   url: https://app.ticketmaster.com/discovery/v2/events.json
+  credit: {name: "Ticketmaster", url: https://www.ticketmaster.com, via: true}
   venue: scullers
   options:
     venue_id: KovZpZAatEtA
@@ -185,6 +207,7 @@
 - id: lilypad
   adapter: squarespace
   url: https://www.lilypadinman.com/home
+  credit: {name: "The Lilypad’s calendar", url: https://www.lilypadinman.com/home}
   venue: lilypad
   notes: >-
     Squarespace list page (its ?format=json is robots-disallowed). Genre labels come through as
@@ -193,6 +216,7 @@
 - id: scullers
   adapter: musicidb
   url: https://musicidb.com/venue/getVenueEvents.htm?listType=upcoming&frameType=listWidget&descrip=1&venueId=715
+  credit: {name: "Scullers’ calendar", url: https://www.scullersjazz.com}
   venue: scullers
   options:
     title_strip: \s*[-–]\s*tickets? on sale.*$
@@ -203,18 +227,21 @@
 - id: plough-and-stars
   adapter: ploughandstars
   url: https://calendar.ploughandstars.com/events/calendar
+  credit: {name: "The Plough & Stars’ calendar", url: https://calendar.ploughandstars.com/events/calendar}
   venue: plough-and-stars
   notes: Act names only, no genres; mostly rock/folk, so few events pass the classifier.
 
 - id: the-burren
   adapter: burren
   url: https://www.burren.com/music.html
+  credit: {name: "The Burren’s music listings", url: https://www.burren.com/music.html}
   venue: the-burren
   notes: Static page; one-line genre blurbs ("Gypsy jazz") feed the classifier.
 
 - id: postunderground
   adapter: textschedule
   url: https://www.postunderground.com/
+  credit: {name: "POSTunderground", url: https://www.postunderground.com/}
   venue: postunderground
   relevance: jazz
   notes: >-
@@ -227,6 +254,7 @@
 - id: submissions
   adapter: submissions
   url: https://bostonjazzcalendar.com/api/submissions/approved
+  credit: {name: "gig submission", url: https://bostonjazzcalendar.com/#submit, via: true}
   notes: >-
     Gigs sent in through the site's form and approved on /admin. The adapter reads them from
     $JAZZCAL_SITE (default bostonjazzcalendar.com) with JAZZCAL_PUBLISH_TOKEN; each carries
@@ -237,6 +265,7 @@
 - id: artsboston
   adapter: ics
   url: https://bostix.org/wp-json/apollo/v1/calendar/subscribe/all
+  credit: {name: "ArtsBoston Calendar / JazzBoston", url: https://bostix.org, via: true}
   enabled: false
   notes: >-
     Public ICS of every ArtsBoston/Bostix listing; JazzBoston's calendar is built from the same

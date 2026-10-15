@@ -178,6 +178,43 @@
       "title": "Regular",
       "type": "object"
     },
+    "SourceCredit": {
+      "additionalProperties": false,
+      "description": "A source of the published listings, credited.",
+      "properties": {
+        "name": {
+          "description": "For people, e.g. 'MIT Events Calendar'",
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "url": {
+          "description": "A public page for people, never an API or feed",
+          "pattern": "^https://\\S+$",
+          "title": "Url",
+          "type": "string"
+        },
+        "via": {
+          "default": false,
+          "description": "A third party to the venue, such as a ticket seller; listings say 'via' it",
+          "title": "Via",
+          "type": "boolean"
+        },
+        "id": {
+          "description": "Source id, as in Event.sources",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "via",
+        "id"
+      ],
+      "title": "SourceCredit",
+      "type": "object"
+    },
     "Venue": {
       "additionalProperties": false,
       "properties": {
@@ -316,6 +353,14 @@
       },
       "title": "Regulars",
       "type": "array"
+    },
+    "sources": {
+      "description": "Every source some event lists, in priority order",
+      "items": {
+        "$ref": "#/$defs/SourceCredit"
+      },
+      "title": "Sources",
+      "type": "array"
     }
   },
   "required": [
@@ -323,7 +368,8 @@
     "generated_at",
     "venues",
     "events",
-    "regulars"
+    "regulars",
+    "sources"
   ],
   "title": "EventsFile",
   "type": "object"

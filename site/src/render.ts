@@ -2,6 +2,12 @@
 
 import { buildCalendar, googleEventUrl } from "./calendar-export";
 import {
+  type Credits,
+  type SourceEntry,
+  type SourceList,
+  viaCredits,
+} from "./credits";
+import {
   ASSUMED_DURATION_MS,
   type DayGroup,
   extraArtists,
@@ -23,7 +29,13 @@ import {
   formatMonth,
   formatShortClock,
 } from "./time";
-import type { CalendarEvent, Regular, Relevance, Venue } from "./types";
+import type {
+  CalendarEvent,
+  Regular,
+  Relevance,
+  SourceCredit,
+  Venue,
+} from "./types";
 
 /** Entries listed in a month-grid cell before "+N more". */
 export const MONTH_CELL_ENTRIES = 8;
@@ -69,6 +81,12 @@ function external(
     ...children,
     srOnly(" (opens in a new tab)"),
   );
+}
+
+/** A source's name, linked to its page. */
+function creditLink(credit: SourceEntry | SourceCredit): Node | string {
+  const href = safeUrl(credit.url);
+  return href ? external({ href }, credit.name) : credit.name;
 }
 
 /** Venue, neighborhood and town; themes may leave out the neighborhood. */
@@ -138,15 +156,38 @@ function renderTitle(
   );
 }
 
-/** Price, ticket link and tags: the small print of a listing. */
-function renderExtra(event: CalendarEvent, about: string): Child {
+/** "via Ticketmaster": the third parties a listing came through. */
+function renderVia(via: readonly SourceCredit[]): Child {
+  if (via.length === 0) return null;
+  return h(
+    "span",
+    { class: "event-via" },
+    "via ",
+    ...via.flatMap((credit, i) => [i > 0 && ", ", creditLink(credit)]),
+  );
+}
+
+/** Price, ticket link, credit and tags: the small print of a listing. */
+function renderExtra(
+  event: CalendarEvent,
+  about: string,
+  via: readonly SourceCredit[],
+): Child {
   const tickets = safeUrl(event.ticket_url);
   // A "free" tag only repeats a price that already says so.
   const tags = (event.tags ?? []).filter(
     (tag) => !(tag === "free" && /^free/i.test(event.price ?? "")),
   );
   const adjacent = event.relevance === "adjacent";
-  if (!event.price && !tickets && tags.length === 0 && !adjacent) return null;
+  if (
+    !event.price &&
+    !tickets &&
+    via.length === 0 &&
+    tags.length === 0 &&
+    !adjacent
+  ) {
+    return null;
+  }
   return h(
     "p",
     { class: "event-extra" },
@@ -157,6 +198,7 @@ function renderExtra(event: CalendarEvent, about: string): Child {
         "Tickets",
         srOnly(about),
       ),
+    renderVia(via),
     ...renderTags(event.relevance, tags),
   );
 }
@@ -182,6 +224,8 @@ function renderAddToCalendar(
   event: CalendarEvent,
   venue: Venue | undefined,
   about: string,
+  credits: Credits,
+  via: readonly SourceCredit[],
 ): HTMLDetailsElement {
   const download = h(
     "button",
@@ -193,6 +237,7 @@ function renderAddToCalendar(
     const ics = buildCalendar([event], venues, {
       name: event.title,
       stamp: new Date(),
+      credits,
     });
     downloadFile(`${fileSlug(event.title)}.ics`, ics, "text/calendar");
   });
@@ -216,7 +261,7 @@ function renderAddToCalendar(
           "a",
           {
             class: "menu-item",
-            href: googleEventUrl(event, venue, ASSUMED_DURATION_MS),
+            href: googleEventUrl(event, venue, ASSUMED_DURATION_MS, via),
             target: "_blank",
             rel: "noopener",
           },
@@ -236,6 +281,7 @@ function renderAddToCalendar(
 function renderEvent(
   event: CalendarEvent,
   venue: Venue | undefined,
+  credits: Credits,
   now: Date,
 ): HTMLLIElement {
   const onNow = !event.cancelled && isOnNow(event, now);
@@ -246,6 +292,7 @@ function renderEvent(
   const artists = extraArtists(event);
   const endLabel = eventEndLabel(event);
   const about = ` for ${event.title} at ${venue?.name ?? event.venue}`;
+  const via = viaCredits(event, credits);
   return h(
     "li",
     { class: classes.join(" ") },
@@ -285,8 +332,9 @@ function renderEvent(
           h("span", { class: "event-artists" }, `with ${artists.join(", ")}`),
       ),
       renderVenue(event.venue, venue),
-      renderExtra(event, about),
-      !event.cancelled && renderAddToCalendar(event, venue, about),
+      renderExtra(event, about, via),
+      !event.cancelled &&
+        renderAddToCalendar(event, venue, about, credits, via),
     ),
   );
 }
@@ -358,6 +406,7 @@ export function renderDayStrip(
 export function renderDays(
   groups: readonly DayGroup[],
   venues: ReadonlyMap<string, Venue>,
+  credits: Credits,
   now: Date,
   today: DayKey,
 ): DocumentFragment {
@@ -373,7 +422,7 @@ export function renderDays(
           "ol",
           { class: "events" },
           ...events.map((event) =>
-            renderEvent(event, venues.get(event.venue), now),
+            renderEvent(event, venues.get(event.venue), credits, now),
           ),
         ),
       ),
@@ -418,6 +467,42 @@ export function renderRegulars(
   return regulars.map((regular, index) =>
     renderRegular(regular, venues.get(regular.venue), index),
   );
+}
+
+const andList = new Intl.ListFormat("en", { type: "conjunction" });
+
+/**
+ * The list of sources: the venues' own calendars, then the services that
+ * supply other venues' listings, each with those venues.
+ */
+export function renderSourceList({ own, via }: SourceList): HTMLElement[] {
+  const group = (
+    heading: string,
+    items: readonly HTMLLIElement[],
+  ): HTMLElement[] =>
+    items.length === 0
+      ? []
+      : [
+          h("h3", { class: "sources-heading" }, heading),
+          h("ul", { class: "sources-list" }, ...items),
+        ];
+  return [
+    ...group(
+      "Venues’ and presenters’ own calendars",
+      own.map((entry) => h("li", {}, creditLink(entry))),
+    ),
+    ...group(
+      "Through other services",
+      via.map((entry) =>
+        h(
+          "li",
+          {},
+          creditLink(entry),
+          entry.venues.length > 0 && `, for ${andList.format(entry.venues)}`,
+        ),
+      ),
+    ),
+  ];
 }
 
 export interface MonthLinks {

@@ -9,7 +9,7 @@ import httpx
 import icalendar
 
 from jazzcal.config import TZ
-from jazzcal.models import EventsFile, StatusFile
+from jazzcal.models import Event, EventsFile, SourceCredit, StatusFile
 
 log = logging.getLogger(__name__)
 
@@ -36,6 +36,7 @@ def to_ics(feed: EventsFile) -> bytes:
     cal.add("x-wr-timezone", "America/New_York")
     cal.add("refresh-interval", timedelta(hours=12))
     venues = {v.id: v for v in feed.venues}
+    credits = {s.id: s for s in feed.sources}
     for e in feed.events:
         venue = venues[e.venue]
         vevent = icalendar.Event()
@@ -55,12 +56,23 @@ def to_ics(feed: EventsFile) -> bytes:
         lines = [e.price or "", f"Details: {e.url}"]
         if e.ticket_url:
             lines.append(f"Tickets: {e.ticket_url}")
+        lines += [f"Listing via {c.name}: {c.url}" for c in via_credits(e, credits)]
         vevent.add("description", "\n".join(line for line in lines if line))
         if e.cancelled:
             vevent.add("status", "CANCELLED")
         cal.add_component(vevent)
     cal.add_missing_timezones()
     return cal.to_ical()
+
+
+def via_credits(event: Event, credits: dict[str, SourceCredit]) -> list[SourceCredit]:
+    """The third parties an event's listings came through, once each, in priority order."""
+    found: dict[str, SourceCredit] = {}
+    for source_id in event.sources:
+        credit = credits.get(source_id)
+        if credit and credit.via:
+            found.setdefault(credit.name, credit)
+    return list(found.values())
 
 
 def site_url() -> str:

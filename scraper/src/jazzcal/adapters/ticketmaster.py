@@ -5,7 +5,8 @@ Needs TICKETMASTER_API_KEY (a free developer key). Options:
   venue_id: Discovery venue id (find with /discovery/v2/venues.json?keyword=...)
 
 API terms: no revenue from the API, cache only for reasonable periods, and remove content on
-request. The site links each show to its venue's page, with the ticket link as given.
+request. The site links each show to its venue's page, with the ticket link as given, and
+credits the listing "via Ticketmaster" (the source's credit in sources.yaml).
 """
 
 import os

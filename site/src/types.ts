@@ -66,6 +66,18 @@ export interface Regular {
   checked: string;
 }
 
+/** A source of the published listings, and how to credit it. */
+export interface SourceCredit {
+  /** Source id, as in CalendarEvent.sources. */
+  id: string;
+  /** For people, e.g. "The Lilypad’s calendar". */
+  name: string;
+  /** A public https page for people, never an API or feed. */
+  url: string;
+  /** A third party to the venue, such as a ticket seller; listings say "via" it. */
+  via?: boolean;
+}
+
 /** Served as /data/events.json. */
 export interface EventsFile {
   version?: number;
@@ -75,6 +87,11 @@ export interface EventsFile {
   events: CalendarEvent[];
   /** Optional here so the site copes with an older feed. */
   regulars?: Regular[];
+  /**
+   * Every source some event lists, in priority order. Optional here so the
+   * site copes with an older feed.
+   */
+  sources?: SourceCredit[];
 }
 
 /** Served as /data/status.json. */

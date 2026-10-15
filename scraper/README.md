@@ -77,14 +77,18 @@ the hand labels in `eval/labels.yaml`. It leads with missed shows. Any classifie
 `name` and `classify(questions) -> {id: Verdict}` can be compared this way.
 
 We publish facts and links only, never venue descriptions or images. Every event links back to
-its venue or source.
+its venue or source. The feed's `sources` list credits each source its events came from, and a
+listing that came through a third party (`via: true`, e.g. Ticketmaster) says so on the site
+and in calendar descriptions ("Listing via Ticketmaster").
 
 ## Adding a source
 
 1. Find the venue's most structured data. In order of preference: an ICS feed, a JSON API,
    JSON-LD in the page, then HTML. See `../research/venues.md`.
 2. Check robots.txt. If it disallows the path, don't work around it; ask the venue instead.
-3. Add the venue to `venues.yaml` if it's new, then the source to `sources.yaml`.
+3. Add the venue to `venues.yaml` if it's new, then the source to `sources.yaml`, with a
+   `credit`: a name and public page for people, plus `via: true` when it's a third party to
+   the venue (a ticket seller or aggregator). The site and calendar feeds credit it from there.
 4. Check what comes out with `uv run jazzcal show <id>` and `uv run jazzcal run --source <id>`.
 5. Save a test fixture, then redact it before committing:
    `uv run python tests/redact.py [--keep SELECTOR] tests/fixtures/<file>`. Fixtures keep

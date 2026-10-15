@@ -17,6 +17,7 @@ src/month.ts     pure logic: the month view's Sunday-first grid
 src/selection.ts venue/town/jazz-adjacent selection: matching, parsing, feed names
                  (shared by the front end and the Worker)
 src/calendar-export.ts  iCalendar generation and Google Calendar links (shared)
+src/credits.ts   source credits: "via" lines and the list of sources (shared)
 src/time.ts      America/New_York date and time formatting
 src/url-state.ts view state <-> query string
 src/types.ts     TS mirror of ../schema/events.schema.json
@@ -82,7 +83,7 @@ Other scripts:
 | `bun run build` | Bundle `src/main.ts` and `src/admin.ts` and copy `public/` into `dist/` |
 | `bun run typecheck` | `tsc` for the front end and the worker (separate configs) |
 | `bun run lint` / `lint:fix` | Biome |
-| `bun run test` | `bun test`: time, filtering, URL-state and worker tests |
+| `bun run test` | `bun test`: time, filtering, URL-state, rendering (happy-dom) and worker tests |
 | `bun run check` | typecheck + lint + test |
 | `bun run deploy` | Build, then `wrangler deploy` |
 

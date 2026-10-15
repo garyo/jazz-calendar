@@ -231,6 +231,14 @@ describe("filtered calendar feeds", () => {
     expect(ics).toContain("STATUS:CANCELLED");
   });
 
+  test("credits listings that came through a third party", async () => {
+    const ics = await (await call("/calendar.ics?venue=scullers")).text();
+    expect(uids(ics)).toEqual(["e1a5"]);
+    expect(ics.replace(/\r\n /g, "")).toContain(
+      String.raw`\nListing via Ticketmaster: https://www.ticketmaster.com`,
+    );
+  });
+
   test("venues or towns, minus jazz-adjacent", async () => {
     const both = await call("/calendar.ics?venue=wallys&town=Cambridge");
     expect(uids(await both.text())).toEqual([
