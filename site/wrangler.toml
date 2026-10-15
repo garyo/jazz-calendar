@@ -1,5 +1,9 @@
 #:schema node_modules/wrangler/config-schema.json
-name = "bostonjazzcalendar"
+name = "jazz-calendar"
+# Serve on the workers.dev address until the custom domain is attached; no per-branch
+# preview copies of the site.
+workers_dev = true
+preview_urls = false
 # account_id set via CLOUDFLARE_ACCOUNT_ID env var
 compatibility_date = "2026-09-01"
 main = "src/worker.ts"
