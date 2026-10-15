@@ -1,7 +1,8 @@
 # jazzcal — the scraper
 
 Collects jazz and jazz-adjacent events from Boston-area venues and calendars, and publishes
-them to the site as `events.json`, `status.json` and `calendar.ics`.
+them to the site as `events.json` and `status.json`. The site builds its `/calendar.ics`
+feeds from `events.json`.
 
 ```sh
 uv sync
@@ -165,7 +166,7 @@ Run now with `sudo systemctl start jazzcal`; logs are in `journalctl -u jazzcal`
 
 Either way, set `JAZZCAL_HEALTHCHECK_URL` to get an alert when daily runs stop.
 
-`jazzcal publish` uploads `calendar.ics`, then `events.json`, then `status.json`, so the
-status always describes a publish that went through. Each upload is retried up to 3 times on
-server errors and failed connections. The healthcheck ping comes last; if it fails, the run
-logs a warning but still succeeds.
+`jazzcal publish` uploads `events.json`, then `status.json`, so the status always describes
+a publish that went through. Each upload is retried up to 3 times on server errors and failed
+connections. The healthcheck ping comes last; if it fails, the run logs a warning but still
+succeeds.

@@ -22,7 +22,8 @@ src/credits.ts   source credits: "via" lines and the list of sources (shared)
 src/time.ts      America/New_York date and time formatting
 src/url-state.ts view state <-> query string
 src/types.ts     TS mirror of ../schema/events.schema.json
-src/worker.ts    the Worker: R2-backed data routes, filtered feeds, the publish API
+src/worker.ts    the Worker: R2-backed data routes, the publish API
+src/worker-calendar.ts     the Worker's /calendar.ics feeds (cached, gzipped, ETags)
 src/worker-submissions.ts  the Worker's gig submission and review API (D1)
 src/worker-freshness.ts    the hourly cron: alerts when events.json goes stale
 src/worker-http.ts         response and bearer-token helpers for the Worker
@@ -137,9 +138,9 @@ else directly, at no worker CPU cost.
 |---|---|
 | `GET /data/events.json` | R2 key `events.json`, `application/json` |
 | `GET /data/status.json` | R2 key `status.json`, `application/json` |
-| `GET /calendar.ics` | R2 key `calendar.ics`, `text/calendar; charset=utf-8` |
+| `GET /calendar.ics` | Every listing as iCalendar, built from `events.json` (below) |
 | `GET /calendar.ics?venue=…&town=…&adjacent=0` | A feed of just that selection (below) |
-| `PUT /api/publish/:key` | Upload one of the three keys (see below) |
+| `PUT /api/publish/:key` | Upload `events.json` or `status.json` (see below) |
 | `POST /api/submissions` | A gig from the form (see [Gig submissions](#gig-submissions)) |
 | `GET /api/submissions/approved` | Upcoming approved gigs, for the scraper (`PUBLISH_TOKEN`) |
 | `GET /api/admin/submissions?status=…` | The review queue (`ADMIN_TOKEN`) |
@@ -149,17 +150,41 @@ Data responses carry `Cache-Control: public, max-age=300`, an `ETag`, and
 `Access-Control-Allow-Origin: *`, since the feed is meant to be reused. A
 matching `If-None-Match` gets `304`. A missing object gets `404`. HEAD works.
 
-## Filtered feeds
+## Calendar feeds
 
-`/calendar.ics` with any of `venue`, `town` or `adjacent` builds a feed from
-`events.json` using the same matching as the page (`src/selection.ts`), with
-the scraper's UIDs, times in UTC and a `REFRESH-INTERVAL` of 12 hours. Lists
-are comma-separated; unknown venue ids or towns, malformed values or more
-than 64 venues or 32 towns get `400`. A query that selects everything (e.g.
-`?adjacent=1`) serves the stored feed. Responses carry
-`Cache-Control: public, max-age=3600` and are kept in the Cache API under the
-normalized query plus the `events.json` ETag, so a new upload invalidates
-them.
+`src/worker-calendar.ts` builds every `/calendar.ics` from `events.json` with
+`src/calendar-export.ts`, the module the page uses for one-show downloads:
+UIDs `{id}@bostonjazzcalendar.com`, times in UTC, all-day shows as dates,
+"Listing via" credits, and a `REFRESH-INTERVAL` of 12 hours. Without `venue`,
+`town` or `adjacent` (other parameters are ignored) the feed lists
+everything. With them, it lists that selection, matched as the page matches
+it (`src/selection.ts`). Lists are comma-separated. Malformed values, or more
+than 64 venues or 32 towns, get `400`. Venue ids and towns the data doesn't
+list are dropped, so old links keep working; a selection naming only those
+gets an empty feed.
+
+- Caching: a built feed is kept gzipped in the Cache API for a day, keyed by
+  the `events.json` ETag and the canonical query (sorted, deduplicated,
+  unknown values dropped, one key for "matches nothing"). A new upload
+  changes the key, and stray values add no entries. Each isolate also keeps
+  the last `events.json` it parsed, so it can canonicalize a query without
+  reading R2 again. A cache hit costs one R2 `head`.
+- Compression: Cloudflare doesn't compress `text/calendar` by default, so the
+  Worker does. A client that sends `Accept-Encoding: gzip` gets the cached
+  gzip bytes as they are (`Content-Encoding: gzip`); others get them
+  decompressed. Responses carry `Vary: Accept-Encoding`. The full feed is
+  about 13 KB gzipped, against 104 KB plain.
+- Validators: responses carry `Cache-Control: public, max-age=3600` and a
+  strong `ETag` derived from the `events.json` ETag and the canonical query
+  (`-gzip` added for the gzip encoding). An `If-None-Match` that lists it, in
+  either encoding, gets `304`.
+- CPU: building the feed is the costly part, and it happens once per data
+  version per query per data center. For the 219-event feed a build costs
+  about 1 ms, plus about 1.3 ms to gzip and 0.2 ms to parse `events.json`
+  (Node/V8 timings). A 1,100-event feed costs about 4.7 + 5 + 0.9 ms, close
+  to the Free plan's 10 ms. If the feed grows that large, drop the Worker's
+  gzip and add a Compression Rule for `text/calendar` in the dashboard
+  instead, since edge compression costs the Worker no CPU.
 
 ## Publish API
 
@@ -170,9 +195,12 @@ curl -X PUT \
   https://bostonjazzcalendar.com/api/publish/events.json
 ```
 
-- `:key` is one of `events.json`, `status.json`, `calendar.ics`. The worker
-  sets the content type from the key; the request's own `Content-Type` is
-  ignored.
+- `:key` is `events.json` or `status.json`. The worker sets the content type
+  from the key; the request's own `Content-Type` is ignored.
+- `calendar.ics` is accepted (`204`) and dropped, since scrapers from before
+  the Worker built the feed upload it first and fail the whole publish if
+  it's refused. Remove it from `LEGACY_KEY` in `src/worker.ts` once every
+  publisher is updated.
 - The body is streamed straight into R2 and is not validated, so the scraper
   must validate before uploading. R2 needs the length up front, so send
   `Content-Length` (curl `-T` and httpx with a bytes body both do). A chunked
