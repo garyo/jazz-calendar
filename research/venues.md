@@ -136,7 +136,7 @@ Presenters book jazz into several halls.
 | MIT | calendar.mit.edu | API (Localist `/api/2/events?keyword=jazz`) | |
 | Northeastern | calendar.northeastern.edu | API (Localist) | Few jazz events. |
 | Boston University | bu.edu/cfa/news/calendar/ | HTML (list page only) | Event detail URLs disallowed; crawl-delay 15. |
-| Harvard (Jazz Bands, Sanders) | — | Blocked (Akamai) | Get via Global Arts Live / ArtsBoston. |
+| Harvard (Jazz Bands, Sanders) | news.harvard.edu/gazette/harvard-events/events-calendar/ | **ICS** (`trumba.com/calendars/gazette.ics`, `?search=` filters) | Arts and box office sites blocked (Akamai); the Gazette calendar lists Sanders shows. |
 | Wellesley BlueJazz | wellesley.edu/events | HTML | |
 | Boston Public Library | bpl.bibliocommons.com/events | API (BiblioCommons search `q=jazz`) | Filter kids' music. |
 | Newton Free Library | newtonfreelibrary.libcal.com | ICS (LibCal) | |

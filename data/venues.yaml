@@ -310,6 +310,15 @@
   neighborhood: Harvard Square
   jazz_level: occasional
 
+- id: paine-hall
+  name: Paine Hall
+  address: 3 Oxford St
+  town: Cambridge
+  neighborhood: Harvard Square
+  url: https://music.fas.harvard.edu
+  jazz_level: occasional
+  aliases: [John Knowles Paine Concert Hall, Harvard Music Building]
+
 - id: 585-arts
   name: 585 Arts
   address: 585 Kendall St

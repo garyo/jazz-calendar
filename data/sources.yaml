@@ -49,6 +49,25 @@
   notes: >-
     Disabled 2026-10-15 for terms of use: Tufts' site terms forbid copying or republishing material from its services. The Trumba feed's own terms allow republishing, but we hold to the stricter reading until Tufts agrees. Ask musicadmin@tufts.edu.
 
+- id: sanders-theatre
+  adapter: ics
+  url: https://www.trumba.com/calendars/gazette.ics?search=Sanders%20Theatre&months=6
+  credit: {name: "Harvard Gazette’s events calendar", url: https://news.harvard.edu/gazette/harvard-events/events-calendar/}
+  venue: sanders-theatre
+  notes: >-
+    The Gazette's Trumba feed, searched for the hall; unfiltered it stops at 500 events, about
+    a month ahead. Harvard's own arts and box office sites are behind Akamai, but the Gazette
+    and Trumba set no terms against reuse (checked 2026-10-15). Mostly classical; jazz is rare.
+
+- id: harvard-jazz
+  adapter: ics
+  url: https://www.trumba.com/calendars/gazette.ics?search=jazz&months=6
+  credit: {name: "Harvard Gazette’s events calendar", url: https://news.harvard.edu/gazette/harvard-events/events-calendar/}
+  trust_text: true
+  notes: >-
+    The same feed searched for "jazz", which also matches descriptions, for shows elsewhere
+    at Harvard (e.g. ArtsThursdays at Paine Hall). The Jazz Bands aren't listed here.
+
 - id: lizard-lounge
   adapter: tribe
   url: https://lizardloungeclub.com
