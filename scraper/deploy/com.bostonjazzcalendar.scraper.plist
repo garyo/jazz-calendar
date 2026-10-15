@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- launchd job: daily at 05:30 local time (the Mac's clock is Eastern). Install to
+     /Library/LaunchDaemons so it runs without a login; edit the user and paths to match. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.bostonjazzcalendar.scraper</string>
+  <key>UserName</key>
+  <string>garyoberbrunner</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/garyoberbrunner/src/jazz-calendar/scraper/deploy/run.sh</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>5</integer>
+    <key>Minute</key>
+    <integer>30</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/garyoberbrunner/Library/Logs/jazzcal.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/garyoberbrunner/Library/Logs/jazzcal.log</string>
+  <key>Nice</key>
+  <integer>10</integer>
+</dict>
+</plist>

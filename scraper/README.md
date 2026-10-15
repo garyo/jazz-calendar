@@ -82,9 +82,30 @@ its venue or source.
 
 ## Deployment
 
-The scraper runs on a small Linux box (a cloud VM or a home server) under a systemd timer.
-It publishes to the Cloudflare site through its authenticated publish API (see
-`../site/README.md`).
+The scraper runs once a day on a small always-on machine and publishes to the Cloudflare site
+through its authenticated publish API (see `../site/README.md`). Secrets live in an env file
+outside the repo; `deploy/jazzcal.env.example` lists them.
+
+### macOS (launchd), the current setup
+
+```sh
+git clone <repo> ~/src/jazz-calendar && cd ~/src/jazz-calendar/scraper && uv sync --frozen
+mkdir -p ~/.config/jazzcal
+install -m 600 deploy/jazzcal.env.example ~/.config/jazzcal/env   # then fill it in
+deploy/run.sh                                                    # one manual run to check
+sudo cp deploy/com.bostonjazzcalendar.scraper.plist /Library/LaunchDaemons/
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.bostonjazzcalendar.scraper.plist
+```
+
+The plist names the user and paths. Edit them if the machine differs.
+
+Day to day:
+- Run now: `sudo launchctl kickstart system/com.bostonjazzcalendar.scraper`
+- Logs: `~/Library/Logs/jazzcal.log`
+- Update: `git pull && uv sync --frozen`. The job picks up the new code on its next run.
+- Remove: `sudo launchctl bootout system/com.bostonjazzcalendar.scraper`
+
+### Linux (systemd)
 
 ```sh
 sudo useradd --system --home /opt/jazz-calendar jazzcal
@@ -95,9 +116,6 @@ sudo cp deploy/jazzcal.service deploy/jazzcal.timer /etc/systemd/system/
 sudo systemctl daemon-reload && sudo systemctl enable --now jazzcal.timer
 ```
 
-Day to day:
-- Run now: `sudo systemctl start jazzcal`
-- Logs: `journalctl -u jazzcal`
-- Debug as the service user: `sudo -u jazzcal uv run jazzcal run --source <id> -v`
+Run now with `sudo systemctl start jazzcal`; logs are in `journalctl -u jazzcal`.
 
-Set `JAZZCAL_HEALTHCHECK_URL` to get an alert when daily runs stop.
+Either way, set `JAZZCAL_HEALTHCHECK_URL` to get an alert when daily runs stop.
