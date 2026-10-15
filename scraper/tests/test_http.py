@@ -1,4 +1,5 @@
-from collections.abc import Callable
+import ipaddress
+from collections.abc import Callable, Collection
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -63,11 +64,30 @@ def today(monkeypatch: pytest.MonkeyPatch) -> list[datetime]:
     return now
 
 
-def client(server: Server, tmp_path: Path, *, offline: bool = False) -> Http:
+PRIVATE_NAMES = {"intranet.example": "10.0.0.5", "metadata.example": "169.254.169.254"}
+
+
+@pytest.fixture(autouse=True)
+def dns(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Resolve names without the network: every name is public but a few private ones."""
+
+    def resolve(host: str) -> list[http_module.Address]:
+        try:
+            return [ipaddress.ip_address(host)]
+        except ValueError:
+            return [ipaddress.ip_address(PRIVATE_NAMES.get(host, "93.184.215.14"))]
+
+    monkeypatch.setattr(http_module, "resolve", resolve)
+
+
+def client(
+    server: Server, tmp_path: Path, *, offline: bool = False, trusted_hosts: Collection[str] = ()
+) -> Http:
     return Http(
         tmp_path / "cache",
         offline=offline,
         max_age=timedelta(hours=6),
+        trusted_hosts=trusted_hosts,
         transport=httpx.MockTransport(server),
     )
 
@@ -243,3 +263,81 @@ def test_robots_server_error_blocks_the_host_for_this_run_only(
     server.routes[robots] = httpx.Response(404)
     with client(server, tmp_path) as http:
         assert http.get("https://club.example/events").text == "ok"
+
+
+def redirect(location: str) -> httpx.Response:
+    return httpx.Response(302, headers={"Location": location})
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        "http://127.0.0.1:8080/admin",
+        "http://[::1]/admin",
+        "http://[::ffff:192.168.1.1]/",
+        "http://intranet.example/",
+        "http://metadata.example/latest/meta-data/",
+        "ftp://club.example/file",
+        "file:///etc/passwd",
+    ],
+)
+def test_redirects_only_to_public_web_addresses(
+    server: Server, tmp_path: Path, today: object, target: str
+) -> None:
+    server.routes["https://club.example/events"] = redirect(target)
+    with client(server, tmp_path) as http, pytest.raises(FetchError, match="refusing"):
+        http.get("https://club.example/events")
+    assert all(r.url.host == "club.example" for _, r in server.requests)
+
+
+def test_refuses_private_addresses_unless_trusted(
+    server: Server, tmp_path: Path, today: object
+) -> None:
+    url = "http://127.0.0.1:8787/api/submissions/approved"
+    server.routes[url] = httpx.Response(200, text="{}")
+    with client(server, tmp_path) as http, pytest.raises(FetchError, match="not public"):
+        http.get(url)
+    assert server.requests == []
+    with client(server, tmp_path, trusted_hosts={"127.0.0.1"}) as http:
+        assert http.get(url).text == "{}"
+
+
+def test_redirects_are_limited(server: Server, tmp_path: Path, today: object) -> None:
+    for n in range(10):
+        server.routes[f"https://club.example/{n}"] = redirect(f"/{n + 1}")
+    with client(server, tmp_path) as http, pytest.raises(FetchError, match="redirects"):
+        http.get("https://club.example/0")
+    assert server.urls()[-1] == f"https://club.example/{http_module.MAX_REDIRECTS}"
+
+
+def test_redirect_to_another_host_checks_its_robots(
+    server: Server, tmp_path: Path, today: object
+) -> None:
+    server.routes["https://club.example/tickets"] = redirect("https://tix.example/club")
+    server.routes["https://club.example/events"] = redirect("https://cal.example/club")
+    server.routes["https://tix.example/robots.txt"] = httpx.Response(
+        200, text="User-agent: *\nDisallow: /\n"
+    )
+    server.routes["https://cal.example/club"] = httpx.Response(200, text="cal")
+    with client(server, tmp_path) as http:
+        with pytest.raises(Disallowed):
+            http.get("https://club.example/tickets")
+        page = http.get("https://club.example/events", headers={"Authorization": "Bearer t"})
+        assert page.text == "cal"
+        # The redirect's target is cached under the URL asked for.
+        assert http.get("https://club.example/events").from_cache
+    assert "https://tix.example/club" not in server.urls()
+    followed = next(r for _, r in server.requests if str(r.url) == "https://cal.example/club")
+    assert "authorization" not in followed.headers
+
+
+def test_responses_are_capped(
+    server: Server, tmp_path: Path, today: object, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(http_module, "MAX_BYTES", 100)
+    server.routes["https://club.example/small"] = httpx.Response(200, content=b"x" * 100)
+    server.routes["https://club.example/huge"] = httpx.Response(200, content=b"x" * 101)
+    with client(server, tmp_path) as http:
+        assert len(http.get("https://club.example/small").text) == 100
+        with pytest.raises(FetchError, match="over 100 bytes"):
+            http.get("https://club.example/huge")

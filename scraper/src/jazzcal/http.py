@@ -3,13 +3,20 @@ to each host, and caches responses on disk so reruns don't refetch.
 
 Pages fetched within `max_age` come straight from the cache; older ones are revalidated with
 a conditional GET. Offline mode serves only from the cache, for working on parsers.
+
+It's careful too: it follows redirects itself, checking robots.txt for every host along the
+way and refusing anything but http(s) to public addresses, so a venue page can't point it at
+the local network. Responses are capped at MAX_BYTES.
 """
 
 import hashlib
+import ipaddress
 import json
 import logging
 import re
+import socket
 import time
+from collections.abc import Collection
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from email.utils import parsedate_to_datetime
@@ -31,6 +38,9 @@ RETRY_BACKOFF = 5.0
 """Seconds before the first retry; doubled for each one after."""
 RETRY_AFTER_MAX = 60.0
 """The longest Retry-After we wait out; asked for longer, we give up on the URL for this run."""
+MAX_REDIRECTS = 5
+MAX_BYTES = 10_000_000
+"""Largest response body we accept, after decompression."""
 
 
 SECRET_PARAM = re.compile(
@@ -63,6 +73,16 @@ class Response:
 
 
 @dataclass
+class _Reply:
+    """One response: a redirect (with the request to follow it) or a page."""
+
+    status: int
+    headers: httpx.Headers
+    text: str = ""
+    redirect: httpx.Request | None = None
+
+
+@dataclass
 class _CacheEntry:
     meta: dict[str, str]
     body: str
@@ -79,15 +99,17 @@ class Http:
         *,
         offline: bool = False,
         max_age: timedelta,
+        trusted_hosts: Collection[str] = (),
         transport: httpx.BaseTransport | None = None,
     ) -> None:
+        """`trusted_hosts` may be private addresses, e.g. the site under `wrangler dev`."""
         self.cache_dir = cache_dir
         self.offline = offline
         self.max_age = max_age
+        self.trusted_hosts = frozenset(trusted_hosts)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self._client = httpx.Client(
             headers={"User-Agent": USER_AGENT, "Accept-Encoding": "gzip, deflate"},
-            follow_redirects=True,
             timeout=30,
             transport=transport,
         )
@@ -112,9 +134,6 @@ class Http:
             return Response(url, cached.body, from_cache=True)
         if self.offline:
             raise FetchError(f"not cached (offline): {redact(url)}")
-        robots = self._robots_for(url)
-        if robots and not robots.can_fetch(url, BOT_NAME):
-            raise Disallowed(f"robots.txt disallows {redact(url)}")
 
         headers = dict(headers or {})
         if cached:
@@ -122,46 +141,90 @@ class Http:
                 headers["If-None-Match"] = etag
             if last_modified := cached.meta.get("last_modified"):
                 headers["If-Modified-Since"] = last_modified
-        resp = self._request(url, headers, robots)
-        if resp.status_code == 304 and cached:
+        reply = self._fetch(url, headers)
+        if reply.status == 304 and cached:
             self._write_cache(url, cached.meta | {"fetched_at": _now().isoformat()}, cached.body)
             return Response(url, cached.body, from_cache=True)
-        if resp.status_code >= 400:
-            raise FetchError(f"HTTP {resp.status_code} for {redact(url)}")
+        if reply.status >= 400:
+            raise FetchError(f"HTTP {reply.status} for {redact(url)}")
         meta = {"url": url, "fetched_at": _now().isoformat()}
-        if etag := resp.headers.get("etag"):
+        if etag := reply.headers.get("etag"):
             meta["etag"] = etag
-        if last_modified := resp.headers.get("last-modified"):
+        if last_modified := reply.headers.get("last-modified"):
             meta["last_modified"] = last_modified
-        self._write_cache(url, meta, resp.text)
-        return Response(url, resp.text, from_cache=False)
+        self._write_cache(url, meta, reply.text)
+        return Response(url, reply.text, from_cache=False)
 
-    def _request(self, url: str, headers: dict[str, str], robots: Protego | None) -> httpx.Response:
-        """GET, retrying server errors and failed connections a couple of times."""
-        host = urlsplit(url).netloc
+    def _fetch(self, url: str, headers: dict[str, str], *, obey_robots: bool = True) -> _Reply:
+        """GET, following redirects to public http(s) addresses that robots.txt lets us fetch."""
+        request = self._client.build_request("GET", url, headers=headers)
+        for _ in range(MAX_REDIRECTS + 1):
+            self._check_target(request.url)
+            target = str(request.url)
+            robots = self._robots_for(target) if obey_robots else None
+            if robots and not robots.can_fetch(target, BOT_NAME):
+                raise Disallowed(f"robots.txt disallows {redact(target)}")
+            reply = self._send(request, robots)
+            if reply.redirect is None:
+                return reply
+            request = reply.redirect
+        raise FetchError(f"more than {MAX_REDIRECTS} redirects from {redact(url)}")
+
+    def _check_target(self, url: httpx.URL) -> None:
+        if url.scheme not in ("http", "https"):
+            raise FetchError(f"refusing {redact(str(url))}: not http(s)")
+        if url.host in self.trusted_hosts:
+            return
+        try:
+            addresses = resolve(url.host)
+        except OSError as e:
+            raise FetchError(f"cannot resolve {url.host}: {e}") from e
+        if private := next((a for a in addresses if not _is_public(a)), None):
+            raise FetchError(f"refusing {redact(str(url))}: {url.host} is {private}, not public")
+
+    def _send(self, request: httpx.Request, robots: Protego | None) -> _Reply:
+        """Send one request, retrying server errors and failed connections a couple of times."""
+        url, host = redact(str(request.url)), request.url.host
         delay = max(MIN_INTERVAL, (robots.crawl_delay(BOT_NAME) or 0) if robots else 0)
         attempt = 0
         while True:
             wait = self._last_request.get(host, 0) + delay - time.monotonic()
             if wait > 0:
                 time.sleep(wait)
-            log.info("GET %s", redact(url))
+            log.info("GET %s", url)
             try:
-                resp = self._client.get(url, headers=headers)
+                reply = self._receive(request)
             except httpx.HTTPError as e:
                 if not isinstance(e, httpx.TransportError) or attempt == RETRIES:
                     raise FetchError(redact(f"{type(e).__name__} fetching {url}: {e}")) from e
                 problem, pause = type(e).__name__, _backoff(attempt)
             else:
-                pause = _retry_pause(resp, attempt)
-                if resp.status_code < 500 or attempt == RETRIES or pause is None:
-                    return resp
-                problem = f"HTTP {resp.status_code}"
+                pause = _retry_pause(reply, attempt)
+                if reply.status < 500 or attempt == RETRIES or pause is None:
+                    return reply
+                problem = f"HTTP {reply.status}"
             finally:
                 self._last_request[host] = time.monotonic()
-            log.warning("%s for %s; retrying in %.0f s", problem, redact(url), pause)
+            log.warning("%s for %s; retrying in %.0f s", problem, url, pause)
             time.sleep(pause)
             attempt += 1
+
+    def _receive(self, request: httpx.Request) -> _Reply:
+        """The response, reading the body only of a success, and at most MAX_BYTES of it."""
+        resp = self._client.send(request, stream=True)
+        try:
+            if resp.next_request is not None:
+                return _Reply(resp.status_code, resp.headers, redirect=resp.next_request)
+            if resp.status_code != 200:
+                return _Reply(resp.status_code, resp.headers)
+            body = bytearray()
+            for chunk in resp.iter_bytes():
+                body += chunk
+                if len(body) > MAX_BYTES:
+                    raise FetchError(f"over {MAX_BYTES:,} bytes: {redact(str(request.url))}")
+            return _Reply(200, resp.headers, body.decode(resp.encoding or "utf-8", "replace"))
+        finally:
+            resp.close()
 
     def _robots_for(self, url: str) -> Protego | None:
         """Parsed robots.txt for the URL's host; None means everything is allowed."""
@@ -176,13 +239,13 @@ class Http:
         if cached and _now() - cached.fetched_at < ROBOTS_MAX_AGE:
             text = cached.body
         else:
-            resp = self._request(robots_url, {}, None)
+            reply = self._fetch(robots_url, {}, obey_robots=False)
             # RFC 9309: a server error disallows everything, a missing robots.txt nothing. The
             # former holds for this run only: caching it would shut the host out for a day.
-            if resp.status_code >= 500:
-                log.warning("HTTP %d for %s; skipping the host", resp.status_code, robots_url)
+            if reply.status >= 500:
+                log.warning("HTTP %d for %s; skipping the host", reply.status, robots_url)
                 return Protego.parse("User-agent: *\nDisallow: /")
-            text = "" if resp.status_code >= 400 else resp.text
+            text = "" if reply.status >= 400 else reply.text
             meta = {"url": robots_url, "fetched_at": _now().isoformat()}
             self._write_cache(robots_url, meta, text)
         return Protego.parse(text) if text.strip() else None
@@ -204,14 +267,29 @@ class Http:
         path.with_suffix(".json").write_text(json.dumps(meta, indent=1))
 
 
+Address = ipaddress.IPv4Address | ipaddress.IPv6Address
+
+
+def resolve(host: str) -> list[Address]:
+    """The addresses a host name (or literal address) resolves to."""
+    infos = socket.getaddrinfo(host, None, proto=socket.IPPROTO_TCP)
+    return [ipaddress.ip_address(info[4][0]) for info in infos]
+
+
+def _is_public(address: Address) -> bool:
+    if isinstance(address, ipaddress.IPv6Address) and address.ipv4_mapped:
+        address = address.ipv4_mapped
+    return address.is_global and not address.is_multicast
+
+
 def _backoff(attempt: int) -> float:
     return RETRY_BACKOFF * 2**attempt
 
 
-def _retry_pause(resp: httpx.Response, attempt: int) -> float | None:
+def _retry_pause(reply: _Reply, attempt: int) -> float | None:
     """Seconds to wait before retrying, honoring Retry-After; None when it asks for too long."""
     backoff = _backoff(attempt)
-    value = resp.headers.get("retry-after")
+    value = reply.headers.get("retry-after")
     if not value:
         return backoff
     try:

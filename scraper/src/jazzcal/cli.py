@@ -6,6 +6,8 @@ import logging
 import os
 from datetime import datetime, timedelta
 
+import httpx
+
 from jazzcal import evaluate, export, pipeline
 from jazzcal.adapters import get_adapter
 from jazzcal.config import ROOT, TZ, VAR_DIR, Registry
@@ -84,7 +86,13 @@ def main() -> None:
 
 
 def _http(offline: bool, max_age_hours: float) -> Http:
-    return Http(VAR_DIR / "cache", offline=offline, max_age=timedelta(hours=max_age_hours))
+    # Our own site may be a local dev server ($JAZZCAL_SITE), so it may be a private address.
+    return Http(
+        VAR_DIR / "cache",
+        offline=offline,
+        max_age=timedelta(hours=max_age_hours),
+        trusted_hosts={httpx.URL(export.site_url()).host},
+    )
 
 
 def _classifier(model: str | None) -> Classifier | None:
