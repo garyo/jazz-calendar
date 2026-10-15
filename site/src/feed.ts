@@ -9,7 +9,7 @@ import {
 import { venuesWithListings } from "./listings";
 import type { CalendarEvent, EventsFile, Regular, Venue } from "./types";
 
-export const FEED_URL = "/data/events.json";
+const FEED_URL = "/data/events.json";
 
 export interface Feed {
   generatedAt: string;

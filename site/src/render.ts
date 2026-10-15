@@ -413,7 +413,7 @@ export function renderSourceList({ own, via }: SourceList): HTMLElement[] {
 }
 
 /** A feed older than this gets a "may be out of date" warning. */
-export const STALE_AFTER_MS = 36 * 60 * 60 * 1000;
+const STALE_AFTER_MS = 36 * 60 * 60 * 1000;
 
 /** "Updated today at 6 am", with a warning when the feed is stale. */
 export function renderUpdated(
