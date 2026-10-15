@@ -1,7 +1,7 @@
 #:schema node_modules/wrangler/config-schema.json
 name = "jazz-calendar"
-# Serve on the workers.dev address until the custom domain is attached; no per-branch
-# preview copies of the site.
+# The site lives at bostonjazzcalendar.com; workers.dev stays on as a fallback until
+# Cloudflare Access guards /admin (see site/README.md). No per-branch preview copies.
 workers_dev = true
 preview_urls = false
 # account_id set via CLOUDFLARE_ACCOUNT_ID env var
