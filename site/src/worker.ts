@@ -1,27 +1,16 @@
 /**
  * Cloudflare Worker for bostonjazzcalendar.com.
  *
- * Serves the scraper's output from R2 (/data/events.json, /data/status.json,
- * /calendar.ics) and accepts fresh copies from the scraper via
- * PUT /api/publish/:key. /calendar.ics with venue, town or adjacent
- * parameters is a feed of just that selection, built from events.json.
- * Gig submissions and their review live in worker-submissions.ts; the
+ * Serves the scraper's output from R2 (/data/events.json, /data/status.json)
+ * and accepts fresh copies from the scraper via PUT /api/publish/:key. The
+ * /calendar.ics feeds are built from events.json in worker-calendar.ts, gig
+ * submissions and their review live in worker-submissions.ts, and the
  * hourly cron's stale-data check in worker-freshness.ts.
  * Static assets never reach this code unless a run_worker_first path falls
  * through (see wrangler.toml).
  */
 
-import { buildCalendar } from "./calendar-export";
-import { creditsById } from "./credits";
-import {
-  calendarName,
-  feedQuery,
-  knownSelection,
-  matchesSelection,
-  parseFeedSelection,
-  type Selection,
-} from "./selection";
-import type { EventsFile } from "./types";
+import { FEED_PATH, serveCalendar } from "./worker-calendar";
 import { checkFreshness } from "./worker-freshness";
 import {
   hasBearer,
@@ -41,7 +30,6 @@ export interface Env extends SubmissionsEnv {
 const CONTENT_TYPES = {
   "events.json": "application/json; charset=utf-8",
   "status.json": "application/json; charset=utf-8",
-  "calendar.ics": "text/calendar; charset=utf-8",
 } as const;
 
 type DataKey = keyof typeof CONTENT_TYPES;
@@ -49,17 +37,17 @@ type DataKey = keyof typeof CONTENT_TYPES;
 const PUBLIC_PATHS = new Map<string, DataKey>([
   ["/data/events.json", "events.json"],
   ["/data/status.json", "status.json"],
-  ["/calendar.ics", "calendar.ics"],
 ]);
+
+/**
+ * Scrapers from before the Worker built /calendar.ics upload it first and
+ * fail the whole publish if that upload fails, so it's accepted and
+ * dropped. Remove once every publisher is updated.
+ */
+const LEGACY_KEY = "calendar.ics";
 
 const PUBLISH_PREFIX = "/api/publish/";
 const CACHE_CONTROL = "public, max-age=300";
-const FEED_PATH = "/calendar.ics";
-const FEED_PARAMS = ["venue", "town", "adjacent"];
-const FEED_CACHE_CONTROL = "public, max-age=3600";
-const FEED_REFRESH_HOURS = 12;
-/** Longer queries are refused before any parsing. */
-const MAX_QUERY_LENGTH = 2048;
 const READ_METHODS = "GET, HEAD";
 
 function isDataKey(key: string): key is DataKey {
@@ -108,78 +96,6 @@ async function serveData(
   });
 }
 
-function withoutBody(request: Request, response: Response): Response {
-  if (request.method !== "HEAD") return response;
-  return new Response(null, response);
-}
-
-function filteredCalendar(feed: EventsFile, selection: Selection): string {
-  const venues = new Map(feed.venues.map((venue) => [venue.id, venue]));
-  const known = knownSelection(selection, feed.venues);
-  const events = known
-    ? feed.events.filter((event) =>
-        matchesSelection(event, venues.get(event.venue), known),
-      )
-    : [];
-  const generated = new Date(feed.generated_at);
-  return buildCalendar(events, venues, {
-    name: known ? calendarName(known, venues) : "Boston Jazz Calendar",
-    stamp: Number.isNaN(generated.getTime()) ? new Date() : generated,
-    refreshHours: FEED_REFRESH_HOURS,
-    credits: creditsById(feed.sources),
-  });
-}
-
-/**
- * /calendar.ics?venue=…&town=…&adjacent=0: the events.json listings that
- * match, as iCalendar. Cached per normalized query and events.json version,
- * so a feed is rebuilt at most once an hour per data center.
- */
-async function serveFilteredCalendar(
-  request: Request,
-  env: Env,
-  ctx: ExecutionContext,
-  url: URL,
-): Promise<Response> {
-  if (!isReadMethod(request)) return methodNotAllowed(READ_METHODS);
-  const selection =
-    url.search.length <= MAX_QUERY_LENGTH
-      ? parseFeedSelection(url.searchParams)
-      : null;
-  if (!selection) return textResponse(400, "Bad venue, town or adjacent");
-  const query = feedQuery(selection);
-  if (!query) return serveData(request, env, "calendar.ics");
-
-  const head = await env.DATA.head("events.json");
-  if (!head) return textResponse(404, "Not found");
-  const cache = caches.default;
-  const cacheKey = (etag: string) =>
-    new Request(`${url.origin}${FEED_PATH}?${query}&v=${etag}`);
-  const cached = await cache.match(cacheKey(head.etag));
-  if (cached) return withoutBody(request, cached);
-
-  const object = await env.DATA.get("events.json");
-  if (!object) return textResponse(404, "Not found");
-  const feed = await object.json<EventsFile>();
-  const response = new Response(filteredCalendar(feed, selection), {
-    headers: {
-      "content-type": CONTENT_TYPES["calendar.ics"],
-      "cache-control": FEED_CACHE_CONTROL,
-      "access-control-allow-origin": "*",
-      "x-content-type-options": "nosniff",
-    },
-  });
-  ctx.waitUntil(cache.put(cacheKey(object.etag), response.clone()));
-  return withoutBody(request, response);
-}
-
-function isFeedQuery(url: URL): boolean {
-  return (
-    url.pathname === FEED_PATH &&
-    FEED_PARAMS.some((name) => url.searchParams.has(name))
-  );
-}
-
 async function publish(
   request: Request,
   env: Env,
@@ -189,6 +105,7 @@ async function publish(
   if (!(await hasBearer(request, env.PUBLISH_TOKEN))) {
     return unauthorized("publish");
   }
+  if (key === LEGACY_KEY) return new Response(null, { status: 204 });
   if (!isDataKey(key)) {
     const keys = Object.keys(CONTENT_TYPES).join(", ");
     return textResponse(400, `Unknown key; expected one of: ${keys}`);
@@ -213,8 +130,8 @@ export default {
     ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url);
-    if (isFeedQuery(url)) return serveFilteredCalendar(request, env, ctx, url);
     const { pathname } = url;
+    if (pathname === FEED_PATH) return serveCalendar(request, env, ctx, url);
     const key = PUBLIC_PATHS.get(pathname);
     if (key) return serveData(request, env, key);
     if (pathname.startsWith(PUBLISH_PREFIX)) {

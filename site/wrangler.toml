@@ -15,8 +15,9 @@ binding = "ASSETS"
 # asset layer directly, which costs no worker CPU or request quota.
 run_worker_first = ["/data/*", "/calendar.ics", "/api/*"]
 
-# Scraper output (events.json, status.json, calendar.ics), uploaded through
+# Scraper output (events.json, status.json), uploaded through
 # PUT /api/publish/:key. The bearer token is the PUBLISH_TOKEN secret.
+# /calendar.ics is built from events.json (src/worker-calendar.ts).
 [[r2_buckets]]
 binding = "DATA"
 bucket_name = "bostonjazzcalendar-data"
