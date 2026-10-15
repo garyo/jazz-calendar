@@ -263,3 +263,27 @@ the two rules' headers with a comma, which browsers enforce as two policies,
 so the page can run only its own bundle and talk only to this site.
 `admin.html` loads nothing but `/admin.js`, whose imports never reach
 `analytics.ts`; `src/csp.test.ts` checks both.
+
+## Operations / hardening (dashboard)
+
+These live in the Cloudflare dashboard, not in this repo:
+
+1. **Cloudflare Access on the review page.** Zero Trust → Access →
+   Applications → Add → Self-hosted. Domain `bostonjazzcalendar.com`,
+   paths `admin`, `admin.html` and `api/admin/*`; an Allow policy for the
+   owner's email, with one-time PIN login. Keep `ADMIN_TOKEN` as a second
+   factor. Leave `/api/publish/*` and `/api/submissions/approved` outside
+   Access; the scraper authenticates with its bearer token. Access on the
+   custom domain doesn't cover `jazz-calendar.garyo.workers.dev`: once the
+   domain is settled, set `workers_dev = false` in `wrangler.toml` and drop
+   that host from `SITE_HOSTS` in `src/worker-submissions.ts`, or turn on
+   Access for workers.dev under the Worker's Settings → Domains & Routes.
+2. **WAF rate limit on submissions.** Security → WAF → Rate limiting rules
+   (the free plan allows one rule, counted per IP over 10 seconds). Match
+   `http.request.uri.path eq "/api/submissions" and http.request.method eq "POST"`,
+   about 3 requests per 10 seconds, action Block. This caps Turnstile and
+   D1 work from a single client.
+3. **HTTPS only.** SSL/TLS → Edge Certificates: turn on Always Use HTTPS,
+   set Minimum TLS Version to 1.2, and enable HSTS (max-age 6 months; add
+   includeSubDomains only if every subdomain serves HTTPS; skip preload
+   until the site has run that way for a while).
