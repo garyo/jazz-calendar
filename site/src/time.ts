@@ -32,6 +32,13 @@ const headingFormat = new Intl.DateTimeFormat("en-US", {
   day: "numeric",
 });
 
+const longDayFormat = new Intl.DateTimeFormat("en-US", {
+  timeZone: "UTC",
+  weekday: "long",
+  month: "long",
+  day: "numeric",
+});
+
 const shortDateFormat = new Intl.DateTimeFormat("en-US", {
   timeZone: "UTC",
   month: "short",
@@ -101,6 +108,29 @@ export function weekday(key: DayKey): number {
 /** "Thursday, Oct 15". */
 export function formatDayHeading(key: DayKey): string {
   return headingFormat.format(keyToDate(key));
+}
+
+export interface DayParts {
+  /** "Thursday, October 15". */
+  long: string;
+  /** "Thu". */
+  weekday: string;
+  /** "15". */
+  day: string;
+  /** "Oct". */
+  month: string;
+}
+
+/** A day's heading in a long and a short form, for the themes to choose from. */
+export function dayParts(key: DayKey): DayParts {
+  const date = keyToDate(key);
+  const { weekday, month, day } = partsOf(longDayFormat, date);
+  return {
+    long: longDayFormat.format(date),
+    weekday: weekday?.slice(0, 3) ?? "",
+    day: day ?? "",
+    month: month?.slice(0, 3) ?? "",
+  };
 }
 
 /** "Oct 15, 2026", or null for anything but a "YYYY-MM-DD" date. */

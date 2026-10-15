@@ -9,8 +9,8 @@
       content="Live jazz in Greater Boston, night by night: clubs, bars, concert halls and jam sessions, each linked straight to the venue."
     />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#f5efe4" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#131015" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1014" media="(prefers-color-scheme: dark)" />
     <meta property="og:title" content="Boston Jazz Calendar" />
     <meta
       property="og:description"
@@ -21,11 +21,20 @@
     <link rel="alternate" type="text/calendar" title="Boston Jazz Calendar" href="/calendar.ics" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Every theme's families in one request; browsers download only the
+         font files the active theme uses. -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,400..800&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400..700&display=swap"
     />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/theme-guide.css" />
+    <link rel="stylesheet" href="/theme-program.css" />
+    <link rel="stylesheet" href="/theme-lateset.css" />
+    <link rel="stylesheet" href="/theme-club.css" />
+    <!-- Sets data-theme before first paint: ?theme=, then the saved choice.
+         Its sha256 is allowed by the CSP in _headers (see theme.test.ts). -->
+    <script>(()=>{let t;const ok=/^(guide|program|lateset|club)$/;try{t=new URLSearchParams(location.search).get("theme");if(ok.test(t))localStorage.setItem("theme",t);else t=localStorage.getItem("theme")}catch{}document.documentElement.dataset.theme=ok.test(t)?t:"program"})()</script>
     <link rel="preload" href="/data/events.json" as="fetch" crossorigin />
     <script type="module" src="/main.js"></script>
   </head>
@@ -33,19 +42,53 @@
     <a class="skip-link" href="#listings">Skip to listings</a>
 
     <header class="masthead">
-      <div class="wrap">
-        <p class="eyebrow">Greater Boston · Live music listings</p>
-        <h1 class="wordmark">Boston Jazz Calendar</h1>
-        <p class="tagline">
-          Every jazz gig we can find, from the clubs to the corner bars, with a
-          link straight to the venue.
-        </p>
+      <div class="wrap masthead-bar">
+        <div class="masthead-text">
+          <p class="eyebrow">Greater Boston · Live music listings</p>
+          <h1 class="wordmark">Boston Jazz Calendar</h1>
+          <p class="tagline">
+            Every jazz gig we can find, from the clubs to the corner bars, with
+            a link straight to the venue.
+          </p>
+        </div>
         <p id="updated" class="updated"></p>
+        <div class="subscribe">
+          <button id="subscribe-toggle" type="button" class="button button-primary subscribe-toggle">
+            Subscribe<span class="subscribe-toggle-more">&nbsp;to this view</span>
+          </button>
+          <div id="subscribe-panel" class="popover subscribe-panel" hidden>
+            <p id="subscribe-title" class="popover-title">Subscribe to this view</p>
+            <p id="subscribe-scope" class="subscribe-scope"></p>
+            <p class="subscribe-help">
+              Your calendar app adds new listings as they appear.
+              <span id="subscribe-note">Search and dates aren’t part of a feed.</span>
+            </p>
+            <p class="subscribe-actions">
+              <a id="subscribe-webcal" class="button button-primary" href="webcal://bostonjazzcalendar.com/calendar.ics">Apple Calendar, Outlook</a>
+              <a id="subscribe-google" class="button" href="https://calendar.google.com/calendar/" target="_blank" rel="noopener">Google Calendar</a>
+            </p>
+            <div class="field">
+              <label class="field-label" for="subscribe-url">Feed address, for any calendar app</label>
+              <div class="subscribe-copy">
+                <input id="subscribe-url" class="subscribe-url" type="url" readonly />
+                <button id="subscribe-copy" type="button" class="button">Copy</button>
+              </div>
+            </div>
+            <p id="subscribe-status" class="subscribe-status" role="status"></p>
+            <p id="subscribe-everything" class="subscribe-everything">
+              Or subscribe to <a id="subscribe-everything-link" href="/calendar.ics">every listing</a>.
+            </p>
+          </div>
+        </div>
       </div>
     </header>
 
     <main id="listings" class="wrap" tabindex="-1">
-      <search aria-label="Filter listings">
+      <nav id="day-strip" class="day-strip" aria-label="Jump to a day" hidden>
+        <ol id="day-strip-list" class="day-strip-list"></ol>
+      </nav>
+
+      <search class="filter-bar" aria-label="Filter listings">
         <form id="filters" class="filters">
           <div class="filter-row filter-row-main">
             <label id="q-field" class="field field-search">
@@ -80,34 +123,6 @@
           <label><input type="radio" name="view" value="list" checked /><span>List</span></label>
           <label><input type="radio" name="view" value="month" /><span>Month</span></label>
         </fieldset>
-        <div class="subscribe">
-          <button id="subscribe-toggle" type="button" class="button button-primary subscribe-toggle">
-            Subscribe to this view
-          </button>
-          <div id="subscribe-panel" class="popover subscribe-panel" hidden>
-            <p id="subscribe-title" class="popover-title">Subscribe to this view</p>
-            <p id="subscribe-scope" class="subscribe-scope"></p>
-            <p class="subscribe-help">
-              Your calendar app adds new listings as they appear.
-              <span id="subscribe-note">Search and dates aren’t part of a feed.</span>
-            </p>
-            <p class="subscribe-actions">
-              <a id="subscribe-webcal" class="button button-primary" href="webcal://bostonjazzcalendar.com/calendar.ics">Apple Calendar, Outlook</a>
-              <a id="subscribe-google" class="button" href="https://calendar.google.com/calendar/" target="_blank" rel="noopener">Google Calendar</a>
-            </p>
-            <div class="field">
-              <label class="field-label" for="subscribe-url">Feed address, for any calendar app</label>
-              <div class="subscribe-copy">
-                <input id="subscribe-url" class="subscribe-url" type="url" readonly />
-                <button id="subscribe-copy" type="button" class="button">Copy</button>
-              </div>
-            </div>
-            <p id="subscribe-status" class="subscribe-status" role="status"></p>
-            <p id="subscribe-everything" class="subscribe-everything">
-              Or subscribe to <a id="subscribe-everything-link" href="/calendar.ics">every listing</a>.
-            </p>
-          </div>
-        </div>
       </div>
 
       <div id="results" class="results">
@@ -135,13 +150,19 @@
 
     <footer class="colophon">
       <div class="wrap colophon-grid">
-        <section aria-labelledby="about-heading">
+        <section id="about" aria-labelledby="about-heading">
           <h2 id="about-heading">About</h2>
           <p>
-            Boston Jazz Calendar is an independent listing, not affiliated with
-            any venue, artist or promoter. We gather dates, times and prices
-            from venues’ own sites and public calendars, and every listing
-            links back to its source.
+            Boston Jazz Calendar is a free, non-commercial, independent listing,
+            run by a local jazz musician and not affiliated with any venue,
+            artist or promoter. No ads, no tracking.
+          </p>
+          <p>
+            Listings come from venues’ own sites and public calendars. Our
+            collector, BostonJazzCalendarBot, visits each once a day, follows
+            each site’s robots.txt and terms, and takes only the facts: date,
+            time, who’s playing and price. We never copy descriptions or
+            photos, and every listing links back to its source.
           </p>
           <p><strong>Plans change: check the venue’s page before you go.</strong></p>
         </section>
@@ -165,6 +186,13 @@
           Venue names belong to their owners and appear here only to identify
           them. No ads, no tracking.
         </p>
+        <fieldset id="theme-switcher" class="theme-switcher">
+          <legend>Theme:</legend>
+          <button type="button" data-theme-choice="guide">Guide</button>
+          <button type="button" data-theme-choice="program">Program</button>
+          <button type="button" data-theme-choice="lateset">Late Set</button>
+          <button type="button" data-theme-choice="club">Club</button>
+        </fieldset>
       </div>
     </footer>
   </body>

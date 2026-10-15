@@ -163,6 +163,33 @@ export function groupByDay(
   return groups;
 }
 
+export interface StripDay {
+  day: DayKey;
+  /** Shows listed that day; 0 for a quiet day inside the range. */
+  count: number;
+}
+
+/**
+ * The days a list covers, for a strip of day links: every day from the first
+ * group's through the last's, at most `max` of them. Fewer than two days
+ * make no strip.
+ */
+export function stripDays(groups: readonly DayGroup[], max = 14): StripDay[] {
+  const first = groups[0]?.day;
+  const last = groups.at(-1)?.day;
+  if (!first || !last || first === last) return [];
+  const counts = new Map(groups.map(({ day, events }) => [day, events.length]));
+  const days: StripDay[] = [];
+  for (
+    let day = first;
+    day <= last && days.length < max;
+    day = addDays(day, 1)
+  ) {
+    days.push({ day, count: counts.get(day) ?? 0 });
+  }
+  return days;
+}
+
 /** Artists not already named in the title. */
 export function extraArtists(event: CalendarEvent): string[] {
   const title = normalize(event.title);

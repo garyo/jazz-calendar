@@ -10,6 +10,7 @@ import {
   normalize,
   presetRange,
   sortName,
+  stripDays,
   venueLocation,
   venuesWithListings,
 } from "./listings";
@@ -305,5 +306,41 @@ describe("display helpers", () => {
   test("sortName", () => {
     expect(sortName("The Lilypad")).toBe("lilypad");
     expect(sortName("Theatre Bar")).toBe("theatre bar");
+  });
+});
+
+describe("stripDays", () => {
+  const group = (day: string, count: number) => ({
+    day,
+    events: sample.events.slice(0, count),
+  });
+
+  test("covers every day from the first group to the last", () => {
+    expect(stripDays([group("2026-10-30", 2), group("2026-11-02", 1)])).toEqual(
+      [
+        { day: "2026-10-30", count: 2 },
+        { day: "2026-10-31", count: 0 },
+        { day: "2026-11-01", count: 0 },
+        { day: "2026-11-02", count: 1 },
+      ],
+    );
+  });
+
+  test("stops at the limit", () => {
+    const days = stripDays([group("2026-10-15", 1), group("2026-12-01", 1)], 7);
+    expect(days.map((d) => d.day)).toEqual([
+      "2026-10-15",
+      "2026-10-16",
+      "2026-10-17",
+      "2026-10-18",
+      "2026-10-19",
+      "2026-10-20",
+      "2026-10-21",
+    ]);
+  });
+
+  test("makes no strip for a single day or none", () => {
+    expect(stripDays([])).toEqual([]);
+    expect(stripDays([group("2026-10-15", 3)])).toEqual([]);
   });
 });

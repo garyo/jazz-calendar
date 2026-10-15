@@ -1,0 +1,460 @@
+/*
+ * Late Set: a dark-first nightlife listing. Condensed caps for acts, a big
+ * time column, one acid accent on near-black. Archivo's width axis does
+ * both the condensed display face and the text face.
+ */
+
+:root[data-theme="lateset"] {
+  --bg: #0b0b0c;
+  --surface: #161618;
+  --ink: #f2f2ee;
+  --muted: #9b9b96;
+  --rule: #2b2b2e;
+  --accent: #c8f53c;
+  --accent-ink: #0b0b0c;
+  --adjacent: #7cc8f0;
+  --focus: #c8f53c;
+  --cancelled: #ff8f7d;
+  --shadow-popover: 0 0.5rem 1.5rem rgb(0 0 0 / 0.6);
+
+  /* The masthead band stays black in both schemes. */
+  --band-bg: #0b0b0c;
+  --band-ink: #f2f2ee;
+  --band-muted: #9b9b96;
+  --band-accent: #c8f53c;
+  --band-accent-ink: #0b0b0c;
+
+  --font-text: "Archivo", system-ui, sans-serif;
+  --font-display: var(--font-text);
+  --measure: 48rem;
+  --radius: 6px;
+  --radius-control: 999px;
+  --time-col: 4.5rem;
+  --row-pad: 0.875rem;
+
+  color-scheme: dark;
+
+  @media (prefers-color-scheme: light) {
+    --bg: #ececea;
+    --surface: #ffffff;
+    --ink: #0d0d0d;
+    --muted: #55554f;
+    --rule: #c9c9c4;
+    --accent: #3f5f00;
+    --accent-ink: #ffffff;
+    --adjacent: #0b5e8a;
+    --focus: #0d0d0d;
+    --cancelled: #a3150e;
+    --shadow-popover: 0 0.5rem 1.5rem rgb(0 0 0 / 0.16);
+
+    color-scheme: light;
+
+    .subscribe-panel {
+      --focus: #0d0d0d;
+    }
+  }
+
+  body {
+    font-weight: 400;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  & a:hover,
+  & a:focus-visible {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+  }
+
+  /* Header: a full-width black band. */
+
+  .masthead {
+    margin-bottom: 0.75rem;
+    padding-block: 1.75rem 1.5rem;
+    border-bottom: 1px solid var(--rule);
+    background: var(--band-bg);
+    color: var(--band-ink);
+    --focus: var(--band-accent);
+  }
+
+  .masthead-bar {
+    row-gap: 0.4rem;
+  }
+
+  .eyebrow {
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--band-accent);
+  }
+
+  .wordmark {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-weight: 800;
+    font-stretch: 62%;
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .tagline {
+    margin-top: 0.75rem;
+    font-size: 0.9375rem;
+    color: var(--band-muted);
+  }
+
+  .updated {
+    font-size: 0.8125rem;
+    color: var(--band-muted);
+  }
+
+  .masthead .button-primary {
+    border-color: var(--band-accent);
+    background: var(--band-accent);
+    color: var(--band-accent-ink);
+  }
+
+  .masthead .button-primary:hover {
+    border-color: var(--band-ink);
+    background: var(--band-ink);
+  }
+
+  .subscribe-panel .button-primary {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* Day strip: scrolls sideways; pinned to the top on phones. */
+
+  .day-strip {
+    display: block;
+    margin-bottom: 1rem;
+    padding-block: 0 0.6rem;
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg);
+    box-shadow: 0 0 0 100vmax var(--bg);
+    clip-path: inset(0 -100vmax);
+  }
+
+  .strip-day {
+    min-width: 3rem;
+    border-color: transparent;
+    font-family: var(--font-text);
+  }
+
+  .strip-weekday {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+
+  .strip-date {
+    font-size: 1.125rem;
+    font-weight: 700;
+    font-stretch: 62%;
+  }
+
+  .strip-day.is-empty {
+    border-color: transparent;
+    opacity: 0.6;
+  }
+
+  a.strip-day:hover {
+    border-color: var(--rule);
+    text-decoration: none;
+  }
+
+  .strip-day.is-today .strip-weekday {
+    color: inherit;
+  }
+
+  /* Controls: pills, the active one filled in accent. */
+
+  & .field-label,
+  & .presets span,
+  & .segmented span,
+  & .selection-chip,
+  & .selection-chip-kind,
+  & .picker-group legend {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  & .presets span,
+  & .segmented span,
+  & .segmented label span {
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius-control);
+  }
+
+  & .presets input:checked + span,
+  & .segmented input:checked + span {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .segmented {
+    gap: 0.35rem;
+  }
+
+  .segmented label + label {
+    margin-left: 0;
+  }
+
+  .toggle input:checked {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .toggle input:checked::before {
+    background: var(--accent-ink);
+  }
+
+  & input[type="search"],
+  & .picker-toggle {
+    background: var(--surface);
+  }
+
+  .toolbar {
+    border-top: 0;
+  }
+
+  .button {
+    border-color: var(--rule);
+  }
+
+  /* Day headings: condensed caps, "Today" in accent. */
+
+  .day {
+    margin-bottom: 1.75rem;
+  }
+
+  .day-heading {
+    gap: 0.6rem;
+    padding: 0.5rem 0 0.35rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-stretch: 62%;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  & .day-long,
+  & .day-month {
+    display: none;
+  }
+
+  .day-short {
+    display: inline;
+  }
+
+  .day-relative {
+    font: inherit;
+    letter-spacing: inherit;
+    color: var(--accent);
+  }
+
+  /* Rows: a big time on the left; the act in caps, then venue · town · price. */
+
+  /*
+   * Block flow, so venue, town and price wrap as one line of text; the time,
+   * the marker and the calendar button sit in the margins.
+   */
+  .event-row {
+    position: relative;
+    display: block;
+    min-height: 4.5rem;
+    padding-left: calc(var(--time-col) + 0.75rem);
+    padding-right: 2.75rem;
+  }
+
+  .event-time {
+    position: absolute;
+    top: var(--row-pad);
+    left: 0;
+    width: var(--time-col);
+  }
+
+  .event-time {
+    font-size: 1.125rem;
+    font-weight: 600;
+    font-stretch: 80%;
+    line-height: 1.2;
+  }
+
+  .event-end {
+    margin-top: 0.15rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .event-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-stretch: 70%;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .event-artists {
+    margin-top: 0.15rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-stretch: 100%;
+    text-transform: none;
+  }
+
+  & .event-venue,
+  & .event-extra {
+    display: inline;
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  .event-title {
+    margin-bottom: 0.3rem;
+  }
+
+  .event-venue a {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .event-hood {
+    display: none;
+  }
+
+  .event-extra::before {
+    content: " · " / "";
+    color: var(--muted);
+  }
+
+  .event-tickets {
+    color: var(--accent);
+  }
+
+  .event-row > .add-to-calendar {
+    position: absolute;
+    right: -0.25rem;
+    bottom: calc(var(--row-pad) - 0.4rem);
+    margin: 0;
+  }
+
+  .event-row > .add-to-calendar .menu {
+    top: 100%;
+  }
+
+  /* Markers: a dot and "ADJ"; a "LIVE" tag with the time in accent. */
+
+  .event-marks {
+    position: absolute;
+    top: calc(var(--row-pad) + 0.3rem);
+    right: 0;
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .mark + .mark {
+    margin: 0;
+  }
+
+  .mark::before {
+    font-size: inherit;
+  }
+
+  .mark-adjacent::before {
+    content: "●" / "";
+    margin-right: 0.3em;
+  }
+
+  .mark-adjacent::after {
+    content: "ADJ" / "";
+    color: var(--muted);
+  }
+
+  .mark-now::before {
+    content: "LIVE" / "";
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .event.is-now .event-time {
+    color: var(--accent);
+  }
+
+  .regular-row {
+    row-gap: 0.15rem;
+  }
+
+  .regular-row .event-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-stretch: 70%;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .regular-when {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .regular-row {
+    padding-right: 3.5rem;
+  }
+
+  /* Month view */
+
+  .month-heading {
+    font-size: 2rem;
+    font-weight: 700;
+    font-stretch: 62%;
+    text-transform: uppercase;
+  }
+
+  .month-cell {
+    border-color: var(--rule);
+  }
+
+  .is-today .month-date {
+    border-radius: 999px;
+  }
+
+  .notice-title {
+    font-size: 1.5rem;
+    font-stretch: 62%;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 39.99rem) {
+    --time-col: 4rem;
+
+    .presets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .day-strip {
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      padding-top: 0.5rem;
+    }
+  }
+}

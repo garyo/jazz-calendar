@@ -1,0 +1,229 @@
+/*
+ * Club: the original cream, Fraunces, brick and brass look, kept only as a
+ * reference while the other themes are compared.
+ */
+
+:root[data-theme="club"] {
+  --bg: #f5efe4;
+  --surface: #fbf7ef;
+  --ink: #1e1a16;
+  --muted: #645a4e;
+  --rule: #ddd2c0;
+  --rule-strong: #1e1a16;
+  --accent: #8a2c1b;
+  --accent-ink: #fffaf2;
+  --brass: #8a5d12;
+  --adjacent: #2c5f63;
+  --cancelled: #a12a1a;
+  --chip: #ebe2d2;
+  --focus: #1f5fbf;
+  --shadow-popover: 0 0.6rem 1.8rem rgb(30 26 22 / 0.16);
+
+  --font-display:
+    "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-time: var(--font-display);
+  --radius: 6px;
+  --radius-control: 999px;
+  --time-col: 5.1rem;
+  --row-pad: 1rem;
+
+  color-scheme: light;
+
+  @media (prefers-color-scheme: dark) {
+    --bg: #131015;
+    --surface: #1c181e;
+    --ink: #eee5d6;
+    --muted: #a89d8e;
+    --rule: #342d35;
+    --rule-strong: #d9a64a;
+    --accent: #d9a64a;
+    --accent-ink: #1a1306;
+    --brass: #d9a64a;
+    --adjacent: #85bdb6;
+    --cancelled: #ff8f7d;
+    --chip: #2a242c;
+    --focus: #8fb8ff;
+    --shadow-popover: 0 0.6rem 1.8rem rgb(0 0 0 / 0.55);
+
+    color-scheme: dark;
+  }
+
+  .masthead {
+    margin-bottom: 1.5rem;
+    padding-block: 2.5rem 1.75rem;
+    border-bottom: 4px double var(--rule-strong);
+  }
+
+  & .eyebrow,
+  & .day-relative,
+  & .colophon h2,
+  & .picker-group legend {
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    color: var(--brass);
+  }
+
+  .eyebrow {
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+  }
+
+  .wordmark {
+    font-size: clamp(2.4rem, 9vw, 4rem);
+    font-weight: 600;
+    font-variation-settings: "opsz" 144;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+  }
+
+  .tagline {
+    margin: 0.9rem 0 1rem;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-style: italic;
+    font-variation-settings: "opsz" 24;
+    line-height: 1.4;
+  }
+
+  .presets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  & .presets span,
+  & .segmented span {
+    border-radius: var(--radius-control);
+  }
+
+  .toggle input:checked {
+    border-color: var(--adjacent);
+    background: var(--adjacent);
+  }
+
+  .selection-chip {
+    border-radius: var(--radius-control);
+  }
+
+  .day-heading {
+    justify-content: space-between;
+    padding: 0.7rem 0 0.45rem;
+    font-size: 1.3rem;
+    font-variation-settings: "opsz" 48;
+    letter-spacing: -0.005em;
+  }
+
+  .event-row {
+    grid-template-areas:
+      "time title title"
+      "time venue cal"
+      "time extra extra"
+      "time marks marks";
+    column-gap: 0.75rem;
+    align-items: start;
+  }
+
+  .event-time {
+    padding-top: 0.15rem;
+    font-size: 0.98rem;
+    font-weight: 500;
+    color: var(--brass);
+  }
+
+  & .event.adjacent .event-time,
+  & .regular.adjacent .regular-when {
+    color: var(--adjacent);
+  }
+
+  .event-title {
+    font-size: 1.22rem;
+    font-variation-settings: "opsz" 30;
+    line-height: 1.25;
+  }
+
+  .event-artists {
+    margin-top: 0.15rem;
+    font-size: 0.94rem;
+  }
+
+  .event-venue {
+    margin-top: 0.35rem;
+    font-size: 1rem;
+    font-weight: 550;
+  }
+
+  .event-venue a {
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  }
+
+  .event-place {
+    font-weight: 400;
+  }
+
+  .event-extra {
+    margin-top: 0.4rem;
+  }
+
+  .event-marks {
+    margin-top: 0.4rem;
+  }
+
+  .event-row > .add-to-calendar {
+    margin-top: 0;
+  }
+
+  /* The old pills, drawn from the same markers. */
+  .mark::before {
+    display: inline-block;
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .mark-adjacent::before {
+    content: "jazz-adjacent" / "";
+    box-shadow: inset 0 0 0 1px var(--adjacent);
+  }
+
+  .mark-now::before {
+    content: "On now" / "";
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .regular-when {
+    font-size: 1.02rem;
+    font-weight: 500;
+    color: var(--brass);
+  }
+
+  .notice-title {
+    font-style: italic;
+  }
+
+  .colophon {
+    border-top-color: var(--rule-strong);
+  }
+
+  @media (min-width: 40rem) {
+    --time-col: 6.25rem;
+
+    .masthead {
+      padding-block: 3.5rem 2rem;
+    }
+
+    .presets {
+      display: flex;
+    }
+
+    .event-time {
+      font-size: 1.05rem;
+    }
+
+    .event-title {
+      font-size: 1.35rem;
+    }
+  }
+}

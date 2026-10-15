@@ -19,7 +19,21 @@ src/time.ts      America/New_York date and time formatting
 src/url-state.ts view state <-> query string
 src/types.ts     TS mirror of ../schema/events.schema.json
 src/worker.ts    the Worker: R2-backed data routes, filtered feeds, the publish API
+src/theme.ts     the review-period theme switcher
 ```
+
+## Themes
+
+`public/styles.css` holds the shared structure, drawn entirely from custom
+properties. Each `public/theme-*.css` (`guide`, `program`, `lateset`, `club`)
+defines its colors and fonts, light and dark, plus its own layouts, all scoped
+to `:root[data-theme="…"]`. A small inline script in `index.html` sets
+`data-theme` before first paint from `?theme=…`, then the choice saved in
+`localStorage`, then the default (`program`); `_headers` allows that script
+by its sha256, which `theme.test.ts` checks. The footer switcher changes it in
+place. To settle on one theme, delete the other theme files and their
+`<link>`s, the switcher (`#theme-switcher` and `themeSwitcher()` in
+`main.ts`), and fold the remaining theme into `styles.css` if wanted.
 
 Page URLs carry the view: `q`, `venue=lilypad,wallys`, `town=Cambridge,Somerville`
 (a single old-style `town=` still works), `adjacent=0`, `when`, `view=month`,

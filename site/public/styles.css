@@ -1,55 +1,37 @@
-/* Boston Jazz Calendar */
+/*
+ * Boston Jazz Calendar: shared structure.
+ *
+ * Everything here is drawn from custom properties. Each theme-*.css file
+ * defines the colors and fonts (light and dark) and its own layouts, all
+ * scoped to :root[data-theme="…"], which index.html sets before first paint.
+ *
+ * Color tokens every theme defines: --bg, --surface, --ink, --muted, --rule,
+ * --accent, --accent-ink, --adjacent, --focus, --cancelled.
+ */
 
 :root {
-  --bg: #f5efe4;
-  --surface: #fbf7ef;
-  --ink: #1e1a16;
-  --muted: #645a4e;
-  --rule: #ddd2c0;
-  --rule-strong: #1e1a16;
-  --accent: #8a2c1b;
-  --accent-ink: #fffaf2;
-  --brass: #8a5d12;
-  --adjacent: #2c5f63;
-  --cancelled: #a12a1a;
-  --chip: #ebe2d2;
-  --focus: #1f5fbf;
-  --highlight: color-mix(in srgb, var(--accent) 10%, var(--surface));
-  --shadow-popover: 0 0.6rem 1.8rem rgb(30 26 22 / 0.16);
-
-  --font-display:
-    "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-text:
     system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-display: var(--font-text);
+  /* Times, dates and counts. */
+  --font-time: var(--font-text);
+  --rule-strong: var(--ink);
+  --chip: var(--surface);
+  --highlight: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  --shadow-popover: 0 0.5rem 1.5rem rgb(0 0 0 / 0.14);
+
   --measure: 46rem;
   /* The month grid's width; the list keeps the narrower measure. */
   --measure-wide: 68rem;
   --gutter: 1rem;
-  --radius: 6px;
-  --radius-pill: 999px;
-
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #131015;
-    --surface: #1c181e;
-    --ink: #eee5d6;
-    --muted: #a89d8e;
-    --rule: #342d35;
-    --rule-strong: #d9a64a;
-    --accent: #d9a64a;
-    --accent-ink: #1a1306;
-    --brass: #d9a64a;
-    --adjacent: #85bdb6;
-    --cancelled: #ff8f7d;
-    --chip: #2a242c;
-    --focus: #8fb8ff;
-    --shadow-popover: 0 0.6rem 1.8rem rgb(0 0 0 / 0.55);
-
-    color-scheme: dark;
-  }
+  /* Popovers, inputs and month cells. */
+  --radius: 4px;
+  /* Buttons, presets and chips. */
+  --radius-control: 4px;
+  --time-col: 5rem;
+  --row-pad: 0.75rem;
+  /* The height of a bar the theme pins to the top; set by main.ts. */
+  --sticky-top: 0px;
 }
 
 *,
@@ -73,7 +55,7 @@ body {
 
 a {
   color: inherit;
-  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
   text-underline-offset: 0.18em;
 }
 
@@ -84,7 +66,18 @@ a:hover {
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: 1px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+/* Themes set display on many elements; hidden must still win. */
+[hidden] {
+  display: none !important;
 }
 
 .wrap {
@@ -119,53 +112,33 @@ a:hover {
   top: 0.5rem;
 }
 
-/* Masthead */
+/* Masthead: title block, last update and Subscribe. */
 
 .masthead {
-  padding-block: 2.5rem 1.75rem;
-  border-bottom: 4px double var(--rule-strong);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-.eyebrow,
-.field-label,
-.day-relative,
-.badge,
-.colophon h2 {
-  font-family: var(--font-text);
-  font-size: 0.72rem;
-  font-weight: 650;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.masthead-bar {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "text text"
+    "updated subscribe";
+  align-items: end;
+  gap: 0.25rem 1.5rem;
 }
 
-.eyebrow {
-  margin: 0 0 0.6rem;
-  color: var(--brass);
+.masthead-text {
+  grid-area: text;
 }
 
-.wordmark {
+.masthead-text > * {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(2.4rem, 9vw, 4rem);
-  font-weight: 600;
-  font-variation-settings: "opsz" 144;
-  line-height: 0.98;
-  letter-spacing: -0.02em;
-}
-
-.tagline {
-  max-width: 34rem;
-  margin: 0.9rem 0 1.4rem;
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-style: italic;
-  font-variation-settings: "opsz" 24;
-  line-height: 1.4;
-  color: var(--muted);
 }
 
 .updated {
+  grid-area: updated;
   margin: 0;
   min-height: 1.3em;
   font-size: 0.875rem;
@@ -176,19 +149,35 @@ a:hover {
   color: var(--cancelled);
 }
 
+.subscribe {
+  grid-area: subscribe;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  line-height: 1.05;
+}
+
+.tagline {
+  max-width: 36rem;
+  color: var(--muted);
+}
+
 /* Buttons */
 
 .button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 2.25rem;
-  padding: 0.35rem 0.9rem;
+  padding: 0.35rem 0.85rem;
   border: 1px solid var(--ink);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--ink);
   font: 600 0.875rem / 1.2 var(--font-text);
   text-decoration: none;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -204,29 +193,52 @@ a:hover {
 }
 
 .button-primary:hover {
-  background: color-mix(in srgb, var(--accent) 85%, var(--ink));
-  border-color: color-mix(in srgb, var(--accent) 85%, var(--ink));
+  border-color: color-mix(in srgb, var(--accent) 82%, var(--ink));
+  background: color-mix(in srgb, var(--accent) 82%, var(--ink));
   color: var(--accent-ink);
+}
+
+.button-small {
+  min-height: 2rem;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.8rem;
+}
+
+.link-button {
+  padding: 0.25rem 0.1rem;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--ink);
 }
 
 /* Filters */
 
 .filters {
+  position: relative;
   display: grid;
-  gap: 0.9rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .filter-row {
   display: flex;
   flex-wrap: wrap;
   align-items: end;
-  gap: 0.75rem 1rem;
+  gap: 0.6rem 1rem;
 }
 
 .field {
   display: grid;
-  gap: 0.3rem;
+  gap: 0.25rem;
 }
 
 .field-search {
@@ -238,38 +250,48 @@ a:hover {
 }
 
 .field-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--muted);
 }
 
 input[type="search"],
 select {
   width: 100%;
-  min-height: 2.6rem;
-  padding: 0.45rem 0.7rem;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.65rem;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--ink);
-  font: inherit;
 }
 
-input[type="search"]:focus,
-select:focus {
+input[type="search"]:hover,
+input[type="search"]:focus {
   border-color: var(--ink);
 }
 
-.presets {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.4rem;
+input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+/* Date presets and List | Month: radio buttons drawn as segments. */
+
+.presets,
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
   margin: 0;
   padding: 0;
   border: 0;
-  flex: 1 1 auto;
 }
 
-.presets[hidden] {
-  display: none;
+.presets {
+  flex: 1 1 auto;
+  gap: 0.4rem;
 }
 
 .presets label,
@@ -289,12 +311,12 @@ select:focus {
 .presets span,
 .segmented span {
   display: block;
-  text-align: center;
   padding: 0.35rem 0.75rem;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-control);
   font-size: 0.875rem;
   font-weight: 550;
+  text-align: center;
   white-space: nowrap;
 }
 
@@ -316,30 +338,26 @@ select:focus {
   outline-offset: 2px;
 }
 
-/* Two joined pills, e.g. List | Month. */
-.segmented {
-  display: flex;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
 .segmented label + label {
   margin-left: -1px;
 }
 
-.segmented label:first-of-type span {
-  border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+.segmented label:not(:last-of-type) span {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
 }
 
-.segmented label:last-of-type span {
-  border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+.segmented label:not(:first-of-type) span {
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
 }
+
+/* The jazz-adjacent switch */
 
 .toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.5rem;
   font-size: 0.875rem;
   cursor: pointer;
 }
@@ -347,11 +365,12 @@ select:focus {
 .toggle input {
   appearance: none;
   position: relative;
-  width: 2.3rem;
-  height: 1.35rem;
+  flex: none;
+  width: 2.2rem;
+  height: 1.3rem;
   margin: 0;
   border: 1px solid var(--muted);
-  border-radius: var(--radius-pill);
+  border-radius: 999px;
   background: var(--surface);
   cursor: pointer;
   transition: background-color 0.15s;
@@ -362,36 +381,24 @@ select:focus {
   position: absolute;
   top: 2px;
   left: 2px;
-  width: calc(1.35rem - 6px);
-  height: calc(1.35rem - 6px);
+  width: calc(1.3rem - 6px);
+  height: calc(1.3rem - 6px);
   border-radius: 50%;
   background: var(--muted);
   transition: transform 0.15s;
 }
 
 .toggle input:checked {
-  border-color: var(--adjacent);
-  background: var(--adjacent);
+  border-color: var(--ink);
+  background: var(--ink);
 }
 
 .toggle input:checked::before {
   background: var(--bg);
-  transform: translateX(0.95rem);
-}
-
-.count {
-  flex: 1 1 auto;
-  margin: 0;
-  min-height: 1.5em;
-  font-size: 0.875rem;
-  color: var(--muted);
+  transform: translateX(0.9rem);
 }
 
 /* Popovers: picker panels, the subscribe panel, add-to-calendar menus. */
-
-.filters {
-  position: relative;
-}
 
 .popover {
   position: absolute;
@@ -399,47 +406,22 @@ select:focus {
   /* top: auto leaves the panel just below its button, wherever it's anchored. */
   top: auto;
   left: 0;
-  margin-top: 0.3rem;
   right: 0;
+  margin-top: 0.3rem;
   padding: 0.75rem;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   background: var(--surface);
+  color: var(--ink);
   box-shadow: var(--shadow-popover);
-}
-
-.popover[hidden] {
-  display: none;
+  text-align: left;
 }
 
 .popover-title {
   margin: 0 0 0.4rem;
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1.125rem;
   font-weight: 600;
-}
-
-.button-small {
-  min-height: 2rem;
-  padding: 0.2rem 0.75rem;
-  font-size: 0.8rem;
-}
-
-.link-button {
-  padding: 0.25rem 0.1rem;
-  border: 0;
-  background: none;
-  color: var(--muted);
-  font: inherit;
-  font-size: 0.875rem;
-  text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
-  text-underline-offset: 0.18em;
-  cursor: pointer;
-}
-
-.link-button:hover {
-  color: var(--ink);
 }
 
 /* Multi-select pickers */
@@ -450,13 +432,12 @@ select:focus {
   justify-content: space-between;
   gap: 0.5rem;
   width: 100%;
-  min-height: 2.6rem;
-  padding: 0.45rem 0.7rem;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.65rem;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--ink);
-  font: inherit;
   text-align: left;
   cursor: pointer;
 }
@@ -464,8 +445,8 @@ select:focus {
 .picker-toggle::after {
   content: "";
   flex: none;
-  width: 0.45rem;
-  height: 0.45rem;
+  width: 0.4rem;
+  height: 0.4rem;
   margin-top: -0.2rem;
   border-right: 1.5px solid currentColor;
   border-bottom: 1.5px solid currentColor;
@@ -508,18 +489,13 @@ select:focus {
   border: 0;
 }
 
-.picker-group[hidden],
-.picker-option[hidden] {
-  display: none;
-}
-
 .picker-group legend {
   padding: 0.35rem 0 0.15rem;
   font-size: 0.72rem;
-  font-weight: 650;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--brass);
+  color: var(--muted);
 }
 
 .picker-option {
@@ -534,7 +510,7 @@ select:focus {
 }
 
 .picker-option:hover {
-  background: var(--chip);
+  background: var(--highlight);
 }
 
 .picker-option input {
@@ -569,10 +545,6 @@ select:focus {
   gap: 0.4rem 0.75rem;
 }
 
-.selection[hidden] {
-  display: none;
-}
-
 .selection-chips {
   display: flex;
   flex-wrap: wrap;
@@ -587,12 +559,12 @@ select:focus {
   align-items: baseline;
   gap: 0.4rem;
   min-height: 2rem;
-  padding: 0.3rem 0.4rem 0.3rem 0.7rem;
+  padding: 0.3rem 0.4rem 0.3rem 0.65rem;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-control);
   background: var(--chip);
   color: var(--ink);
-  font: 550 0.875rem / 1.2 var(--font-text);
+  font: 500 0.8125rem / 1.2 var(--font-text);
   cursor: pointer;
 }
 
@@ -601,9 +573,9 @@ select:focus {
 }
 
 .selection-chip-kind {
-  font-size: 0.64rem;
-  font-weight: 650;
-  letter-spacing: 0.12em;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -615,18 +587,28 @@ select:focus {
   color: var(--muted);
 }
 
-/* Toolbar: count, view toggle, subscribe */
+/* Toolbar: count and List | Month */
 
 .toolbar {
-  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem 0.9rem;
+  gap: 0.6rem 1rem;
   margin-bottom: 0.5rem;
-  padding-block: 0.6rem;
+  padding-block: 0.5rem;
   border-top: 1px solid var(--rule);
 }
+
+.count {
+  flex: 1 1 auto;
+  margin: 0;
+  min-height: 1.5em;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+/* Subscribe */
 
 .subscribe-toggle {
   white-space: nowrap;
@@ -689,14 +671,74 @@ select:focus {
   margin: 0.25rem 0 0.5rem;
   padding: 0.6rem 0.8rem;
   border-radius: var(--radius);
-  background: var(--chip);
+  background: var(--surface);
   font-size: 0.92rem;
+}
+
+/* Day strip: jump links to each day of the list. Themes opt in. */
+
+.day-strip {
+  display: none;
+}
+
+.day-strip-list {
+  display: flex;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.strip-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 2.75rem;
+  padding: 0.25rem 0.35rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-control);
+  font-family: var(--font-time);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+a.strip-day:hover {
+  border-color: var(--ink);
+}
+
+.strip-day.is-empty {
+  color: var(--muted);
+  border-style: dashed;
+}
+
+.strip-day.is-today {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.strip-weekday {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.strip-date {
+  font-weight: 600;
 }
 
 /* Month view */
 
-#listings.is-month {
+/* The month grid needs more width; the header and footer follow it. */
+:root:has(#listings.is-month) .wrap {
   max-width: var(--measure-wide);
+}
+
+.month {
+  margin-bottom: 1.5rem;
 }
 
 .month-nav {
@@ -711,9 +753,8 @@ select:focus {
 .month-heading {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  font-variation-settings: "opsz" 48;
 }
 
 .month-steps {
@@ -723,7 +764,6 @@ select:focus {
 }
 
 .month-step {
-  justify-content: center;
   min-width: 2.25rem;
   padding-inline: 0.5rem;
   font-size: 1.1rem;
@@ -743,8 +783,8 @@ select:focus {
 .month-grid th {
   padding: 0 0.4rem 0.35rem;
   font-size: 0.72rem;
-  font-weight: 650;
-  letter-spacing: 0.12em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-align: left;
   text-transform: uppercase;
   color: var(--muted);
@@ -766,7 +806,7 @@ select:focus {
   flex-direction: column;
   gap: 0.1rem;
   height: 100%;
-  min-height: 6.75rem;
+  min-height: 6.5rem;
   padding: 0.3rem 0.4rem 0.4rem;
   color: inherit;
   text-decoration: none;
@@ -784,11 +824,16 @@ a.month-day:focus-visible {
   align-self: flex-start;
   min-width: 1.6rem;
   padding: 0.05rem 0.3rem;
-  border-radius: var(--radius-pill);
-  font-weight: 650;
+  border-radius: var(--radius-control);
+  font-family: var(--font-time);
   font-size: 0.875rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   text-align: center;
+}
+
+.month-cell.is-today {
+  background: var(--highlight);
 }
 
 .is-today .month-date {
@@ -796,12 +841,8 @@ a.month-day:focus-visible {
   color: var(--accent-ink);
 }
 
-.is-today {
-  background: var(--highlight);
-}
-
 .is-outside {
-  background: color-mix(in srgb, var(--bg) 60%, var(--rule));
+  background: color-mix(in srgb, var(--ink) 5%, var(--bg));
 }
 
 .is-outside .month-day,
@@ -830,9 +871,9 @@ a.month-day:focus-visible {
 
 .month-entry-time {
   margin-right: 0.3em;
-  font-weight: 650;
+  font-family: var(--font-time);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--brass);
 }
 
 .month-entry.adjacent .month-entry-time {
@@ -846,15 +887,10 @@ a.month-day:focus-visible {
 
 .month-more {
   color: var(--muted);
-  font-weight: 550;
 }
 
 .month-count {
   display: none;
-}
-
-.month {
-  margin-bottom: 1.5rem;
 }
 
 @media (max-width: 39.99rem) {
@@ -865,7 +901,7 @@ a.month-day:focus-visible {
 
   .month-day {
     align-items: center;
-    min-height: 3.4rem;
+    min-height: 3.25rem;
     padding: 0.25rem 0.1rem;
   }
 
@@ -881,41 +917,81 @@ a.month-day:focus-visible {
     display: block;
     min-width: 1.4rem;
     padding: 0 0.3rem;
-    border-radius: var(--radius-pill);
-    background: var(--chip);
+    border-radius: var(--radius-control);
+    background: var(--surface);
+    font-family: var(--font-time);
     font-size: 0.72rem;
-    font-weight: 650;
+    font-weight: 600;
     text-align: center;
     color: var(--ink);
   }
+
+  .is-outside .month-count,
+  .is-today .month-count {
+    background: var(--bg);
+  }
 }
 
-/* Add to calendar */
+/* Add to calendar: a compact icon button and its menu. */
 
 .add-to-calendar {
   position: relative;
 }
 
-.add-to-calendar > summary {
+.add-to-calendar-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 2rem;
   min-height: 2rem;
-  padding-block: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  color: var(--muted);
   list-style: none;
+  cursor: pointer;
 }
 
-.add-to-calendar > summary::-webkit-details-marker {
+.add-to-calendar-toggle::-webkit-details-marker {
   display: none;
 }
 
-.add-to-calendar[open] > summary {
-  background: var(--ink);
-  color: var(--bg);
+.add-to-calendar-toggle:hover,
+.add-to-calendar[open] > .add-to-calendar-toggle {
+  border-color: var(--rule);
+  color: var(--ink);
+}
+
+/* Visually hidden by default; the icon carries the button. */
+.add-to-calendar-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.icon {
+  display: inline-block;
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.icon-calendar {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='1.5'/%3E%3Cpath d='M3.5 10h17M8 3v4M16 3v4M12 13v5M9.5 15.5h5'/%3E%3C/svg%3E");
 }
 
 .menu {
-  right: auto;
+  right: 0;
+  left: auto;
   width: max-content;
   min-width: 13rem;
-  margin: 0;
+  margin: 0.25rem 0 0;
   padding: 0.3rem;
   list-style: none;
 }
@@ -928,43 +1004,51 @@ a.month-day:focus-visible {
   border-radius: var(--radius);
   background: none;
   color: var(--ink);
-  font: 550 0.9rem / 1.3 var(--font-text);
+  font: 500 0.9rem / 1.3 var(--font-text);
   text-align: left;
   text-decoration: none;
   cursor: pointer;
 }
 
 .menu-item:hover {
-  background: var(--chip);
+  background: var(--highlight);
 }
 
 /* Days */
 
 .day {
   margin-bottom: 1.25rem;
+  scroll-margin-top: var(--sticky-top);
 }
 
 .day-heading {
   position: sticky;
-  top: 0;
-  z-index: 1;
+  top: var(--sticky-top);
+  z-index: 2;
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
   margin: 0;
-  padding: 0.7rem 0 0.45rem;
+  padding: 0.6rem 0 0.4rem;
   border-bottom: 1px solid var(--rule-strong);
   background: var(--bg);
   font-family: var(--font-display);
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  font-variation-settings: "opsz" 48;
-  letter-spacing: -0.005em;
+}
+
+/* The heading comes in two forms; each theme shows one. */
+.day-short {
+  display: none;
 }
 
 .day-relative {
-  color: var(--brass);
+  font-family: var(--font-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .events {
@@ -973,73 +1057,101 @@ a.month-day:focus-visible {
   list-style: none;
 }
 
-/* Events */
+/* Events. Each theme lays out .event-row; this is the plain default. */
 
 .event,
 .regular {
   border-bottom: 1px solid var(--rule);
 }
 
-.event article {
+.event-row {
+  position: relative;
   display: grid;
-  grid-template-columns: 5.1rem 1fr;
-  gap: 0 0.75rem;
-  padding-block: 1rem;
+  grid-template-columns: var(--time-col) minmax(0, 1fr) auto;
+  grid-template-areas:
+    "time title cal"
+    "time venue cal"
+    "time extra cal"
+    "time marks cal";
+  align-items: start;
+  column-gap: 1rem;
+  padding-block: var(--row-pad);
+}
+
+.event-row > * {
+  margin: 0;
+  min-width: 0;
 }
 
 .event-time {
-  margin: 0;
-  padding-top: 0.2rem;
-  font-family: var(--font-display);
-  font-size: 0.98rem;
-  font-weight: 500;
+  grid-area: time;
+  font-family: var(--font-time);
   font-variant-numeric: lining-nums tabular-nums;
-  line-height: 1.3;
-  color: var(--brass);
+  line-height: 1.35;
 }
 
 .event-time time {
   display: block;
+  white-space: nowrap;
+}
+
+/* Clock times come in two forms; each theme shows one. */
+.clock-short {
+  display: none;
 }
 
 .event-end {
   display: block;
-  white-space: nowrap;
-  font-size: 0.8rem;
-  font-weight: 400;
+  font-size: 0.8em;
   color: var(--muted);
+  white-space: nowrap;
 }
 
-.event-body {
-  min-width: 0;
-}
-
-.event-body > * {
-  margin: 0;
+.event-marks {
+  grid-area: marks;
 }
 
 .event-title {
+  grid-area: title;
   font-family: var(--font-display);
-  font-size: 1.22rem;
+  font-size: 1.0625rem;
   font-weight: 600;
-  font-variation-settings: "opsz" 30;
-  line-height: 1.25;
+  line-height: 1.3;
   overflow-wrap: break-word;
 }
 
+.event-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.event-link:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
 .event-artists {
-  margin-top: 0.15rem;
+  display: block;
+  font-family: var(--font-text);
+  font-size: 0.875rem;
+  font-weight: 400;
   color: var(--muted);
-  font-size: 0.94rem;
 }
 
 .event-venue {
-  margin-top: 0.35rem;
-  font-weight: 550;
+  grid-area: venue;
+  font-size: 0.875rem;
+}
+
+.event-venue a {
+  text-decoration: none;
+}
+
+.event-venue a:hover {
+  text-decoration: underline;
 }
 
 .event-place {
-  font-weight: 400;
   color: var(--muted);
 }
 
@@ -1047,70 +1159,78 @@ a.month-day:focus-visible {
   content: " · ";
 }
 
-.event-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem 0.75rem;
-  margin-top: 0.4rem;
+.event-extra {
+  grid-area: extra;
   font-size: 0.875rem;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.chip {
-  padding: 0.05rem 0.5rem;
-  border-radius: var(--radius-pill);
-  background: var(--chip);
   color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.5;
 }
 
-.chip-adjacent {
-  background: transparent;
-  box-shadow: inset 0 0 0 1px var(--adjacent);
+/* Inline-block keeps a link's underline off its separator. */
+.event-extra > * + *::before {
+  content: "·" / "";
+  display: inline-block;
+  margin-inline: 0.3em;
+  color: var(--muted);
+}
+
+.event-price {
+  font-variant-numeric: tabular-nums;
+}
+
+.event-tickets {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* A full-size target that doesn't make the row taller. */
+.event-row > .add-to-calendar {
+  grid-area: cal;
+  align-self: start;
+  margin-block: -0.3rem;
+}
+
+/* Markers: a glyph each, with text for screen readers. */
+
+.mark::before {
+  font-size: 0.85em;
+}
+
+.mark-now::before {
+  content: "●" / "";
+  color: var(--accent);
+}
+
+.mark-adjacent::before {
+  content: "◇" / "";
   color: var(--adjacent);
 }
 
-.event-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-.event-links .button {
-  min-height: 2rem;
-  padding-block: 0.25rem;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.1rem 0.4rem;
-  border-radius: 3px;
-  font-size: 0.64rem;
-  line-height: 1.4;
-  vertical-align: 0.2em;
-}
-
-.badge-now {
-  margin-top: 0.35rem;
-  background: var(--accent);
-  color: var(--accent-ink);
+.mark + .mark {
+  margin-left: 0.3em;
 }
 
 .badge-cancelled {
-  margin-right: 0.45rem;
+  margin-left: 0.5rem;
+  padding: 0 0.3rem;
   border: 1px solid var(--cancelled);
+  border-radius: 2px;
+  font-family: var(--font-text);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  vertical-align: 0.15em;
   color: var(--cancelled);
+}
+
+.event.cancelled .event-link,
+.event.cancelled .event-time time {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+.event.cancelled .event-row {
+  color: var(--muted);
 }
 
 /* Weekly regulars: standing series, kept apart from the dated listings. */
@@ -1120,50 +1240,38 @@ a.month-day:focus-visible {
 }
 
 .regulars-intro {
-  margin: 0.6rem 0 0.25rem;
+  margin: 0.5rem 0 0.25rem;
   font-size: 0.875rem;
   color: var(--muted);
 }
 
-.regular .event-body {
-  padding-block: 1rem;
+.regular-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "when" "marks" "title" "venue" "checked";
+  padding-block: var(--row-pad);
+}
+
+.regular-row > * {
+  margin: 0;
 }
 
 .regular-when {
-  margin-top: 0.15rem;
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-weight: 500;
-  color: var(--brass);
-}
-
-.regular .event-links {
-  align-items: center;
+  grid-area: when;
+  font-family: var(--font-time);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
 }
 
 .regular-checked {
+  grid-area: checked;
   font-size: 0.8rem;
   color: var(--muted);
 }
 
-/* Jazz-adjacent: a different voice, same volume. */
-.event.adjacent .event-time,
-.regular.adjacent .regular-when {
-  color: var(--adjacent);
-}
-
-.event.cancelled .event-title-text,
-.event.cancelled .event-time time {
-  text-decoration: line-through;
-  text-decoration-thickness: 1.5px;
-}
-
-.event.cancelled .event-body,
-.event.cancelled .event-time {
-  color: var(--muted);
-}
-
-/* Notices */
+/* Loading, empty and error notices */
 
 .notice {
   padding: 3rem 1rem;
@@ -1177,8 +1285,8 @@ a.month-day:focus-visible {
 
 .notice-title {
   font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-style: italic;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: var(--ink);
 }
 
@@ -1187,9 +1295,9 @@ a.month-day:focus-visible {
 .colophon {
   margin-top: 3rem;
   padding-block: 2rem 2.5rem;
-  border-top: 1px solid var(--rule-strong);
+  border-top: 1px solid var(--rule);
   background: var(--surface);
-  font-size: 0.92rem;
+  font-size: 0.9rem;
 }
 
 .colophon-grid {
@@ -1198,8 +1306,13 @@ a.month-day:focus-visible {
 }
 
 .colophon h2 {
-  margin: 0 0 0.6rem;
-  color: var(--brass);
+  margin: 0 0 0.5rem;
+  font-family: var(--font-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .colophon p {
@@ -1216,35 +1329,55 @@ a.month-day:focus-visible {
   color: var(--muted);
 }
 
+/* Review-period theme switcher; remove with the themes not chosen. */
+
+.theme-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.1rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  border: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.theme-switcher legend {
+  float: left;
+  margin-right: 0.3rem;
+  padding: 0;
+}
+
+.theme-switcher button {
+  padding: 0.2rem 0.15rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.theme-switcher button + button::before {
+  content: "·" / "";
+  display: inline-block;
+  margin-right: 0.3rem;
+  text-decoration: none;
+}
+
+.theme-switcher button[aria-pressed="true"] {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Wider screens */
+
 @media (min-width: 40rem) {
   :root {
     --gutter: 1.5rem;
-  }
-
-  .masthead {
-    padding-block: 3.5rem 2rem;
-  }
-
-  .event article {
-    grid-template-columns: 6.25rem 1fr;
-    gap: 0 1.25rem;
-  }
-
-  .event-time {
-    font-size: 1.05rem;
-  }
-
-  .event-title {
-    font-size: 1.35rem;
-  }
-
-  .tagline {
-    font-size: 1.15rem;
-  }
-
-  .presets {
-    display: flex;
-    flex-wrap: wrap;
   }
 
   .field-search {
@@ -1267,13 +1400,28 @@ a.month-day:focus-visible {
   }
 
   .subscribe-panel {
-    right: 0;
     left: auto;
     width: 26rem;
   }
 
   .colophon-grid {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 39.99rem) {
+  .subscribe-panel {
+    left: var(--gutter);
+    right: var(--gutter);
+  }
+
+  .subscribe-toggle-more {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 

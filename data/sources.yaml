@@ -45,7 +45,7 @@
   venue: mad-monkfish
   relevance: jazz
   options:
-    title_strip: ^\d{1,2}/\d{1,2}\s+
+    title_strip: ^\d{1,2}/\d{1,2}\s+|\s*\(?\b\d{1,2}(:\d{2})?\s*([ap]m)?\s*-\s*\d{1,2}(:\d{2})?\s*[ap]m\)?|\s+\d{1,2}(:\d{2})?\s*[ap]m\b|\s*\(Mad Monkfish Concert Series\)
     ticket_link: a[href*="exploretock.com/themadmonkfish/experience/"]
   notes: Only the www host serves pages; themadmonkfish.com/<path> returns 404.
 

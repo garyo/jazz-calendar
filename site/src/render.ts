@@ -7,6 +7,7 @@ import {
   extraArtists,
   isOnNow,
   normalize,
+  type StripDay,
   venueLocation,
 } from "./listings";
 import type { MonthDay } from "./month";
@@ -14,6 +15,7 @@ import {
   addDays,
   addMonths,
   type DayKey,
+  dayParts,
   eventEndLabel,
   eventTimeLabel,
   formatDate,
@@ -56,36 +58,83 @@ function srOnly(text: string): HTMLSpanElement {
   return h("span", { class: "sr-only" }, text);
 }
 
+/** Venue, neighborhood and town; themes may leave out the neighborhood. */
 function renderVenue(venueId: string, venue: Venue | undefined): Node {
   if (!venue) return h("p", { class: "event-venue" }, venueId);
   const href = safeUrl(venue.url);
+  const location = venueLocation(venue);
+  const hood = location.slice(0, -venue.town.length);
   return h(
     "p",
     { class: "event-venue" },
     href ? h("a", { href }, venue.name) : venue.name,
-    h("span", { class: "event-place" }, venueLocation(venue)),
+    h(
+      "span",
+      { class: "event-place" },
+      hood && h("span", { class: "event-hood" }, hood),
+      venue.town,
+    ),
   );
 }
 
-function adjacentChip(relevance: Relevance): Child {
-  return (
-    relevance === "adjacent" &&
-    h("li", { class: "chip chip-adjacent" }, "jazz-adjacent")
-  );
+/** A clock time in two forms, "7:30 pm" and "7:30p"; each theme shows one. */
+function clock(long: string, short: string): Node[] {
+  return [
+    h("span", { class: "clock-long" }, long),
+    h("span", { class: "clock-short" }, short),
+  ];
 }
 
-function renderMeta(event: CalendarEvent): Node | null {
-  const chips = [
-    adjacentChip(event.relevance),
-    ...(event.tags ?? []).map((tag) => h("li", { class: "chip" }, tag)),
-  ].filter(Boolean);
-  if (!event.price && chips.length === 0) return null;
+/**
+ * Status markers ("on now", "jazz-adjacent"). Each theme draws its own glyph
+ * or label; the text here is for screen readers.
+ */
+function renderMarks(relevance: Relevance, onNow = false): Child {
+  if (!onNow && relevance !== "adjacent") return null;
   return h(
-    "div",
-    { class: "event-meta" },
+    "p",
+    { class: "event-marks" },
+    onNow && h("span", { class: "mark mark-now" }, srOnly("On now.")),
+    relevance === "adjacent" &&
+      h("span", { class: "mark mark-adjacent" }, srOnly("Jazz-adjacent.")),
+  );
+}
+
+/** The title, linked to the listing's own page when there is one. */
+function renderTitle(
+  id: string,
+  title: string,
+  url: string | null | undefined,
+  ...rest: Child[]
+): HTMLHeadingElement {
+  const href = safeUrl(url);
+  return h(
+    "h3",
+    { class: "event-title", id },
+    href
+      ? h("a", { class: "event-link", href }, title)
+      : h("span", { class: "event-link" }, title),
+    ...rest,
+  );
+}
+
+/** Price, ticket link and tags: the small print of a listing. */
+function renderExtra(event: CalendarEvent, about: string): Child {
+  const tickets = safeUrl(event.ticket_url);
+  const tags = event.tags ?? [];
+  if (!event.price && !tickets && tags.length === 0) return null;
+  return h(
+    "p",
+    { class: "event-extra" },
     event.price && h("span", { class: "event-price" }, event.price),
-    chips.length > 0 &&
-      h("ul", { class: "chips", "aria-label": "Tags" }, ...chips),
+    tickets &&
+      h(
+        "a",
+        { class: "event-tickets", href: tickets },
+        "Tickets",
+        srOnly(about),
+      ),
+    ...tags.map((tag) => h("span", { class: "event-tag" }, tag)),
   );
 }
 
@@ -127,7 +176,13 @@ function renderAddToCalendar(
   return h(
     "details",
     { class: "add-to-calendar" },
-    h("summary", { class: "button" }, "Add to calendar", srOnly(about)),
+    h(
+      "summary",
+      { class: "add-to-calendar-toggle", title: "Add to calendar" },
+      h("span", { class: "icon icon-calendar", "aria-hidden": "true" }),
+      h("span", { class: "add-to-calendar-label" }, "Add to calendar"),
+      srOnly(about),
+    ),
     h(
       "ul",
       { class: "popover menu" },
@@ -150,66 +205,65 @@ function renderAddToCalendar(
   );
 }
 
-function renderLinks(event: CalendarEvent, venue: Venue | undefined): Node {
-  const details = safeUrl(event.url);
-  const tickets = safeUrl(event.ticket_url);
-  const about = ` for ${event.title} at ${venue?.name ?? event.venue}`;
-  return h(
-    "p",
-    { class: "event-links" },
-    details &&
-      h("a", { class: "button", href: details }, "Details", srOnly(about)),
-    tickets &&
-      h(
-        "a",
-        { class: "button button-primary", href: tickets },
-        "Tickets",
-        srOnly(about),
-      ),
-    !event.cancelled && renderAddToCalendar(event, venue, about),
-  );
-}
-
+/**
+ * One listing. The article's children are deliberately flat (time, marks,
+ * title, venue, extra, calendar menu) so each theme can lay them out as
+ * columns, a hanging list or two lines of text without different markup.
+ */
 function renderEvent(
   event: CalendarEvent,
   venue: Venue | undefined,
   now: Date,
 ): HTMLLIElement {
+  const onNow = !event.cancelled && isOnNow(event, now);
   const classes = ["event", event.relevance];
   if (event.cancelled) classes.push("cancelled");
+  if (onNow) classes.push("is-now");
   const titleId = `event-${event.id}`;
   const artists = extraArtists(event);
   const endLabel = eventEndLabel(event);
-  const onNow = !event.cancelled && isOnNow(event, now);
+  const about = ` for ${event.title} at ${venue?.name ?? event.venue}`;
   return h(
     "li",
     { class: classes.join(" ") },
     h(
       "article",
-      { "aria-labelledby": titleId },
+      { class: "event-row", "aria-labelledby": titleId },
       h(
         "p",
         { class: "event-time" },
-        h("time", { datetime: event.start }, eventTimeLabel(event)),
-        endLabel && h("span", { class: "event-end" }, endLabel),
-        onNow && h("span", { class: "badge badge-now" }, "On now"),
-      ),
-      h(
-        "div",
-        { class: "event-body" },
         h(
-          "h3",
-          { class: "event-title", id: titleId },
-          event.cancelled &&
-            h("span", { class: "badge badge-cancelled" }, "Cancelled"),
-          h("span", { class: "event-title-text" }, event.title),
+          "time",
+          { datetime: event.start },
+          ...(event.all_day
+            ? [eventTimeLabel(event)]
+            : clock(
+                eventTimeLabel(event),
+                formatShortClock(new Date(event.start)),
+              )),
         ),
-        artists.length > 0 &&
-          h("p", { class: "event-artists" }, `with ${artists.join(", ")}`),
-        renderVenue(event.venue, venue),
-        renderMeta(event),
-        renderLinks(event, venue),
+        endLabel &&
+          event.end &&
+          h(
+            "span",
+            { class: "event-end" },
+            " ",
+            ...clock(endLabel, `to ${formatShortClock(new Date(event.end))}`),
+          ),
       ),
+      renderMarks(event.relevance, onNow),
+      renderTitle(
+        titleId,
+        event.title,
+        event.url,
+        event.cancelled &&
+          h("span", { class: "badge badge-cancelled" }, "Cancelled"),
+        artists.length > 0 &&
+          h("span", { class: "event-artists" }, `with ${artists.join(", ")}`),
+      ),
+      renderVenue(event.venue, venue),
+      renderExtra(event, about),
+      !event.cancelled && renderAddToCalendar(event, venue, about),
     ),
   );
 }
@@ -218,6 +272,64 @@ function relativeDay(day: DayKey, today: DayKey): string | null {
   if (day === today) return "Today";
   if (day === addDays(today, 1)) return "Tomorrow";
   return null;
+}
+
+function renderDayHeading(id: string, day: DayKey, today: DayKey): Node {
+  const parts = dayParts(day);
+  const relative = relativeDay(day, today);
+  return h(
+    "h2",
+    { class: "day-heading", id },
+    h(
+      "time",
+      { datetime: day },
+      h("span", { class: "day-long" }, parts.long),
+      h(
+        "span",
+        { class: "day-short" },
+        `${parts.weekday} ${parts.day}`,
+        h("span", { class: "day-month" }, ` ${parts.month}`),
+      ),
+    ),
+    relative && h("span", { class: "day-relative" }, relative),
+  );
+}
+
+/** Jump links to each day of the list, quiet days shown but not linked. */
+export function renderDayStrip(
+  days: readonly StripDay[],
+  today: DayKey,
+): HTMLElement[] {
+  return days.map(({ day, count }) => {
+    const { weekday, day: date } = dayParts(day);
+    const classes = ["strip-day"];
+    if (day === today) classes.push("is-today");
+    const label = [
+      h("span", { class: "strip-weekday" }, weekday),
+      h("span", { class: "strip-date" }, date),
+    ];
+    return h(
+      "li",
+      {},
+      count > 0
+        ? h(
+            "a",
+            {
+              class: classes.join(" "),
+              href: `#day-${day}`,
+              "aria-label": `${formatDayHeading(day)}: ${showCount(count)}`,
+              "aria-current": day === today ? "date" : null,
+            },
+            ...label,
+          )
+        : h(
+            "span",
+            { class: `${classes.join(" ")} is-empty` },
+            ...label,
+            srOnly(": no shows"),
+          ),
+    );
+  });
 }
 
 export function renderDays(
@@ -229,17 +341,11 @@ export function renderDays(
   const fragment = document.createDocumentFragment();
   for (const { day, events } of groups) {
     const headingId = `day-${day}`;
-    const relative = relativeDay(day, today);
     fragment.append(
       h(
         "section",
         { class: "day", "aria-labelledby": headingId },
-        h(
-          "h2",
-          { class: "day-heading", id: headingId },
-          h("time", { datetime: day }, formatDayHeading(day)),
-          relative && h("span", { class: "day-relative" }, relative),
-        ),
+        renderDayHeading(headingId, day, today),
         h(
           "ol",
           { class: "events" },
@@ -259,43 +365,24 @@ function renderRegular(
   index: number,
 ): HTMLLIElement {
   const titleId = `regular-${index}`;
-  const venueName = venue?.name ?? regular.venue;
-  const schedule = safeUrl(regular.url);
   const checked = formatDate(regular.checked);
-  const chip = adjacentChip(regular.relevance);
   return h(
     "li",
     { class: `regular ${regular.relevance}` },
     h(
       "article",
-      { class: "event-body", "aria-labelledby": titleId },
-      h("h3", { class: "event-title", id: titleId }, regular.title),
+      { class: "regular-row", "aria-labelledby": titleId },
       h("p", { class: "regular-when" }, regular.when),
+      renderMarks(regular.relevance),
+      renderTitle(titleId, regular.title, regular.url),
       renderVenue(regular.venue, venue),
-      chip &&
+      checked &&
         h(
-          "div",
-          { class: "event-meta" },
-          h("ul", { class: "chips", "aria-label": "Tags" }, chip),
+          "p",
+          { class: "regular-checked" },
+          "Schedule as of ",
+          h("time", { datetime: regular.checked }, checked),
         ),
-      h(
-        "p",
-        { class: "event-links" },
-        schedule &&
-          h(
-            "a",
-            { class: "button", href: schedule },
-            "Schedule",
-            srOnly(` for ${regular.title} at ${venueName}`),
-          ),
-        checked &&
-          h(
-            "span",
-            { class: "regular-checked" },
-            "as of ",
-            h("time", { datetime: regular.checked }, checked),
-          ),
-      ),
     ),
   );
 }

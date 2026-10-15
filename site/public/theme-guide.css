@@ -1,0 +1,357 @@
+/*
+ * Guide: an editorial listings page, like a print jazz guide. Serif act
+ * names on the left, venue and time set right; centered serif day heads.
+ */
+
+:root[data-theme="guide"] {
+  --bg: #fcfcfa;
+  --surface: #f1f1ed;
+  --ink: #141414;
+  --muted: #595955;
+  --rule: #d6d6cf;
+  --accent: #1747a6;
+  --accent-ink: #ffffff;
+  --adjacent: #7a4b00;
+  --focus: #1747a6;
+  --cancelled: #a1261b;
+
+  --font-display: "Source Serif 4", Georgia, serif;
+  --measure: 44rem;
+  --radius: 2px;
+  --radius-control: 2px;
+  --row-pad: 0.5rem;
+
+  color-scheme: light;
+
+  @media (prefers-color-scheme: dark) {
+    --bg: #141413;
+    --surface: #1d1d1b;
+    --ink: #ededea;
+    --muted: #a6a6a0;
+    --rule: #34342f;
+    --accent: #8fb1ff;
+    --accent-ink: #0d1426;
+    --adjacent: #e0b35c;
+    --focus: #8fb1ff;
+    --cancelled: #ff9a8a;
+    --shadow-popover: 0 0.5rem 1.5rem rgb(0 0 0 / 0.5);
+
+    color-scheme: dark;
+  }
+
+  a {
+    text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+    text-decoration-thickness: 1px;
+  }
+
+  /* Header: wordmark, a line of dek, then a heavy rule. */
+
+  .masthead {
+    padding-top: 2rem;
+  }
+
+  .masthead-text {
+    display: contents;
+  }
+
+  .masthead-bar {
+    grid-template-areas:
+      "wordmark subscribe"
+      "tagline tagline"
+      "updated updated"
+      "rule rule";
+    align-items: end;
+    row-gap: 0.35rem;
+  }
+
+  .masthead-bar::after {
+    content: "";
+    grid-area: rule;
+    height: 3px;
+    margin-top: 0.75rem;
+    background: var(--ink);
+  }
+
+  .eyebrow {
+    display: none;
+  }
+
+  .wordmark {
+    grid-area: wordmark;
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 600;
+    font-variation-settings: "opsz" 60;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+
+  .tagline {
+    grid-area: tagline;
+    margin: 0.25rem 0 0;
+    max-width: none;
+    font-size: 0.9375rem;
+  }
+
+  .updated {
+    font-size: 0.8125rem;
+  }
+
+  .subscribe {
+    align-self: center;
+  }
+
+  @media (max-width: 39.99rem) {
+    .masthead-bar {
+      grid-template-areas:
+        "wordmark wordmark"
+        "tagline tagline"
+        "updated subscribe"
+        "rule rule";
+    }
+
+    .wordmark {
+      font-size: 2.25rem;
+    }
+  }
+
+  .picker {
+    flex-basis: 10rem;
+  }
+
+  /* Controls: newspaper section tabs. */
+
+  & .presets,
+  & .segmented {
+    gap: 0 1.1rem;
+  }
+
+  .segmented label + label {
+    margin-left: 0;
+  }
+
+  & .presets span,
+  & .segmented span,
+  & .segmented label span {
+    padding: 0.3rem 0;
+    border: 0;
+    border-radius: 0;
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  & .presets input:hover + span,
+  & .segmented input:hover + span {
+    color: var(--ink);
+  }
+
+  & .presets input:checked + span,
+  & .segmented input:checked + span {
+    background: none;
+    color: var(--ink);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+
+  .selection-chip {
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .toolbar {
+    border-top: 0;
+  }
+
+  .button:not(.button-primary) {
+    border-color: var(--rule);
+  }
+
+  .button:not(.button-primary):hover {
+    border-color: var(--ink);
+    background: none;
+    color: var(--ink);
+  }
+
+  & .popover-title,
+  & .notice-title,
+  & .month-heading {
+    font-weight: 600;
+  }
+
+  /* Day heads: centered between two hairlines. */
+
+  .day {
+    margin: 2rem 0 0;
+  }
+
+  .day-heading {
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0;
+    border-bottom: 0;
+    font-size: 1.25rem;
+    text-align: center;
+  }
+
+  & .day-heading::before,
+  & .day-heading::after {
+    content: "";
+    flex: 1 1 1rem;
+    align-self: center;
+    border-top: 1px solid var(--rule);
+  }
+
+  .day-relative {
+    order: 1;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+
+  .day-heading::after {
+    order: 2;
+  }
+
+  /* Rows: the act on the left, venue · town · time set right. */
+
+  & .event,
+  & .regular {
+    border-bottom: 0;
+  }
+
+  .event-row {
+    grid-template-columns: 1.25rem auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "marks title title cal"
+      "marks time venue venue"
+      "marks extra extra extra";
+    column-gap: 0;
+    align-items: baseline;
+  }
+
+  /* A hanging column, like the bullets of a printed listing. */
+  .event-marks {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.15em;
+    padding-right: 0.4rem;
+    line-height: 1.6;
+  }
+
+  .mark + .mark {
+    margin: 0;
+  }
+
+  .event-title {
+    font-size: 1.0625rem;
+    font-weight: 650;
+  }
+
+  & .event-time,
+  & .event-venue {
+    font-family: var(--font-text);
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  .event-time {
+    margin-right: 0.35em;
+  }
+
+  .event-time time {
+    display: inline;
+  }
+
+  .event-row .event-venue::before {
+    content: "·" / "";
+    margin-right: 0.35em;
+  }
+
+  & .event-end,
+  & .event-hood {
+    display: none;
+  }
+
+  .event-venue a {
+    text-decoration: none;
+  }
+
+  .event-extra {
+    color: var(--muted);
+  }
+
+  .event-tickets {
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+  }
+
+  .event-row > .add-to-calendar {
+    margin-left: 0.5rem;
+  }
+
+  .regular-row {
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    grid-template-areas:
+      "marks title"
+      ". when"
+      ". venue"
+      ". checked";
+  }
+
+  .regular-row .event-title {
+    font-weight: 650;
+  }
+
+  #regulars-heading {
+    margin-top: 1rem;
+  }
+
+  @media (min-width: 40rem) {
+    .event-row {
+      grid-template-columns: 1.25rem minmax(0, 1fr) auto auto auto;
+      grid-template-areas:
+        "marks title venue time cal"
+        "marks extra extra extra extra";
+    }
+
+    .event-title {
+      margin-right: 1rem;
+    }
+
+    .event-row .event-venue {
+      max-width: 16rem;
+      text-align: right;
+    }
+
+    .event-row .event-venue::before {
+      content: none;
+    }
+
+    .regular-row {
+      grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+      grid-template-areas:
+        "marks title venue"
+        ". when when"
+        ". checked checked";
+      align-items: baseline;
+    }
+
+    .event-time {
+      margin: 0 0 0 0.35em;
+      text-align: right;
+    }
+
+    .event-time::before {
+      content: "·" / "";
+      margin-right: 0.35em;
+    }
+
+    .event-extra {
+      font-size: 0.875rem;
+    }
+  }
+}

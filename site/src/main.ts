@@ -6,6 +6,7 @@ import {
   filterRegulars,
   groupByDay,
   matchingEvents,
+  stripDays,
   venuesWithListings,
 } from "./listings";
 import { buildMonth } from "./month";
@@ -13,6 +14,7 @@ import { createPicker, type PickerOption } from "./picker";
 import {
   h,
   type MonthLinks,
+  renderDayStrip,
   renderDays,
   renderMonth,
   renderNotice,
@@ -20,6 +22,7 @@ import {
   showCount,
 } from "./render";
 import { feedQuery, selectionLabel } from "./selection";
+import { themeSwitcher } from "./theme";
 import {
   type DayKey,
   dayKey,
@@ -63,6 +66,9 @@ const updated = byId<HTMLElement>("updated");
 const regularsSection = byId<HTMLElement>("regulars");
 const regularsList = byId<HTMLUListElement>("regulars-list");
 const listings = byId<HTMLElement>("listings");
+const dayStrip = byId<HTMLElement>("day-strip");
+const dayStripList = byId<HTMLOListElement>("day-strip-list");
+const filterBar = document.querySelector<HTMLElement>("search.filter-bar");
 const subscribe = {
   scope: byId<HTMLElement>("subscribe-scope"),
   note: byId<HTMLElement>("subscribe-note"),
@@ -278,9 +284,13 @@ function renderList(now: Date, today: DayKey): void {
         "Show all dates",
       ),
     );
+  const groups = groupByDay(shown, today);
+  const strip = state.day ? [] : stripDays(groups);
+  dayStripList.replaceChildren(...renderDayStrip(strip, today));
+  dayStrip.hidden = strip.length === 0;
   let body: Node;
   if (shown.length > 0) {
-    body = renderDays(groupByDay(shown, today), feed.venues, now, today);
+    body = renderDays(groups, feed.venues, now, today);
   } else if (isFiltered()) {
     body = renderNotice(
       "Nothing matches those filters.",
@@ -325,6 +335,7 @@ function renderMonthView(now: Date, today: DayKey): void {
       : null;
   results.replaceChildren(grid, ...(agenda ? [agenda] : []));
   regularsSection.hidden = true;
+  dayStrip.hidden = true;
 }
 
 function render(): void {
@@ -378,6 +389,35 @@ results.addEventListener("click", (event) => {
   event.preventDefault();
   followLink(link);
 });
+
+/** Scrolls to a day picked from the day strip and moves focus to its heading. */
+dayStrip.addEventListener("click", (event) => {
+  const link = (event.target as Element).closest<HTMLAnchorElement>("a");
+  const heading = link && document.getElementById(link.hash.slice(1));
+  if (!heading) return;
+  event.preventDefault();
+  heading.tabIndex = -1;
+  heading.focus({ preventScroll: true });
+  heading.closest(".day")?.scrollIntoView({ block: "start" });
+});
+
+/**
+ * Day headings stick just below whichever bar the theme pins (the filters or
+ * the day strip), so the stylesheet needs that bar's height.
+ */
+function updateStickyTop(): void {
+  const pinned = [dayStrip, filterBar].find(
+    (bar) => bar && getComputedStyle(bar).position === "sticky",
+  );
+  document.documentElement.style.setProperty(
+    "--sticky-top",
+    `${pinned?.offsetHeight ?? 0}px`,
+  );
+}
+const stickyObserver = new ResizeObserver(updateStickyTop);
+for (const bar of [dayStrip, filterBar]) if (bar) stickyObserver.observe(bar);
+compact.addEventListener("change", updateStickyTop);
+themeSwitcher(byId("theme-switcher"), updateStickyTop);
 
 function showUpdated(generatedAt: string): void {
   const date = new Date(generatedAt);
@@ -509,6 +549,10 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") render();
 });
 
+// The pre-paint script has already applied and saved ?theme=; drop it.
+if (new URLSearchParams(location.search).has("theme")) {
+  history.replaceState(null, "", hrefFor(state) + location.hash);
+}
 writeControls(state);
 updateSubscribe();
 load();

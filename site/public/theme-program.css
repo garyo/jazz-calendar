@@ -1,0 +1,389 @@
+/*
+ * Program: a utilitarian program guide. A grotesk face, a fixed time column
+ * and one row per gig; mono for times and counts, one orange accent.
+ * Also the default when no theme is set.
+ */
+
+:root:not([data-theme]),
+:root[data-theme="program"] {
+  --bg: #ffffff;
+  --surface: #f3f4f6;
+  --ink: #15171c;
+  --muted: #565c68;
+  --rule: #dfe2e7;
+  --accent: #c2410c;
+  --accent-ink: #ffffff;
+  --adjacent: #6d28d9;
+  --focus: #2563eb;
+  --cancelled: #b91c1c;
+
+  --font-text: "IBM Plex Sans", system-ui, sans-serif;
+  --font-display: var(--font-text);
+  --font-time: "IBM Plex Mono", ui-monospace, monospace;
+  --measure: 64rem;
+  --measure-wide: 64rem;
+  --radius: 2px;
+  --radius-control: 2px;
+  --time-col: 5.5rem;
+  --row-pad: 0.375rem;
+
+  color-scheme: light;
+
+  @media (prefers-color-scheme: dark) {
+    --bg: #0e1014;
+    --surface: #171a20;
+    --ink: #e7e9ed;
+    --muted: #9aa1ad;
+    --rule: #2a2f38;
+    --accent: #ff8a4c;
+    --accent-ink: #1a0b02;
+    --adjacent: #b9a2ff;
+    --focus: #7aa7ff;
+    --cancelled: #ff8a80;
+    --shadow-popover: 0 0.5rem 1.5rem rgb(0 0 0 / 0.5);
+
+    color-scheme: dark;
+  }
+
+  body {
+    line-height: 1.35;
+  }
+
+  /* Header: one 48px bar. */
+
+  .masthead {
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .masthead-bar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "text updated subscribe";
+    align-items: center;
+    min-height: 3rem;
+    padding-block: 0.375rem;
+  }
+
+  & .eyebrow,
+  & .tagline {
+    display: none;
+  }
+
+  .wordmark {
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .updated {
+    justify-self: end;
+    min-height: 0;
+    font-family: var(--font-time);
+    font-size: 0.75rem;
+    text-align: right;
+  }
+
+  @media (max-width: 39.99rem) {
+    .masthead-bar {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "text subscribe" "updated updated";
+      row-gap: 0;
+    }
+
+    .updated {
+      justify-self: start;
+      text-align: left;
+    }
+  }
+
+  .subscribe-toggle {
+    min-height: 2rem;
+    padding-block: 0.25rem;
+  }
+
+  /* Day strip, Hot House style */
+
+  .day-strip {
+    display: block;
+    padding-block: 0.25rem 0.75rem;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 0.75rem;
+  }
+
+  .strip-day {
+    min-width: 3rem;
+    padding-block: 0.3rem;
+  }
+
+  .strip-weekday {
+    font-size: 0.6875rem;
+  }
+
+  .strip-date {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .strip-day.is-empty {
+    border-color: transparent;
+  }
+
+  /* Filters and segmented controls */
+
+  & .field-label,
+  & .picker-group legend,
+  & .selection-chip-kind,
+  & .presets span,
+  & .segmented span,
+  & .selection-chip {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  /* Placeholders and picker summaries say what each field is. */
+  .filters .field-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .presets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .presets label {
+    margin: 0 0 -1px -1px;
+  }
+
+  & .presets span,
+  & .segmented span {
+    padding: 0.45rem 0.7rem;
+    border-color: var(--rule);
+    border-radius: 0;
+  }
+
+  .toolbar {
+    border-top: 0;
+  }
+
+  .count {
+    font-family: var(--font-time);
+    font-size: 0.8125rem;
+  }
+
+  /* Day headings: a mono band across the full width. */
+
+  .day {
+    margin-bottom: 0.5rem;
+  }
+
+  .day-heading {
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    border-bottom: 0;
+    background: var(--surface);
+    box-shadow: 0 0 0 100vmax var(--surface);
+    clip-path: inset(0 -100vmax);
+    font-family: var(--font-time);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .day-long {
+    display: none;
+  }
+
+  .day-short {
+    display: inline;
+  }
+
+  .day-relative {
+    font: inherit;
+    letter-spacing: inherit;
+    color: var(--accent);
+  }
+
+  .day-relative::before {
+    content: "— " / "";
+    color: var(--muted);
+  }
+
+  /* Rows: time | act | venue | price, one line where it fits. */
+
+  .event-row {
+    grid-template-columns: 4rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      "time title title"
+      "time venue cal"
+      "time extra extra";
+    column-gap: 0.75rem;
+    align-items: baseline;
+  }
+
+  .event-time {
+    font-size: 0.875rem;
+  }
+
+  .event-end {
+    font-size: 0.75rem;
+  }
+
+  & .clock-long,
+  & .event-hood {
+    display: none;
+  }
+
+  .clock-short {
+    display: inline;
+  }
+
+  .event-marks {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .event-title {
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .event-artists {
+    display: inline;
+    margin-left: 0.35em;
+    font-size: 0.875rem;
+  }
+
+  .event-row > .add-to-calendar {
+    align-self: center;
+  }
+
+  .event.adjacent {
+    margin-left: calc(-0.5rem - 3px);
+    padding-left: 0.5rem;
+    border-left: 3px solid var(--adjacent);
+  }
+
+  .event.is-now .event-time {
+    align-self: stretch;
+    margin-left: -0.35rem;
+    padding: 0.1rem 0.35rem;
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .event.is-now .event-end {
+    color: inherit;
+  }
+
+  .regular-row {
+    row-gap: 0.1rem;
+  }
+
+  .regular.adjacent {
+    margin-left: calc(-0.5rem - 3px);
+    padding-left: 0.5rem;
+    border-left: 3px solid var(--adjacent);
+  }
+
+  .regular-row .event-marks {
+    position: absolute;
+  }
+
+  .notice-title {
+    font-size: 1.125rem;
+  }
+
+  @media (min-width: 52rem) {
+    /* The filters pin to the top as one bar. */
+    .filter-bar {
+      position: sticky;
+      top: 0;
+      z-index: 4;
+      margin-bottom: 0.25rem;
+      padding-block: 0.5rem;
+      border-bottom: 1px solid var(--rule);
+      background: var(--bg);
+      box-shadow: 0 0 0 100vmax var(--bg);
+      clip-path: inset(0 -100vmax);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 0.75rem;
+      margin-bottom: 0;
+    }
+
+    .filter-row {
+      display: contents;
+    }
+
+    .field-search {
+      flex: 1 1 12rem;
+    }
+
+    .picker {
+      flex: 0 1 10rem;
+    }
+
+    .presets {
+      display: flex;
+      flex: none;
+    }
+
+    .selection {
+      order: 1;
+      flex-basis: 100%;
+    }
+
+    & input[type="search"],
+    & .picker-toggle {
+      min-height: 2.25rem;
+      padding-block: 0.3rem;
+    }
+
+    .event-row {
+      grid-template-columns: var(--time-col) minmax(0, 1fr) 15rem 7rem 2rem;
+      grid-template-areas: "time title venue extra cal";
+      column-gap: 1rem;
+    }
+
+    .event-extra {
+      text-align: right;
+    }
+
+    .event-extra > * {
+      display: block;
+    }
+
+    .event-extra > * + *::before {
+      content: none;
+    }
+
+    .regular-row {
+      grid-template-columns: 12rem minmax(0, 1fr) 15rem;
+      grid-template-areas: "when title venue" "when checked venue";
+      column-gap: 1rem;
+      align-items: baseline;
+    }
+
+    .regular-when {
+      font-family: var(--font-text);
+    }
+  }
+}

@@ -3,6 +3,7 @@ import {
   addDays,
   addMonths,
   dayKey,
+  dayParts,
   eventEndLabel,
   eventTimeLabel,
   formatClock,
@@ -48,6 +49,12 @@ describe("day arithmetic", () => {
     expect(weekday("2026-10-18")).toBe(0);
     expect(formatDayHeading("2026-10-15")).toBe("Thursday, Oct 15");
     expect(formatDayHeading("2026-11-01")).toBe("Sunday, Nov 1");
+    expect(dayParts("2026-09-03")).toEqual({
+      long: "Thursday, September 3",
+      weekday: "Thu",
+      day: "3",
+      month: "Sep",
+    });
   });
 });
 
