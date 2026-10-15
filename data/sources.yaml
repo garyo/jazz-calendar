@@ -78,7 +78,7 @@
 
 - id: bpl
   adapter: bibliocommons
-  url: https://gateway.bibliocommons.com/v2/libraries/bpl/events/search
+  url: https://gateway.bibliocommons.com/v2/libraries/bpl/rss/events
   venue: bpl
   options:
     query: jazz
@@ -114,7 +114,9 @@
     follow: a[href*="/BPC/events/"]
     max_follow: 40
     trust_text: true
-  notes: robots.txt sets Crawl-delay 10 and disallows ?page= and ?keys=, so only the first list page.
+  enabled: false
+  notes: >-
+    Disabled 2026-10-15 for terms of use: Berklee's terms require express written consent to use its content on another website. Ask via berklee.edu/contact.
 
 - id: berklee-red-room
   adapter: jsonld
@@ -123,6 +125,9 @@
   options:
     follow: a[href*="/red-room-cafe-939/events/"]
     max_follow: 20
+  enabled: false
+  notes: >-
+    Disabled 2026-10-15 for terms of use: Berklee's terms require express written consent to use its content on another website. Ask via berklee.edu/contact.
 
 - id: vivo
   adapter: jsonld
@@ -131,7 +136,9 @@
   options:
     follow: a[href*="/productions/"]
     max_follow: 30
-  notes: Vivo (formerly Celebrity Series) jazz list; events across several halls.
+  enabled: false
+  notes: >-
+    Disabled 2026-10-15 for terms of use: Vivo's terms (2026-01-08) forbid any robot or automatic means to access the site, and allow links only to the home page. Ask info@vivoperformingarts.org.
 
 - id: global-arts-live
   adapter: jsonld
@@ -148,19 +155,23 @@
   notes: All genres (much world music); Crawl-delay 10, so a cold run takes ~10 minutes.
 
 - id: regattabar
-  adapter: jsonld
-  url: https://www.ticketweb.com/venue/regattabar-cambridge-ma/748814?pl=regatta
+  adapter: ticketmaster
+  url: https://app.ticketmaster.com/discovery/v2/events.json
   venue: regattabar
-  enabled: false
   options:
+    venue_id: KovZ917AYuX
     unknown: jazz
   notes: >-
-    Do not enable. TicketWeb's Terms of Use (info.ticketweb.com/terms-of-use, updated
-    2017-03-13) forbid robots and spiders that retrieve or data-mine the site, except public
-    search engines, even though its robots.txt allows /venue/. Regattabar's own site has no
-    schedule. Routes to try: the Ticketmaster Discovery API (its docs don't list TicketWeb as
-    a source; test with a key), the ArtsBoston feed once permitted (it lists some Regattabar
-    shows), or asking Regattabar / the Charles Hotel directly.
+    Via the Ticketmaster Discovery API, which carries Regattabar's TicketWeb listings.
+    TicketWeb's own pages forbid robots, so never scrape them.
+
+- id: scullers-tm
+  adapter: ticketmaster
+  url: https://app.ticketmaster.com/discovery/v2/events.json
+  venue: scullers
+  options:
+    venue_id: KovZpZAatEtA
+  notes: Via the Ticketmaster Discovery API (Scullers sells through TicketWeb).
 
 - id: lilypad
   adapter: squarespace
@@ -174,9 +185,11 @@
   adapter: musicidb
   url: https://musicidb.com/venue/getVenueEvents.htm?listType=upcoming&frameType=listWidget&descrip=1&venueId=715
   venue: scullers
-  notes: The MusicIDB list widget scullersjazz.com embeds; TicketWeb links.
   options:
     title_strip: \s*[-–]\s*tickets? on sale.*$
+  enabled: false
+  notes: >-
+    Disabled 2026-10-15 for terms of use: MusicIDB's terms forbid scraping or crawling without written consent of MusicIDB or its Members (Scullers). Ask Info@ScullersJazz.com and People@MusicIDB.com, or use the Ticketmaster API.
 
 - id: plough-and-stars
   adapter: ploughandstars
