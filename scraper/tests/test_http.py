@@ -177,3 +177,69 @@ def test_errors_hide_secrets(server: Server, tmp_path: Path, today: object) -> N
     assert str(forbidden.value) == "HTTP 403 for https://api.example/events?apikey=REDACTED"
     assert "t0k" not in str(down.value)
     assert "token=REDACTED" in str(down.value)
+
+
+def responses(*items: httpx.Response | Exception) -> Handler:
+    """A route answering with each item in turn (raising the exceptions), then the last again."""
+    queue = list(items)
+
+    def answer(request: httpx.Request) -> httpx.Response:
+        item = queue.pop(0) if len(queue) > 1 else queue[0]
+        if isinstance(item, Exception):
+            raise item
+        return item
+
+    return answer
+
+
+def test_server_errors_are_retried(
+    server: Server, clock: Clock, tmp_path: Path, today: object
+) -> None:
+    url = "https://club.example/events"
+    server.routes[url] = responses(
+        httpx.Response(503, headers={"Retry-After": "30"}),
+        httpx.ConnectError("reset"),
+        httpx.Response(200, text="ok"),
+    )
+    with client(server, tmp_path) as http:
+        assert http.get(url).text == "ok"
+    times = [t for t, r in server.requests if str(r.url) == url]
+    assert len(times) == 3
+    assert times[1] - times[0] == 30
+    assert times[2] - times[1] == 2 * http_module.RETRY_BACKOFF
+
+
+def test_retries_give_up(server: Server, tmp_path: Path, today: object) -> None:
+    server.routes["https://club.example/down"] = httpx.Response(502)
+    server.routes["https://club.example/busy"] = httpx.Response(
+        503, headers={"Retry-After": "3600"}
+    )
+    server.routes["https://club.example/gone"] = responses(httpx.ReadTimeout("slow"))
+    with client(server, tmp_path) as http:
+        with pytest.raises(FetchError, match="HTTP 502"):
+            http.get("https://club.example/down")
+        with pytest.raises(FetchError, match="HTTP 503"):
+            http.get("https://club.example/busy")
+        with pytest.raises(FetchError, match="ReadTimeout"):
+            http.get("https://club.example/gone")
+    attempts = server.urls()
+    assert attempts.count("https://club.example/down") == 1 + http_module.RETRIES
+    assert attempts.count("https://club.example/busy") == 1
+    assert attempts.count("https://club.example/gone") == 1 + http_module.RETRIES
+
+
+def test_robots_server_error_blocks_the_host_for_this_run_only(
+    server: Server, tmp_path: Path, today: object
+) -> None:
+    robots = "https://club.example/robots.txt"
+    server.routes[robots] = httpx.Response(500)
+    server.routes["https://club.example/events"] = httpx.Response(200, text="ok")
+    with client(server, tmp_path) as http:
+        with pytest.raises(Disallowed):
+            http.get("https://club.example/events")
+        with pytest.raises(Disallowed):
+            http.get("https://club.example/events")
+    assert server.urls().count(robots) == 1 + http_module.RETRIES
+    server.routes[robots] = httpx.Response(404)
+    with client(server, tmp_path) as http:
+        assert http.get("https://club.example/events").text == "ok"

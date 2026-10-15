@@ -12,6 +12,7 @@ import re
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -24,6 +25,12 @@ BOT_NAME = "BostonJazzCalendarBot"
 USER_AGENT = f"Mozilla/5.0 (compatible; {BOT_NAME}/0.1; +https://bostonjazzcalendar.com/#about)"
 MIN_INTERVAL = 3.0
 ROBOTS_MAX_AGE = timedelta(hours=24)
+RETRIES = 2
+"""Further attempts after a server error, timeout or failed connection."""
+RETRY_BACKOFF = 5.0
+"""Seconds before the first retry; doubled for each one after."""
+RETRY_AFTER_MAX = 60.0
+"""The longest Retry-After we wait out; asked for longer, we give up on the URL for this run."""
 
 
 SECRET_PARAM = re.compile(
@@ -130,18 +137,31 @@ class Http:
         return Response(url, resp.text, from_cache=False)
 
     def _request(self, url: str, headers: dict[str, str], robots: Protego | None) -> httpx.Response:
+        """GET, retrying server errors and failed connections a couple of times."""
         host = urlsplit(url).netloc
         delay = max(MIN_INTERVAL, (robots.crawl_delay(BOT_NAME) or 0) if robots else 0)
-        wait = self._last_request.get(host, 0) + delay - time.monotonic()
-        if wait > 0:
-            time.sleep(wait)
-        log.info("GET %s", redact(url))
-        try:
-            return self._client.get(url, headers=headers)
-        except httpx.HTTPError as e:
-            raise FetchError(redact(f"{type(e).__name__} fetching {url}: {e}")) from e
-        finally:
-            self._last_request[host] = time.monotonic()
+        attempt = 0
+        while True:
+            wait = self._last_request.get(host, 0) + delay - time.monotonic()
+            if wait > 0:
+                time.sleep(wait)
+            log.info("GET %s", redact(url))
+            try:
+                resp = self._client.get(url, headers=headers)
+            except httpx.HTTPError as e:
+                if not isinstance(e, httpx.TransportError) or attempt == RETRIES:
+                    raise FetchError(redact(f"{type(e).__name__} fetching {url}: {e}")) from e
+                problem, pause = type(e).__name__, _backoff(attempt)
+            else:
+                pause = _retry_pause(resp, attempt)
+                if resp.status_code < 500 or attempt == RETRIES or pause is None:
+                    return resp
+                problem = f"HTTP {resp.status_code}"
+            finally:
+                self._last_request[host] = time.monotonic()
+            log.warning("%s for %s; retrying in %.0f s", problem, redact(url), pause)
+            time.sleep(pause)
+            attempt += 1
 
     def _robots_for(self, url: str) -> Protego | None:
         """Parsed robots.txt for the URL's host; None means everything is allowed."""
@@ -157,13 +177,12 @@ class Http:
             text = cached.body
         else:
             resp = self._request(robots_url, {}, None)
-            # RFC 9309: a missing robots.txt allows everything; a server error disallows all.
-            if 400 <= resp.status_code < 500:
-                text = ""
-            elif resp.status_code >= 500:
-                text = "User-agent: *\nDisallow: /"
-            else:
-                text = resp.text
+            # RFC 9309: a server error disallows everything, a missing robots.txt nothing. The
+            # former holds for this run only: caching it would shut the host out for a day.
+            if resp.status_code >= 500:
+                log.warning("HTTP %d for %s; skipping the host", resp.status_code, robots_url)
+                return Protego.parse("User-agent: *\nDisallow: /")
+            text = "" if resp.status_code >= 400 else resp.text
             meta = {"url": robots_url, "fetched_at": _now().isoformat()}
             self._write_cache(robots_url, meta, text)
         return Protego.parse(text) if text.strip() else None
@@ -183,6 +202,26 @@ class Http:
         path = self._cache_path(url)
         path.with_suffix(".body").write_text(body)
         path.with_suffix(".json").write_text(json.dumps(meta, indent=1))
+
+
+def _backoff(attempt: int) -> float:
+    return RETRY_BACKOFF * 2**attempt
+
+
+def _retry_pause(resp: httpx.Response, attempt: int) -> float | None:
+    """Seconds to wait before retrying, honoring Retry-After; None when it asks for too long."""
+    backoff = _backoff(attempt)
+    value = resp.headers.get("retry-after")
+    if not value:
+        return backoff
+    try:
+        seconds = float(value)
+    except ValueError:
+        try:
+            seconds = (parsedate_to_datetime(value) - _now()).total_seconds()
+        except (TypeError, ValueError):
+            return backoff
+    return None if seconds > RETRY_AFTER_MAX else max(seconds, backoff)
 
 
 def _now() -> datetime:
