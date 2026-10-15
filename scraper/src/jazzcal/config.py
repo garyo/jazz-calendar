@@ -3,6 +3,7 @@
 import os
 import re
 from dataclasses import dataclass, field
+from datetime import date, timedelta
 from functools import cached_property
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -10,13 +11,24 @@ from zoneinfo import ZoneInfo
 import yaml
 from pydantic import Field, TypeAdapter
 
-from jazzcal.models import Regular, Source, Venue
+from jazzcal.models import Regular, ScrapedEvent, Source, Venue
 
 TZ = ZoneInfo("America/New_York")
+
+NIGHT_CUTOFF = timedelta(hours=4)
+"""A show starting before 4 am local time belongs to the previous night's lineup."""
 
 ROOT = Path(os.environ.get("JAZZCAL_ROOT", Path(__file__).resolve().parents[3]))
 DATA_DIR = ROOT / "data"
 VAR_DIR = Path(os.environ.get("JAZZCAL_VAR", ROOT / "scraper" / "var"))
+
+
+def night_of(event: ScrapedEvent) -> date:
+    """The night a show belongs to: its local start date, or the day before for a set starting
+    after midnight but before NIGHT_CUTOFF. All-day listings keep their date."""
+    local = event.start.astimezone(TZ)
+    # Aware datetime arithmetic is on the wall clock, so DST changes don't shift the cutoff.
+    return local.date() if event.all_day else (local - NIGHT_CUTOFF).date()
 
 
 class VenueConfig(Venue):

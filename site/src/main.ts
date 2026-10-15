@@ -8,6 +8,8 @@ import {
   filterRegulars,
   groupByDay,
   matchingEvents,
+  regularsIntro,
+  regularsNotice,
   stripDays,
   venuesWithListings,
 } from "./listings";
@@ -29,11 +31,11 @@ import { submitDialog } from "./submit";
 import { themeSwitcher } from "./theme";
 import {
   type DayKey,
-  dayKey,
   formatDayHeading,
   formatMonth,
   formatUpdated,
   monthOf,
+  nightOf,
 } from "./time";
 import type { CalendarEvent, EventsFile, Regular, Venue } from "./types";
 import {
@@ -68,6 +70,7 @@ const results = byId<HTMLElement>("results");
 const count = byId<HTMLElement>("count");
 const updated = byId<HTMLElement>("updated");
 const regularsSection = byId<HTMLElement>("regulars");
+const regularsIntroText = byId<HTMLElement>("regulars-intro");
 const regularsList = byId<HTMLUListElement>("regulars-list");
 const listings = byId<HTMLElement>("listings");
 const dayStrip = byId<HTMLElement>("day-strip");
@@ -295,14 +298,20 @@ function renderList(now: Date, today: DayKey): void {
   const strip = state.day ? [] : stripDays(groups);
   dayStripList.replaceChildren(...renderDayStrip(strip, today));
   dayStrip.hidden = strip.length === 0;
+  const regulars = filterRegulars(feed.regulars, feed.venues, state, today);
+  const clear = { label: "Clear filters", onClick: resetFilters };
+  const onlyRegulars =
+    shown.length === 0 && regularsNotice(regulars, feed.venues, state, today);
   let body: Node;
   if (shown.length > 0) {
     body = renderDays(groups, feed.venues, feed.credits, now, today);
+  } else if (onlyRegulars) {
+    body = renderNotice(onlyRegulars.title, onlyRegulars.body, clear);
   } else if (isFiltered()) {
     body = renderNotice(
       "Nothing matches those filters.",
       "Try a wider date range or a different search.",
-      { label: "Clear filters", onClick: resetFilters },
+      clear,
     );
   } else {
     body = renderNotice(
@@ -313,7 +322,7 @@ function renderList(now: Date, today: DayKey): void {
   results.replaceChildren(
     ...[banner, body].filter((node) => node instanceof Node),
   );
-  const regulars = filterRegulars(feed.regulars, feed.venues, state);
+  regularsIntroText.textContent = regularsIntro(state, today);
   regularsList.replaceChildren(...renderRegulars(regulars, feed.venues));
   regularsSection.hidden = regulars.length === 0;
 }
@@ -348,7 +357,7 @@ function renderMonthView(now: Date, today: DayKey): void {
 function render(): void {
   if (!feed) return;
   const now = new Date();
-  const today = dayKey(now);
+  const today = nightOf(now);
   const month = state.view === "month";
   presets.hidden = month;
   listings.classList.toggle("is-month", month);

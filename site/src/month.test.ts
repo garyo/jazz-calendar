@@ -5,17 +5,23 @@ import type { CalendarEvent } from "./types";
 // Placement must not depend on the viewer's zone.
 process.env.TZ = "Asia/Tokyo";
 
-const event = (id: string, start: string): CalendarEvent => ({
+const event = (id: string, start: string, all_day = false): CalendarEvent => ({
   id,
   title: id,
   start,
+  all_day,
   venue: "lilypad",
   url: "https://example.com/",
   relevance: "jazz",
   sources: ["test"],
 });
 
-const days = (weeks: ReturnType<typeof buildMonth>) => weeks.flat();
+type Weeks = ReturnType<typeof buildMonth>;
+const days = (weeks: Weeks) => weeks.flat();
+const on = (weeks: Weeks, day: string) =>
+  days(weeks)
+    .find((d) => d.day === day)
+    ?.events.map((e) => e.id);
 
 describe("buildMonth", () => {
   test("Sunday-first weeks covering the month, neighbors marked", () => {
@@ -46,49 +52,48 @@ describe("buildMonth", () => {
     });
   });
 
-  test("events go on their Boston-local start day, after-midnight sets included", () => {
+  test("events go on their night, after-midnight sets with the evening before", () => {
     const weeks = buildMonth("2026-10", [
       event("evening", "2026-10-16T21:00:00-04:00"), // 01:00Z on the 17th
       event("utc", "2026-10-17T03:30:00Z"), // 11:30 pm on the 16th
-      event("late", "2026-10-17T00:30:00-04:00"), // after midnight: the 17th
+      event("late", "2026-10-17T00:30:00-04:00"), // Friday's late set
+      event("dawn", "2026-10-17T04:00:00-04:00"), // the cutoff: Saturday
       event("neighbor", "2026-09-28T20:00:00-04:00"),
       event("outside", "2026-11-12T20:00:00-05:00"),
     ]);
-    const on = (day: string) =>
-      days(weeks)
-        .find((d) => d.day === day)
-        ?.events.map((e) => e.id);
-    expect(on("2026-10-16")).toEqual(["evening", "utc"]);
-    expect(on("2026-10-17")).toEqual(["late"]);
-    expect(on("2026-09-28")).toEqual(["neighbor"]);
+    expect(on(weeks, "2026-10-16")).toEqual(["evening", "utc", "late"]);
+    expect(on(weeks, "2026-10-17")).toEqual(["dawn"]);
+    expect(on(weeks, "2026-09-28")).toEqual(["neighbor"]);
     expect(days(weeks).flatMap((d) => d.events.map((e) => e.id))).not.toContain(
       "outside",
     );
   });
 
   test("across the end of DST", () => {
-    const weeks = buildMonth("2026-11", [
+    const events = [
       event("edt", "2026-11-01T01:30:00-04:00"),
-      event("est", "2026-11-01T23:30:00-05:00"), // 04:30Z on the 2nd
-      event("allday", "2026-11-22T00:00:00-05:00"),
+      event("est", "2026-11-01T01:30:00-05:00"), // the second 1:30 am
+      event("cutoff", "2026-11-01T04:00:00-05:00"),
+      event("night", "2026-11-01T23:30:00-05:00"), // 04:30Z on the 2nd
+      event("allday", "2026-11-22T00:00:00-05:00", true),
+    ];
+    expect(on(buildMonth("2026-10", events), "2026-10-31")).toEqual([
+      "edt",
+      "est",
     ]);
-    expect(weeks[0][0].events.map((e) => e.id)).toEqual(["edt", "est"]);
-    expect(
-      days(weeks)
-        .find((d) => d.day === "2026-11-22")
-        ?.events.map((e) => e.id),
-    ).toEqual(["allday"]);
+    const weeks = buildMonth("2026-11", events);
+    expect(on(weeks, "2026-11-01")).toEqual(["cutoff", "night"]);
+    expect(on(weeks, "2026-11-22")).toEqual(["allday"]);
   });
 
   test("across the start of DST", () => {
     const weeks = buildMonth("2027-03", [
-      event("before", "2027-03-14T01:30:00-05:00"),
-      event("after", "2027-03-14T23:30:00-04:00"), // 03:30Z on the 15th
+      event("small", "2027-03-14T01:30:00-05:00"),
+      event("skipped", "2027-03-14T03:30:00-04:00"), // just after 2 am became 3
+      event("cutoff", "2027-03-14T04:00:00-04:00"),
+      event("night", "2027-03-14T23:30:00-04:00"), // 03:30Z on the 15th
     ]);
-    expect(
-      days(weeks)
-        .find((d) => d.day === "2027-03-14")
-        ?.events.map((e) => e.id),
-    ).toEqual(["before", "after"]);
+    expect(on(weeks, "2027-03-13")).toEqual(["small", "skipped"]);
+    expect(on(weeks, "2027-03-14")).toEqual(["cutoff", "night"]);
   });
 });

@@ -1,20 +1,20 @@
 /** Pure logic for the month view: a Sunday-first grid of Boston-local days. */
 
-import { addDays, type DayKey, dayKey, monthOf, weekday } from "./time";
+import { addDays, type DayKey, eventNight, monthOf, weekday } from "./time";
 import type { CalendarEvent } from "./types";
 
 export interface MonthDay {
   day: DayKey;
   /** False for the leading and trailing days of neighboring months. */
   inMonth: boolean;
-  /** Events starting that day (Boston time), in feed order. */
+  /** Events on that night (see eventNight), in feed order. */
   events: CalendarEvent[];
 }
 
 /**
  * The weeks covering `month` ("YYYY-MM"), Sunday through Saturday, each
- * day holding the given events that start on it. Events are placed by
- * their Boston-local start date, so a 12:30 am set belongs to the next day.
+ * day holding the given events of that night: a 12:30 am set on Saturday
+ * goes on Friday, as in the list.
  */
 export function buildMonth(
   month: string,
@@ -34,7 +34,7 @@ export function buildMonth(
     weeks.push(week);
   }
   for (const event of events) {
-    byDay.get(dayKey(new Date(event.start)))?.push(event);
+    byDay.get(eventNight(event))?.push(event);
   }
   return weeks;
 }

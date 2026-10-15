@@ -19,6 +19,8 @@ Listed = Literal["jazz", "adjacent"]
 
 Relevance = Listed | Literal["other"]
 
+Weekday = Literal["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+
 
 class Model(BaseModel):
     model_config = ConfigDict(extra="forbid", json_schema_serialization_defaults_required=True)
@@ -112,7 +114,13 @@ class Regular(Model):
 
     venue: str = Field(description="Venue id")
     title: str
-    when: str = Field(description="The schedule as the venue states it")
+    when: str = Field(description="The schedule as the venue states it, for people")
+    days: list[Weekday] = Field(min_length=1, description="The weekdays it runs")
+    nth: list[Literal[1, 2, 3, 4, 5, -1]] = Field(
+        default_factory=list,
+        description="Which of those weekdays in a month it runs (-1 for the last); "
+        "empty for every week",
+    )
     relevance: Listed
     url: str = Field(description="Where the venue or organizer publishes the schedule")
     checked: date = Field(description="When we last confirmed the schedule there")

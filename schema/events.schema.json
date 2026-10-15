@@ -143,9 +143,43 @@
           "type": "string"
         },
         "when": {
-          "description": "The schedule as the venue states it",
+          "description": "The schedule as the venue states it, for people",
           "title": "When",
           "type": "string"
+        },
+        "days": {
+          "description": "The weekdays it runs",
+          "items": {
+            "enum": [
+              "mon",
+              "tue",
+              "wed",
+              "thu",
+              "fri",
+              "sat",
+              "sun"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Days",
+          "type": "array"
+        },
+        "nth": {
+          "description": "Which of those weekdays in a month it runs (-1 for the last); empty for every week",
+          "items": {
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              -1
+            ],
+            "type": "integer"
+          },
+          "title": "Nth",
+          "type": "array"
         },
         "relevance": {
           "enum": [
@@ -171,6 +205,8 @@
         "venue",
         "title",
         "when",
+        "days",
+        "nth",
         "relevance",
         "url",
         "checked"

@@ -3,11 +3,15 @@
 # standing schedule doesn't promise any particular night. Only add a series its venue or
 # organizer publishes, and recheck it now and then (update `checked`).
 #
-# when: the schedule as the venue states it
+# when: the schedule as the venue states it, shown to people
+# days: the weekdays it runs (mon, tue, wed, thu, fri, sat, sun), so the site can show it on
+#   those days
+# nth: optional; which of those weekdays in a month, e.g. [1, 3] for 1st and 3rd, -1 for the last
 
 - venue: wallys
   title: Jam session
   when: Tuesday–Saturday, 7–9 pm
+  days: [tue, wed, thu, fri, sat]
   relevance: jazz
   url: https://www.wallyscafe.com/one-night/
   checked: 2026-10-15
@@ -15,6 +19,7 @@
 - venue: bluebird-bar
   title: Live jazz
   when: Mondays, 7–9 pm
+  days: [mon]
   relevance: jazz
   url: https://www.thebluebirdbar.com
   checked: 2026-10-15
@@ -22,6 +27,8 @@
 - venue: phoenix-landing
   title: JazzBoston jam session
   when: 1st and 3rd Fridays, 5–7 pm
+  days: [fri]
+  nth: [1, 3]
   relevance: jazz
   url: https://jazzboston.org/jazzjams/
   checked: 2026-10-15
@@ -29,6 +36,7 @@
 - venue: wellington-belmont
   title: "Saturday band sessions: Morningside Music ensembles"
   when: Saturdays, 7:30–9:30 pm (mixed styles, often jazz and Brazilian)
+  days: [sat]
   relevance: adjacent
   url: https://www.thewellingtonbelmont.com/live-music/
   checked: 2026-10-15

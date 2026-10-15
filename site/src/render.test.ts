@@ -61,6 +61,20 @@ describe("a listing's credit", () => {
   });
 });
 
+describe("an after-midnight set", () => {
+  test("shows its real time, marked late", () => {
+    const time = row(byId("e1ac")).querySelector(".event-time");
+    expect(time?.querySelector("time")?.textContent).toBe("12 am12a");
+    expect(time?.querySelector(".event-late")?.textContent).toBe(
+      "late (after midnight)",
+    );
+  });
+
+  test("an evening set isn't marked", () => {
+    expect(row(byId("e1a5")).querySelector(".event-late")).toBeNull();
+  });
+});
+
 describe("renderSourceList", () => {
   const render = () =>
     renderSourceList(sourceList(sample.sources ?? [], sample.events, venues));

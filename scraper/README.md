@@ -36,8 +36,9 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
 - **`pipeline.build`**:
   1. Resolves venues (by id, name, alias or street address).
   2. Classifies each event as jazz, adjacent or other (`classify.py`).
-  3. Merges duplicates across sources (same venue and day, start within an hour, similar
-     title).
+  3. Merges duplicates across sources (same venue and night, start within an hour, similar
+     title). A set starting before 4 am belongs to the previous night (`config.night_of`), as
+     on the site.
   4. Drops past events.
 
 ### Weekly regulars
@@ -46,6 +47,8 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
 as Wally's jam. The feed carries them in a separate `regulars` list, and the site shows them in
 their own section. They never become calendar events: a standing schedule doesn't promise any
 particular night. Only list what a venue or organizer publishes, and recheck it now and then.
+`when` is the schedule in the venue's words; `days` (plus `nth`, for e.g. 1st and 3rd Fridays)
+lets the site show a series in views of the days it usually runs.
 
 ### Submitted gigs
 

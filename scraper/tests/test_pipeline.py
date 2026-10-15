@@ -8,7 +8,7 @@ from pydantic import ValidationError
 
 from jazzcal import pipeline
 from jazzcal.classify import Ruling, classify, tags
-from jazzcal.config import TZ, Registry, VenueConfig, address_key
+from jazzcal.config import TZ, Registry, VenueConfig, address_key, night_of
 from jazzcal.export import to_ics
 from jazzcal.http import redact
 from jazzcal.llm import Question, Verdict
@@ -168,6 +168,50 @@ def test_build_dedups_and_prefers_earlier_source(store: Store) -> None:
     assert [s.id for s in status.sources] == ["venue-site", "aggregator"]
 
 
+def at(text: str, **kw: object) -> ScrapedEvent:
+    return ScrapedEvent.model_validate({"uid": "x", "title": "Set", "start": text, **kw})
+
+
+@pytest.mark.parametrize(
+    ("start", "night"),
+    [
+        ("2026-10-16T23:30:00-04:00", "2026-10-16"),
+        ("2026-10-17T00:00:00-04:00", "2026-10-16"),  # "12a": Friday's late set
+        ("2026-10-17T03:59:00-04:00", "2026-10-16"),
+        ("2026-10-17T04:00:00-04:00", "2026-10-17"),  # the cutoff starts a new night
+        ("2026-10-17T07:30:00Z", "2026-10-16"),  # 3:30 am local
+        # The end of DST: 1:30 am comes twice, and 4 am is still the cutoff.
+        ("2026-11-01T01:30:00-04:00", "2026-10-31"),
+        ("2026-11-01T01:30:00-05:00", "2026-10-31"),
+        ("2026-11-01T03:30:00-05:00", "2026-10-31"),
+        ("2026-11-01T04:00:00-05:00", "2026-11-01"),
+        # The start of DST: 2-3 am is skipped.
+        ("2027-03-14T03:30:00-04:00", "2027-03-13"),
+        ("2027-03-14T04:00:00-04:00", "2027-03-14"),
+    ],
+)
+def test_night_of(start: str, night: str) -> None:
+    assert night_of(at(start)) == date.fromisoformat(night)
+
+
+def test_night_of_all_day_keeps_its_date() -> None:
+    assert night_of(at("2026-10-17T00:00:00-04:00", all_day=True)) == date(2026, 10, 17)
+
+
+def test_build_merges_a_late_set_listed_either_side_of_midnight(store: Store) -> None:
+    sources = [
+        Source(id="venue-site", adapter="ics", url="https://a", venue="club"),
+        Source(id="aggregator", adapter="ics", url="https://b", venue="club"),
+    ]
+    registry = Registry({"club": venue("club", "dedicated")}, sources)
+    store.record_success("venue-site", [event("a1", "Midnight Hour", hours=12.25)])
+    store.record_success("aggregator", [event("b1", "The Midnight Hour", hours=11.75)])
+    feed, _ = pipeline.build(registry, store, NOW)
+    assert [(e.title, e.sources) for e in feed.events] == [
+        ("Midnight Hour", ["venue-site", "aggregator"])
+    ]
+
+
 def test_missing_listings_drop_after_two_runs(store: Store) -> None:
     source = Source(id="s", adapter="ics", url="https://a", venue="club")
     registry = Registry({"club": venue("club", "dedicated")}, [source])
@@ -243,6 +287,7 @@ def test_regulars_are_published_apart_from_events(store: Store) -> None:
         venue="club",
         title="Jam session",
         when="Tuesdays, 7-9 pm",
+        days=["tue"],
         relevance="jazz",
         url="https://club.example/",
         checked=date(2026, 10, 15),

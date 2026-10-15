@@ -207,6 +207,24 @@
    ]
   },
   {
+   "id": "e1ac",
+   "title": "The Midnight Hour",
+   "start": "2026-10-17T00:00:00-04:00",
+   "end": "2026-10-17T02:00:00-04:00",
+   "all_day": false,
+   "venue": "square-root",
+   "url": "https://squarerootrozzie.com/events/",
+   "ticket_url": null,
+   "price": "No cover",
+   "artists": [],
+   "relevance": "jazz",
+   "tags": [],
+   "cancelled": false,
+   "sources": [
+    "submissions"
+   ]
+  },
+  {
    "id": "e1a7",
    "title": "Saturday Jazz Brunch",
    "start": "2026-10-17T11:00:00-04:00",
@@ -315,6 +333,14 @@
    "venue": "wallys",
    "title": "Jam session",
    "when": "Tuesday–Saturday, 7–9 pm",
+   "days": [
+    "tue",
+    "wed",
+    "thu",
+    "fri",
+    "sat"
+   ],
+   "nth": [],
    "relevance": "jazz",
    "url": "https://www.wallyscafe.com/one-night/",
    "checked": "2026-10-15"
@@ -323,6 +349,10 @@
    "venue": "wellington-belmont",
    "title": "Saturday band sessions",
    "when": "Saturdays, 7:30–9:30 pm (mixed styles)",
+   "days": [
+    "sat"
+   ],
+   "nth": [],
    "relevance": "adjacent",
    "url": "https://thewellingtonbelmont.com/live-music/",
    "checked": "2026-10-15"

@@ -265,6 +265,11 @@
     display: inline;
   }
 
+  .event-late {
+    display: inline;
+    margin-left: 0.35em;
+  }
+
   .event-row .event-venue::before {
     content: "·" / "";
     margin-right: 0.35em;

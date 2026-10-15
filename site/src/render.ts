@@ -28,6 +28,7 @@ import {
   formatDayHeading,
   formatMonth,
   formatShortClock,
+  isLateSet,
 } from "./time";
 import type {
   CalendarEvent,
@@ -312,6 +313,13 @@ function renderEvent(
                 formatShortClock(new Date(event.start)),
               )),
         ),
+        isLateSet(event) &&
+          h(
+            "span",
+            { class: "event-late" },
+            h("span", { "aria-hidden": "true" }, "late"),
+            srOnly(" (after midnight)"),
+          ),
         endLabel &&
           event.end &&
           h(

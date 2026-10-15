@@ -11,7 +11,7 @@ from rapidfuzz import fuzz
 
 from jazzcal.adapters import get_adapter
 from jazzcal.classify import Ruling, classify, tags
-from jazzcal.config import TZ, Registry
+from jazzcal.config import Registry, night_of
 from jazzcal.http import Http, redact
 from jazzcal.llm import Classifier, Question
 from jazzcal.models import Event, EventsFile, ScrapedEvent, Source, SourceCredit, StatusFile
@@ -173,7 +173,7 @@ def _dedup(candidates: list[Candidate]) -> list[Candidate]:
     """Merge listings of one event from several sources into the highest-priority one."""
     kept: dict[tuple[str, object], list[Candidate]] = {}
     for c in sorted(candidates, key=lambda c: c.priority):
-        group = kept.setdefault((c.venue, c.scraped.start.astimezone(TZ).date()), [])
+        group = kept.setdefault((c.venue, night_of(c.scraped)), [])
         match = next((k for k in group if _same_event(k, c)), None)
         if match:
             match.merged.append(c)
