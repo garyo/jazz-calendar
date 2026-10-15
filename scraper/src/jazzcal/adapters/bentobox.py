@@ -8,23 +8,22 @@ Options:
   title_strip: regex removed from titles, e.g. a leading date "10/16 ".
   ticket_link: CSS selector for a booking link on the event page, e.g.
           a[href*="exploretock.com"][href*="/experience/"].
-  max_follow: cap on event pages fetched per run (default 40). They're cached for 24 hours.
+  max_follow: cap on event pages fetched per run (default 40). They're cached for 5 days.
 """
 
 import json
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any
 from urllib.parse import urljoin
 
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
-from jazzcal.adapters import adapter, clean, html_to_text
+from jazzcal.adapters import DETAIL_MAX_AGE, adapter, clean, html_to_text
 from jazzcal.config import TZ
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
 
-DETAIL_MAX_AGE = timedelta(hours=24)
 WHEN = re.compile(r"([A-Z][a-z]+ \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M)")
 
 
