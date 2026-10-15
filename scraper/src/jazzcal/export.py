@@ -8,6 +8,7 @@ from pathlib import Path
 import httpx
 import icalendar
 
+from jazzcal.config import TZ
 from jazzcal.models import EventsFile, StatusFile
 
 log = logging.getLogger(__name__)
@@ -41,12 +42,14 @@ def to_ics(feed: EventsFile) -> bytes:
         vevent.add("uid", f"{e.id}@bostonjazzcalendar.com")
         vevent.add("dtstamp", feed.generated_at)
         vevent.add("summary", f"{e.title} @ {venue.name}")
+        # Times come back from JSON with bare UTC offsets; name the zone so clients get a
+        # proper TZID and VTIMEZONE.
         if e.all_day:
-            vevent.add("dtstart", e.start.date())
+            vevent.add("dtstart", e.start.astimezone(TZ).date())
         else:
-            vevent.add("dtstart", e.start)
+            vevent.add("dtstart", e.start.astimezone(TZ))
             if e.end:
-                vevent.add("dtend", e.end)
+                vevent.add("dtend", e.end.astimezone(TZ))
         vevent.add("location", ", ".join(p for p in (venue.name, venue.address, venue.town) if p))
         vevent.add("url", e.url)
         lines = [e.price or "", f"Details: {e.url}"]

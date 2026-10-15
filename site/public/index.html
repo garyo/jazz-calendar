@@ -40,38 +40,25 @@
           Every jazz gig we can find, from the clubs to the corner bars, with a
           link straight to the venue.
         </p>
-        <div class="masthead-meta">
-          <p class="subscribe">
-            <a id="subscribe-webcal" class="button button-primary" href="webcal://bostonjazzcalendar.com/calendar.ics">
-              Subscribe in your calendar
-            </a>
-            <span class="subscribe-alt">
-              or add the feed by URL:
-              <a id="subscribe-https" href="https://bostonjazzcalendar.com/calendar.ics">bostonjazzcalendar.com/calendar.ics</a>
-            </span>
-          </p>
-          <p id="updated" class="updated"></p>
-        </div>
+        <p id="updated" class="updated"></p>
       </div>
     </header>
 
     <main id="listings" class="wrap" tabindex="-1">
       <search aria-label="Filter listings">
         <form id="filters" class="filters">
-          <div class="filter-row">
-            <label class="field field-search">
+          <div class="filter-row filter-row-main">
+            <label id="q-field" class="field field-search">
               <span class="field-label">Search</span>
               <input id="q" name="q" type="search" placeholder="Artist, band or venue" autocomplete="off" spellcheck="false" />
             </label>
-            <label class="field field-town">
-              <span class="field-label">Town</span>
-              <select id="town" name="town">
-                <option value="">All towns</option>
-              </select>
-            </label>
+          </div>
+          <div id="selection" class="selection" hidden>
+            <ul id="selection-chips" class="selection-chips" aria-label="Selected venues and towns"></ul>
+            <button id="clear-selection" type="button" class="link-button">Clear all</button>
           </div>
           <div class="filter-row">
-            <fieldset class="presets">
+            <fieldset id="presets" class="presets">
               <legend class="sr-only">When</legend>
               <label><input type="radio" name="when" value="tonight" /><span>Tonight</span></label>
               <label><input type="radio" name="when" value="weekend" /><span>This weekend</span></label>
@@ -86,7 +73,43 @@
         </form>
       </search>
 
-      <p id="count" class="count" role="status" aria-live="polite"></p>
+      <div class="toolbar">
+        <p id="count" class="count" role="status" aria-live="polite"></p>
+        <fieldset id="view-toggle" class="segmented view-toggle">
+          <legend class="sr-only">View</legend>
+          <label><input type="radio" name="view" value="list" checked /><span>List</span></label>
+          <label><input type="radio" name="view" value="month" /><span>Month</span></label>
+        </fieldset>
+        <div class="subscribe">
+          <button id="subscribe-toggle" type="button" class="button button-primary subscribe-toggle">
+            Subscribe to this view
+          </button>
+          <div id="subscribe-panel" class="popover subscribe-panel" hidden>
+            <p id="subscribe-title" class="popover-title">Subscribe to this view</p>
+            <p id="subscribe-scope" class="subscribe-scope"></p>
+            <p class="subscribe-help">
+              Your calendar app adds new listings as they appear.
+              <span id="subscribe-note">Search and dates aren’t part of a feed.</span>
+            </p>
+            <p class="subscribe-actions">
+              <a id="subscribe-webcal" class="button button-primary" href="webcal://bostonjazzcalendar.com/calendar.ics">Apple Calendar, Outlook</a>
+              <a id="subscribe-google" class="button" href="https://calendar.google.com/calendar/" target="_blank" rel="noopener">Google Calendar</a>
+            </p>
+            <div class="field">
+              <label class="field-label" for="subscribe-url">Feed address, for any calendar app</label>
+              <div class="subscribe-copy">
+                <input id="subscribe-url" class="subscribe-url" type="url" readonly />
+                <button id="subscribe-copy" type="button" class="button">Copy</button>
+              </div>
+            </div>
+            <p id="subscribe-status" class="subscribe-status" role="status"></p>
+            <p id="subscribe-everything" class="subscribe-everything">
+              Or subscribe to <a id="subscribe-everything-link" href="/calendar.ics">every listing</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div id="results" class="results">
         <noscript>
           <div class="notice">
@@ -137,6 +160,8 @@
       </div>
       <div class="wrap">
         <p class="fine-print">
+          Calendar feed of every listing:
+          <a href="/calendar.ics">bostonjazzcalendar.com/calendar.ics</a>.
           Venue names belong to their owners and appear here only to identify
           them. No ads, no tracking.
         </p>

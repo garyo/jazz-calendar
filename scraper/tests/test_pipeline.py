@@ -6,8 +6,9 @@ import pytest
 from jazzcal import pipeline
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key
+from jazzcal.export import to_ics
 from jazzcal.llm import Question, Verdict
-from jazzcal.models import Regular, ScrapedEvent, Source
+from jazzcal.models import EventsFile, Regular, ScrapedEvent, Source
 from jazzcal.store import Store
 
 NOW = datetime(2026, 10, 15, 12, tzinfo=TZ)
@@ -226,3 +227,14 @@ def test_regulars_are_published_apart_from_events(store: Store) -> None:
     feed, _ = pipeline.build(registry, store, NOW)
     assert feed.events == []
     assert feed.regulars == [regular]
+
+
+def test_ics_uses_named_timezone(store: Store) -> None:
+    source = Source(id="s", adapter="ics", url="https://a", venue="club")
+    registry = Registry({"club": venue("club", "dedicated")}, [source])
+    store.record_success("s", [event("1", "Gig")])
+    feed, _ = pipeline.build(registry, store, NOW)
+    roundtripped = EventsFile.model_validate_json(feed.model_dump_json())
+    ics = to_ics(roundtripped).decode()
+    assert "DTSTART;TZID=America/New_York:20261015T200000" in ics
+    assert "BEGIN:VTIMEZONE" in ics

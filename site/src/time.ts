@@ -45,6 +45,12 @@ const fullDateFormat = new Intl.DateTimeFormat("en-US", {
   day: "numeric",
 });
 
+const monthFormat = new Intl.DateTimeFormat("en-US", {
+  timeZone: "UTC",
+  year: "numeric",
+  month: "long",
+});
+
 type Parts = Partial<Record<Intl.DateTimeFormatPartTypes, string>>;
 
 function partsOf(format: Intl.DateTimeFormat, date: Date): Parts {
@@ -70,6 +76,23 @@ export function addDays(key: DayKey, days: number): DayKey {
   return date.toISOString().slice(0, 10);
 }
 
+/** "YYYY-MM": the month a day falls in. */
+export function monthOf(key: DayKey): string {
+  return key.slice(0, 7);
+}
+
+/** The month `months` after "YYYY-MM" (negative for before). */
+export function addMonths(month: string, months: number): string {
+  const [y, m] = month.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1 + months, 1, 12));
+  return date.toISOString().slice(0, 7);
+}
+
+/** "November 2026". */
+export function formatMonth(month: string): string {
+  return monthFormat.format(keyToDate(`${month}-01`));
+}
+
 /** 0 = Sunday … 6 = Saturday. */
 export function weekday(key: DayKey): number {
   return keyToDate(key).getUTCDay();
@@ -92,6 +115,13 @@ export function formatClock(date: Date): string {
   const { hour, minute, dayPeriod } = partsOf(clockFormat, date);
   const time = minute === "00" ? hour : `${hour}:${minute}`;
   return `${time} ${dayPeriod?.toLowerCase()}`;
+}
+
+/** "8p", "8:15p", "11a": for tight spaces like the month grid. */
+export function formatShortClock(date: Date): string {
+  const { hour, minute, dayPeriod } = partsOf(clockFormat, date);
+  const time = minute === "00" ? hour : `${hour}:${minute}`;
+  return `${time}${dayPeriod?.charAt(0).toLowerCase()}`;
 }
 
 /**

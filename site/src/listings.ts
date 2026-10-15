@@ -3,12 +3,13 @@
  * match the filters, and how events group into Boston-local days.
  */
 
+import { matchesSelection } from "./selection";
 import { addDays, type DayKey, dayKey, weekday } from "./time";
-import type { CalendarEvent, Regular, Relevance, Venue } from "./types";
-import type { DatePreset, Filters } from "./url-state";
+import type { CalendarEvent, Regular, Venue } from "./types";
+import type { DatePreset, ViewState } from "./url-state";
 
-/** How long an event with no end time stays listed after it starts. */
-const ASSUMED_DURATION_MS = 3 * 60 * 60 * 1000;
+/** How long an event with no end time is assumed to last. */
+export const ASSUMED_DURATION_MS = 3 * 60 * 60 * 1000;
 
 export interface DayGroup {
   day: DayKey;
@@ -87,51 +88,61 @@ function matchesTerms(texts: readonly string[], terms: string[]): boolean {
   return terms.every((term) => haystack.includes(term));
 }
 
-/** The relevance and town filters, shared by events and regulars. */
-function matchesListing(
-  listing: { relevance: Relevance },
-  venue: Venue | undefined,
-  filters: Filters,
-): boolean {
-  if (!filters.adjacent && listing.relevance === "adjacent") return false;
-  return !filters.town || venue?.town === filters.town;
+/** The list view's days: the chosen day, else the date preset's. */
+function listRange(state: ViewState, today: DayKey): DayRange | null {
+  return state.day
+    ? { from: state.day, to: state.day }
+    : presetRange(state.when, today);
 }
 
-export function filterEvents(
+/** Events matching the selection and search, whatever their date. */
+export function matchingEvents(
   events: readonly CalendarEvent[],
   venues: ReadonlyMap<string, Venue>,
-  filters: Filters,
-  now: Date,
+  state: ViewState,
 ): CalendarEvent[] {
-  const today = dayKey(now);
-  const range = presetRange(filters.when, today);
-  const terms = searchTerms(filters.query);
+  const terms = searchTerms(state.query);
   return events.filter((event) => {
-    if (!isUpcoming(event, now)) return false;
     const venue = venues.get(event.venue);
-    if (!matchesListing(event, venue, filters)) return false;
-    if (range) {
-      const day = listingDay(event, today);
-      if (day < range.from || day > range.to) return false;
-    }
-    return matchesTerms(
-      [event.title, ...(event.artists ?? []), venue?.name ?? ""],
-      terms,
+    return (
+      matchesSelection(event, venue, state) &&
+      matchesTerms(
+        [event.title, ...(event.artists ?? []), venue?.name ?? ""],
+        terms,
+      )
     );
   });
 }
 
-/** Regulars matching the filters; date presets don't apply to them. */
+/** The list view's events: upcoming, matching, and within its days. */
+export function filterEvents(
+  events: readonly CalendarEvent[],
+  venues: ReadonlyMap<string, Venue>,
+  state: ViewState,
+  now: Date,
+): CalendarEvent[] {
+  const today = dayKey(now);
+  const range = listRange(state, today);
+  const upcoming = events.filter((event) => {
+    if (!isUpcoming(event, now)) return false;
+    if (!range) return true;
+    const day = listingDay(event, today);
+    return day >= range.from && day <= range.to;
+  });
+  return matchingEvents(upcoming, venues, state);
+}
+
+/** Regulars matching the selection and search; dates don't apply to them. */
 export function filterRegulars(
   regulars: readonly Regular[],
   venues: ReadonlyMap<string, Venue>,
-  filters: Filters,
+  state: ViewState,
 ): Regular[] {
-  const terms = searchTerms(filters.query);
+  const terms = searchTerms(state.query);
   return regulars.filter((regular) => {
     const venue = venues.get(regular.venue);
     return (
-      matchesListing(regular, venue, filters) &&
+      matchesSelection(regular, venue, state) &&
       matchesTerms([regular.title, venue?.name ?? ""], terms)
     );
   });
@@ -168,15 +179,22 @@ export function venueLocation(venue: Venue): string {
     : town;
 }
 
-/** Towns of venues that have at least one of the given listings, sorted. */
-export function townsWithListings(
+/** A venue name for sorting: "The Lilypad" sorts as "Lilypad". */
+export function sortName(name: string): string {
+  return normalize(name).replace(/^the\s+/, "");
+}
+
+/** Venues with at least one of the given listings, by town and then name. */
+export function venuesWithListings(
   listings: readonly { venue: string }[],
   venues: ReadonlyMap<string, Venue>,
-): string[] {
-  const towns = new Set<string>();
-  for (const listing of listings) {
-    const town = venues.get(listing.venue)?.town;
-    if (town) towns.add(town);
-  }
-  return [...towns].sort((a, b) => a.localeCompare(b));
+): Venue[] {
+  const ids = new Set(listings.map((listing) => listing.venue));
+  return [...venues.values()]
+    .filter((venue) => ids.has(venue.id))
+    .sort(
+      (a, b) =>
+        a.town.localeCompare(b.town) ||
+        sortName(a.name).localeCompare(sortName(b.name)),
+    );
 }

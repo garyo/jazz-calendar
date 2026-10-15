@@ -49,6 +49,11 @@ def scrape(registry: Registry, store: Store, http: Http, only: set[str] | None =
             log.exception("source %s failed", source.id)
             store.record_failure(source.id, f"{type(e).__name__}: {e}")
             continue
+        if pattern := source.options.get("title_strip"):
+            events = [
+                e.model_copy(update={"title": re.sub(pattern, "", e.title, flags=re.I).strip()})
+                for e in events
+            ]
         log.info("source %s: %d events", source.id, len(events))
         store.record_success(source.id, events)
 

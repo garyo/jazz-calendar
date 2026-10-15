@@ -8,6 +8,7 @@
 # options:   include / exclude — regexes matched against title + source categories;
 #            trust_text — let a description mentioning jazz count at any venue;
 #            unknown — jazz | adjacent for listings nothing else settles (default: other);
+#            title_strip — regex removed from every title (dates, ticket blurbs);
 #            plus adapter-specific options
 
 - id: nec
@@ -159,6 +160,8 @@
   url: https://musicidb.com/venue/getVenueEvents.htm?listType=upcoming&frameType=listWidget&descrip=1&venueId=715
   venue: scullers
   notes: The MusicIDB list widget scullersjazz.com embeds; TicketWeb links.
+  options:
+    title_strip: \s*[-–]\s*tickets? on sale.*$
 
 - id: plough-and-stars
   adapter: ploughandstars

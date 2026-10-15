@@ -7,14 +7,25 @@ through the publish API below. The worker stores it in R2.
 
 ```
 public/          static files copied into dist/ (index.html, styles.css, _headers, …)
-src/main.ts      front-end entry: fetches /data/events.json, filters, renders
-src/render.ts    DOM construction (text only, never innerHTML)
+src/main.ts      front-end entry: fetches /data/events.json, wires controls, renders
+src/render.ts    DOM construction (text only, never innerHTML), incl. the month grid
+src/picker.ts    multi-select (venues, towns); src/disclosure.ts: popover toggling
 src/listings.ts  pure logic: upcoming, filtering, grouping by Boston-local day
+src/month.ts     pure logic: the month view's Sunday-first grid
+src/selection.ts venue/town/jazz-adjacent selection: matching, parsing, feed names
+                 (shared by the front end and the Worker)
+src/calendar-export.ts  iCalendar generation and Google Calendar links (shared)
 src/time.ts      America/New_York date and time formatting
-src/url-state.ts filter state <-> query string
+src/url-state.ts view state <-> query string
 src/types.ts     TS mirror of ../schema/events.schema.json
-src/worker.ts    the Worker: R2-backed data routes and the publish API
+src/worker.ts    the Worker: R2-backed data routes, filtered feeds, the publish API
 ```
+
+Page URLs carry the view: `q`, `venue=lilypad,wallys`, `town=Cambridge,Somerville`
+(a single old-style `town=` still works), `adjacent=0`, `when`, `view=month`,
+`month=2026-11` and `day=2026-11-12`. A listing matches the selection when it
+is at any selected venue or in any selected town; with neither selected,
+everything matches. Regulars follow the same rule.
 
 ## Development
 
@@ -77,11 +88,24 @@ else directly, at no worker CPU cost.
 | `GET /data/events.json` | R2 key `events.json`, `application/json` |
 | `GET /data/status.json` | R2 key `status.json`, `application/json` |
 | `GET /calendar.ics` | R2 key `calendar.ics`, `text/calendar; charset=utf-8` |
+| `GET /calendar.ics?venue=…&town=…&adjacent=0` | A feed of just that selection (below) |
 | `PUT /api/publish/:key` | Upload one of the three keys (see below) |
 
 Data responses carry `Cache-Control: public, max-age=300`, an `ETag`, and
 `Access-Control-Allow-Origin: *`, since the feed is meant to be reused. A
 matching `If-None-Match` gets `304`. A missing object gets `404`. HEAD works.
+
+## Filtered feeds
+
+`/calendar.ics` with any of `venue`, `town` or `adjacent` builds a feed from
+`events.json` using the same matching as the page (`src/selection.ts`), with
+the scraper's UIDs, times in UTC and a `REFRESH-INTERVAL` of 12 hours. Lists
+are comma-separated; unknown venue ids or towns, malformed values or more
+than 64 venues or 32 towns get `400`. A query that selects everything (e.g.
+`?adjacent=1`) serves the stored feed. Responses carry
+`Cache-Control: public, max-age=3600` and are kept in the Cache API under the
+normalized query plus the `events.json` ETag, so a new upload invalidates
+them.
 
 ## Publish API
 

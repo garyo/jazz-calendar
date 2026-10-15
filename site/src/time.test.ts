@@ -1,13 +1,17 @@
 import { describe, expect, test } from "bun:test";
 import {
   addDays,
+  addMonths,
   dayKey,
   eventEndLabel,
   eventTimeLabel,
   formatClock,
   formatDate,
   formatDayHeading,
+  formatMonth,
+  formatShortClock,
   formatUpdated,
+  monthOf,
   weekday,
 } from "./time";
 import type { CalendarEvent } from "./types";
@@ -47,7 +51,24 @@ describe("day arithmetic", () => {
   });
 });
 
+describe("month arithmetic", () => {
+  test("monthOf, addMonths and formatMonth", () => {
+    expect(monthOf("2026-10-15")).toBe("2026-10");
+    expect(addMonths("2026-10", 1)).toBe("2026-11");
+    expect(addMonths("2026-12", 1)).toBe("2027-01");
+    expect(addMonths("2026-01", -1)).toBe("2025-12");
+    expect(addMonths("2026-03", -14)).toBe("2025-01");
+    expect(formatMonth("2026-11")).toBe("November 2026");
+  });
+});
+
 describe("clock formatting", () => {
+  test("formatShortClock", () => {
+    expect(formatShortClock(at("2026-10-15T20:00:00-04:00"))).toBe("8p");
+    expect(formatShortClock(at("2026-10-15T19:30:00-04:00"))).toBe("7:30p");
+    expect(formatShortClock(at("2026-10-17T00:30:00-04:00"))).toBe("12:30a");
+  });
+
   test("drops :00 and lowercases the period", () => {
     expect(formatClock(at("2026-10-15T20:00:00-04:00"))).toBe("8 pm");
     expect(formatClock(at("2026-10-15T20:15:00-04:00"))).toBe("8:15 pm");

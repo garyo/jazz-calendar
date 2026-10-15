@@ -3,9 +3,22 @@
  *
  * Serves the scraper's output from R2 (/data/events.json, /data/status.json,
  * /calendar.ics) and accepts fresh copies from the scraper via
- * PUT /api/publish/:key. Static assets never reach this code unless a
- * run_worker_first path falls through (see wrangler.toml).
+ * PUT /api/publish/:key. /calendar.ics with venue, town or adjacent
+ * parameters is a feed of just that selection, built from events.json.
+ * Static assets never reach this code unless a run_worker_first path falls
+ * through (see wrangler.toml).
  */
+
+import { buildCalendar } from "./calendar-export";
+import {
+  calendarName,
+  feedQuery,
+  knownSelection,
+  matchesSelection,
+  parseFeedSelection,
+  type Selection,
+} from "./selection";
+import type { EventsFile } from "./types";
 
 export interface Env {
   ASSETS: Fetcher;
@@ -31,6 +44,12 @@ const PUBLIC_PATHS = new Map<string, DataKey>([
 
 const PUBLISH_PREFIX = "/api/publish/";
 const CACHE_CONTROL = "public, max-age=300";
+const FEED_PATH = "/calendar.ics";
+const FEED_PARAMS = ["venue", "town", "adjacent"];
+const FEED_CACHE_CONTROL = "public, max-age=3600";
+const FEED_REFRESH_HOURS = 12;
+/** Longer queries are refused before any parsing. */
+const MAX_QUERY_LENGTH = 2048;
 
 function isDataKey(key: string): key is DataKey {
   return Object.hasOwn(CONTENT_TYPES, key);
@@ -53,14 +72,20 @@ function requestedEtag(headers: Headers): string | undefined {
   return first?.replace(/^W\//, "").replaceAll('"', "") || undefined;
 }
 
+function isReadMethod(request: Request): boolean {
+  return request.method === "GET" || request.method === "HEAD";
+}
+
+function methodNotAllowed(): Response {
+  return textResponse(405, "Method not allowed", { allow: "GET, HEAD" });
+}
+
 async function serveData(
   request: Request,
   env: Env,
   key: DataKey,
 ): Promise<Response> {
-  if (request.method !== "GET" && request.method !== "HEAD") {
-    return textResponse(405, "Method not allowed", { allow: "GET, HEAD" });
-  }
+  if (!isReadMethod(request)) return methodNotAllowed();
   const etag = requestedEtag(request.headers);
   const object = await env.DATA.get(
     key,
@@ -85,6 +110,77 @@ async function serveData(
       "x-content-type-options": "nosniff",
     },
   });
+}
+
+function withoutBody(request: Request, response: Response): Response {
+  if (request.method !== "HEAD") return response;
+  return new Response(null, response);
+}
+
+function filteredCalendar(feed: EventsFile, selection: Selection): string {
+  const venues = new Map(feed.venues.map((venue) => [venue.id, venue]));
+  const known = knownSelection(selection, feed.venues);
+  const events = known
+    ? feed.events.filter((event) =>
+        matchesSelection(event, venues.get(event.venue), known),
+      )
+    : [];
+  const generated = new Date(feed.generated_at);
+  return buildCalendar(events, venues, {
+    name: known ? calendarName(known, venues) : "Boston Jazz Calendar",
+    stamp: Number.isNaN(generated.getTime()) ? new Date() : generated,
+    refreshHours: FEED_REFRESH_HOURS,
+  });
+}
+
+/**
+ * /calendar.ics?venue=…&town=…&adjacent=0: the events.json listings that
+ * match, as iCalendar. Cached per normalized query and events.json version,
+ * so a feed is rebuilt at most once an hour per data center.
+ */
+async function serveFilteredCalendar(
+  request: Request,
+  env: Env,
+  ctx: ExecutionContext,
+  url: URL,
+): Promise<Response> {
+  if (!isReadMethod(request)) return methodNotAllowed();
+  const selection =
+    url.search.length <= MAX_QUERY_LENGTH
+      ? parseFeedSelection(url.searchParams)
+      : null;
+  if (!selection) return textResponse(400, "Bad venue, town or adjacent");
+  const query = feedQuery(selection);
+  if (!query) return serveData(request, env, "calendar.ics");
+
+  const head = await env.DATA.head("events.json");
+  if (!head) return textResponse(404, "Not found");
+  const cache = caches.default;
+  const cacheKey = (etag: string) =>
+    new Request(`${url.origin}${FEED_PATH}?${query}&v=${etag}`);
+  const cached = await cache.match(cacheKey(head.etag));
+  if (cached) return withoutBody(request, cached);
+
+  const object = await env.DATA.get("events.json");
+  if (!object) return textResponse(404, "Not found");
+  const feed = await object.json<EventsFile>();
+  const response = new Response(filteredCalendar(feed, selection), {
+    headers: {
+      "content-type": CONTENT_TYPES["calendar.ics"],
+      "cache-control": FEED_CACHE_CONTROL,
+      "access-control-allow-origin": "*",
+      "x-content-type-options": "nosniff",
+    },
+  });
+  ctx.waitUntil(cache.put(cacheKey(object.etag), response.clone()));
+  return withoutBody(request, response);
+}
+
+function isFeedQuery(url: URL): boolean {
+  return (
+    url.pathname === FEED_PATH &&
+    FEED_PARAMS.some((name) => url.searchParams.has(name))
+  );
 }
 
 /** Constant-time comparison: both sides are hashed to equal-length digests. */
@@ -140,8 +236,14 @@ async function publish(
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const { pathname } = new URL(request.url);
+  async fetch(
+    request: Request,
+    env: Env,
+    ctx: ExecutionContext,
+  ): Promise<Response> {
+    const url = new URL(request.url);
+    if (isFeedQuery(url)) return serveFilteredCalendar(request, env, ctx, url);
+    const { pathname } = url;
     const key = PUBLIC_PATHS.get(pathname);
     if (key) return serveData(request, env, key);
     if (pathname.startsWith(PUBLISH_PREFIX)) {

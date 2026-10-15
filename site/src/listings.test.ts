@@ -6,13 +6,15 @@ import {
   groupByDay,
   isOnNow,
   isUpcoming,
+  matchingEvents,
   normalize,
   presetRange,
-  townsWithListings,
+  sortName,
   venueLocation,
+  venuesWithListings,
 } from "./listings";
 import type { CalendarEvent, EventsFile, Regular } from "./types";
-import { DEFAULT_FILTERS, type Filters } from "./url-state";
+import { DEFAULT_STATE, type ViewState } from "./url-state";
 
 const sample: EventsFile = await Bun.file(
   new URL("../../schema/sample-events.json", import.meta.url),
@@ -26,12 +28,12 @@ const byId = (id: string) => {
 
 const at = (iso: string) => new Date(iso);
 const ids = (events: CalendarEvent[]) => events.map((e) => e.id);
-const shown = (filters: Partial<Filters>, now: string) =>
+const shown = (state: Partial<ViewState>, now: string) =>
   ids(
     filterEvents(
       sample.events,
       venues,
-      { ...DEFAULT_FILTERS, ...filters },
+      { ...DEFAULT_STATE, ...state },
       at(now),
     ),
   );
@@ -129,8 +131,38 @@ describe("filterEvents", () => {
     expect(shown({ adjacent: false }, evening)).not.toContain("e1a6");
   });
 
-  test("town", () => {
-    expect(shown({ town: "Belmont" }, evening)).toEqual(["e1a7"]);
+  test("towns", () => {
+    expect(shown({ towns: ["Belmont"] }, evening)).toEqual(["e1a7"]);
+    expect(shown({ towns: ["Belmont", "Cambridge"] }, evening)).toEqual([
+      "e1a3",
+      "e1a4",
+      "e1a6",
+      "e1a7",
+      "e1ab",
+    ]);
+  });
+
+  test("venues", () => {
+    expect(shown({ venues: ["wallys"] }, evening)).toEqual(["e1a2"]);
+    expect(shown({ venues: ["wallys", "scullers"] }, evening)).toEqual([
+      "e1a2",
+      "e1a5",
+    ]);
+  });
+
+  test("venues and towns together: either one matches", () => {
+    expect(shown({ venues: ["wallys"], towns: ["Belmont"] }, evening)).toEqual([
+      "e1a2",
+      "e1a7",
+    ]);
+  });
+
+  test("a single day replaces the date preset", () => {
+    expect(shown({ day: "2026-10-16", when: "tonight" }, evening)).toEqual([
+      "e1a5",
+      "e1a6",
+    ]);
+    expect(shown({ day: "2026-10-14" }, evening)).toEqual([]);
   });
 
   test("search matches title, artists and venue, ignoring accents and apostrophes", () => {
@@ -144,8 +176,8 @@ describe("filterEvents", () => {
 
 describe("filterRegulars", () => {
   const regulars = sample.regulars ?? [];
-  const titles = (filters: Partial<Filters>) =>
-    filterRegulars(regulars, venues, { ...DEFAULT_FILTERS, ...filters }).map(
+  const titles = (state: Partial<ViewState>) =>
+    filterRegulars(regulars, venues, { ...DEFAULT_STATE, ...state }).map(
       (r) => r.title,
     );
   const all = ["Jam session", "Saturday band sessions"];
@@ -163,9 +195,11 @@ describe("filterRegulars", () => {
     expect(titles({ adjacent: false })).toEqual(["Jam session"]);
   });
 
-  test("town", () => {
-    expect(titles({ town: "Belmont" })).toEqual(["Saturday band sessions"]);
-    expect(titles({ town: "Cambridge" })).toEqual([]);
+  test("towns and venues", () => {
+    expect(titles({ towns: ["Belmont"] })).toEqual(["Saturday band sessions"]);
+    expect(titles({ towns: ["Cambridge"] })).toEqual([]);
+    expect(titles({ venues: ["wallys"] })).toEqual(["Jam session"]);
+    expect(titles({ venues: ["wallys"], towns: ["Belmont"] })).toEqual(all);
   });
 
   test("search matches title and venue, not the schedule", () => {
@@ -177,7 +211,7 @@ describe("filterRegulars", () => {
     expect(titles({ query: "tuesday" })).toEqual([]);
   });
 
-  test("a regular at an unknown venue is dropped only by the town filter", () => {
+  test("a regular at an unknown venue is dropped only by a selection", () => {
     const orphan: Regular = {
       venue: "nowhere",
       title: "Mystery jam",
@@ -186,10 +220,24 @@ describe("filterRegulars", () => {
       url: "https://example.com/",
       checked: "2026-10-15",
     };
-    expect(filterRegulars([orphan], venues, DEFAULT_FILTERS)).toHaveLength(1);
+    expect(filterRegulars([orphan], venues, DEFAULT_STATE)).toHaveLength(1);
     expect(
-      filterRegulars([orphan], venues, { ...DEFAULT_FILTERS, town: "Boston" }),
+      filterRegulars([orphan], venues, { ...DEFAULT_STATE, towns: ["Boston"] }),
     ).toEqual([]);
+  });
+});
+
+describe("matchingEvents", () => {
+  test("ignores dates, including past shows, but not filters", () => {
+    const state = { ...DEFAULT_STATE, when: "tonight" as const };
+    expect(ids(matchingEvents(sample.events, venues, state))).toEqual(
+      ids(sample.events),
+    );
+    expect(
+      ids(
+        matchingEvents(sample.events, venues, { ...state, query: "scullers" }),
+      ),
+    ).toEqual(["e1a5"]);
   });
 });
 
@@ -241,15 +289,21 @@ describe("display helpers", () => {
     expect(normalize("Wally’s Café")).toBe("wallys cafe");
   });
 
-  test("townsWithListings", () => {
-    expect(townsWithListings(sample.events, venues)).toEqual([
-      "Belmont",
-      "Boston",
-      "Cambridge",
+  test("venuesWithListings sorts by town, then name without 'The'", () => {
+    const listed = (listings: { venue: string }[]) =>
+      venuesWithListings(listings, venues).map((v) => v.id);
+    expect(listed(sample.regulars ?? [])).toEqual([
+      "wellington-belmont",
+      "wallys",
     ]);
-    expect(townsWithListings(sample.regulars ?? [], venues)).toEqual([
-      "Belmont",
-      "Boston",
-    ]);
+    const cambridge = listed(sample.events).filter(
+      (id) => venues.get(id)?.town === "Cambridge",
+    );
+    expect(cambridge).toEqual(["lilypad", "lizard-lounge", "mad-monkfish"]);
+  });
+
+  test("sortName", () => {
+    expect(sortName("The Lilypad")).toBe("lilypad");
+    expect(sortName("Theatre Bar")).toBe("theatre bar");
   });
 });

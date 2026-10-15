@@ -14,13 +14,19 @@
   --cancelled: #a12a1a;
   --chip: #ebe2d2;
   --focus: #1f5fbf;
+  --highlight: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  --shadow-popover: 0 0.6rem 1.8rem rgb(30 26 22 / 0.16);
 
   --font-display:
     "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-text:
     system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --measure: 46rem;
+  /* The month grid's width; the list keeps the narrower measure. */
+  --measure-wide: 68rem;
   --gutter: 1rem;
+  --radius: 6px;
+  --radius-pill: 999px;
 
   color-scheme: light;
 }
@@ -40,6 +46,7 @@
     --cancelled: #ff8f7d;
     --chip: #2a242c;
     --focus: #8fb8ff;
+    --shadow-popover: 0 0.6rem 1.8rem rgb(0 0 0 / 0.55);
 
     color-scheme: dark;
   }
@@ -158,32 +165,11 @@ a:hover {
   color: var(--muted);
 }
 
-.masthead-meta {
-  display: grid;
-  gap: 0.6rem;
-}
-
-.subscribe {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 1rem;
-  margin: 0;
-}
-
-.subscribe-alt,
-.updated {
-  font-size: 0.875rem;
-  color: var(--muted);
-}
-
-.subscribe-alt a {
-  overflow-wrap: anywhere;
-}
-
 .updated {
   margin: 0;
   min-height: 1.3em;
+  font-size: 0.875rem;
+  color: var(--muted);
 }
 
 .updated.stale {
@@ -198,7 +184,7 @@ a:hover {
   min-height: 2.25rem;
   padding: 0.35rem 0.9rem;
   border: 1px solid var(--ink);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--ink);
   font: 600 0.875rem / 1.2 var(--font-text);
@@ -244,11 +230,11 @@ a:hover {
 }
 
 .field-search {
-  flex: 1 1 11rem;
+  flex: 1 1 100%;
 }
 
-.field-town {
-  flex: 0 1 8.5rem;
+.picker {
+  flex: 1 1 9rem;
 }
 
 .field-label {
@@ -261,7 +247,7 @@ select {
   min-height: 2.6rem;
   padding: 0.45rem 0.7rem;
   border: 1px solid var(--rule);
-  border-radius: 6px;
+  border-radius: var(--radius);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -282,11 +268,17 @@ select:focus {
   flex: 1 1 auto;
 }
 
-.presets label {
+.presets[hidden] {
+  display: none;
+}
+
+.presets label,
+.segmented label {
   position: relative;
 }
 
-.presets input {
+.presets input,
+.segmented input {
   position: absolute;
   inset: 0;
   opacity: 0;
@@ -294,30 +286,54 @@ select:focus {
   cursor: pointer;
 }
 
-.presets span {
+.presets span,
+.segmented span {
   display: block;
   text-align: center;
   padding: 0.35rem 0.75rem;
   border: 1px solid var(--rule);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.875rem;
   font-weight: 550;
   white-space: nowrap;
 }
 
-.presets input:hover + span {
+.presets input:hover + span,
+.segmented input:hover + span {
   border-color: var(--ink);
 }
 
-.presets input:checked + span {
+.presets input:checked + span,
+.segmented input:checked + span {
   border-color: var(--ink);
   background: var(--ink);
   color: var(--bg);
 }
 
-.presets input:focus-visible + span {
+.presets input:focus-visible + span,
+.segmented input:focus-visible + span {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
+}
+
+/* Two joined pills, e.g. List | Month. */
+.segmented {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.segmented label + label {
+  margin-left: -1px;
+}
+
+.segmented label:first-of-type span {
+  border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+}
+
+.segmented label:last-of-type span {
+  border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
 }
 
 .toggle {
@@ -335,7 +351,7 @@ select:focus {
   height: 1.35rem;
   margin: 0;
   border: 1px solid var(--muted);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--surface);
   cursor: pointer;
   transition: background-color 0.15s;
@@ -364,10 +380,562 @@ select:focus {
 }
 
 .count {
-  margin: 0 0 0.25rem;
+  flex: 1 1 auto;
+  margin: 0;
   min-height: 1.5em;
   font-size: 0.875rem;
   color: var(--muted);
+}
+
+/* Popovers: picker panels, the subscribe panel, add-to-calendar menus. */
+
+.filters {
+  position: relative;
+}
+
+.popover {
+  position: absolute;
+  z-index: 5;
+  /* top: auto leaves the panel just below its button, wherever it's anchored. */
+  top: auto;
+  left: 0;
+  margin-top: 0.3rem;
+  right: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-popover);
+}
+
+.popover[hidden] {
+  display: none;
+}
+
+.popover-title {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.button-small {
+  min-height: 2rem;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.link-button {
+  padding: 0.25rem 0.1rem;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--ink);
+}
+
+/* Multi-select pickers */
+
+.picker-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.6rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.picker-toggle::after {
+  content: "";
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-top: -0.2rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.is-open > .picker-toggle::after {
+  margin-top: 0.2rem;
+  transform: rotate(225deg);
+}
+
+.picker-toggle:hover,
+.is-open > .picker-toggle {
+  border-color: var(--ink);
+}
+
+.picker-summary {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker.has-selection .picker-summary {
+  font-weight: 600;
+}
+
+.picker-filter {
+  margin-bottom: 0.5rem;
+}
+
+.picker-options {
+  max-height: min(20rem, 55vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.picker-group {
+  margin: 0 0 0.4rem;
+  padding: 0;
+  border: 0;
+}
+
+.picker-group[hidden],
+.picker-option[hidden] {
+  display: none;
+}
+
+.picker-group legend {
+  padding: 0.35rem 0 0.15rem;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+
+.picker-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.1rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: var(--radius);
+  font-size: 0.94rem;
+  cursor: pointer;
+}
+
+.picker-option:hover {
+  background: var(--chip);
+}
+
+.picker-option input {
+  flex: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.picker-empty {
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.picker-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--rule);
+}
+
+/* Selected venues and towns, as removable chips */
+
+.selection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+}
+
+.selection[hidden] {
+  display: none;
+}
+
+.selection-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.selection-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.4rem 0.3rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  background: var(--chip);
+  color: var(--ink);
+  font: 550 0.875rem / 1.2 var(--font-text);
+  cursor: pointer;
+}
+
+.selection-chip:hover {
+  border-color: var(--ink);
+}
+
+.selection-chip-kind {
+  font-size: 0.64rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.selection-chip-x {
+  padding-inline: 0.2rem;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--muted);
+}
+
+/* Toolbar: count, view toggle, subscribe */
+
+.toolbar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.9rem;
+  margin-bottom: 0.5rem;
+  padding-block: 0.6rem;
+  border-top: 1px solid var(--rule);
+}
+
+.subscribe-toggle {
+  white-space: nowrap;
+}
+
+.subscribe-panel > * {
+  margin: 0 0 0.75rem;
+}
+
+.subscribe-panel > :last-child {
+  margin-bottom: 0;
+}
+
+.subscribe-scope {
+  font-weight: 600;
+}
+
+.subscribe-help,
+.subscribe-everything,
+.subscribe-status {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.subscribe-status:empty {
+  display: none;
+}
+
+.subscribe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.subscribe-copy {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.subscribe-url {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 2.4rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--ink);
+  font:
+    0.8rem / 1.3 ui-monospace,
+    "SF Mono",
+    Menlo,
+    Consolas,
+    monospace;
+}
+
+/* A single day picked from the month grid */
+
+.day-filter {
+  margin: 0.25rem 0 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  background: var(--chip);
+  font-size: 0.92rem;
+}
+
+/* Month view */
+
+#listings.is-month {
+  max-width: var(--measure-wide);
+}
+
+.month-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.month-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  font-variation-settings: "opsz" 48;
+}
+
+.month-steps {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.month-step {
+  justify-content: center;
+  min-width: 2.25rem;
+  padding-inline: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.month-steps [aria-disabled="true"] {
+  border-color: var(--rule);
+  color: var(--muted);
+}
+
+.month-grid {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.month-grid th {
+  padding: 0 0.4rem 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.month-grid abbr {
+  text-decoration: none;
+}
+
+.month-cell {
+  height: 1px; /* lets the day link fill the cell */
+  padding: 0;
+  border: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+.month-day {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  height: 100%;
+  min-height: 6.75rem;
+  padding: 0.3rem 0.4rem 0.4rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.month-day:hover {
+  background: var(--highlight);
+}
+
+a.month-day:focus-visible {
+  outline-offset: -2px;
+}
+
+.month-date {
+  align-self: flex-start;
+  min-width: 1.6rem;
+  padding: 0.05rem 0.3rem;
+  border-radius: var(--radius-pill);
+  font-weight: 650;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.is-today .month-date {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.is-today {
+  background: var(--highlight);
+}
+
+.is-outside {
+  background: color-mix(in srgb, var(--bg) 60%, var(--rule));
+}
+
+.is-outside .month-day,
+.is-past .month-date {
+  color: var(--muted);
+}
+
+.is-selected {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+
+.month-entries {
+  display: grid;
+  min-width: 0;
+}
+
+.month-entry,
+.month-more {
+  overflow: hidden;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.month-entry-time {
+  margin-right: 0.3em;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--brass);
+}
+
+.month-entry.adjacent .month-entry-time {
+  color: var(--adjacent);
+}
+
+.month-entry.cancelled {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.month-more {
+  color: var(--muted);
+  font-weight: 550;
+}
+
+.month-count {
+  display: none;
+}
+
+.month {
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 39.99rem) {
+  .month-grid th {
+    padding-inline: 0;
+    text-align: center;
+  }
+
+  .month-day {
+    align-items: center;
+    min-height: 3.4rem;
+    padding: 0.25rem 0.1rem;
+  }
+
+  .month-date {
+    align-self: center;
+  }
+
+  .month-entries {
+    display: none;
+  }
+
+  .month-count {
+    display: block;
+    min-width: 1.4rem;
+    padding: 0 0.3rem;
+    border-radius: var(--radius-pill);
+    background: var(--chip);
+    font-size: 0.72rem;
+    font-weight: 650;
+    text-align: center;
+    color: var(--ink);
+  }
+}
+
+/* Add to calendar */
+
+.add-to-calendar {
+  position: relative;
+}
+
+.add-to-calendar > summary {
+  min-height: 2rem;
+  padding-block: 0.25rem;
+  list-style: none;
+}
+
+.add-to-calendar > summary::-webkit-details-marker {
+  display: none;
+}
+
+.add-to-calendar[open] > summary {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.menu {
+  right: auto;
+  width: max-content;
+  min-width: 13rem;
+  margin: 0;
+  padding: 0.3rem;
+  list-style: none;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--ink);
+  font: 550 0.9rem / 1.3 var(--font-text);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background: var(--chip);
 }
 
 /* Days */
@@ -499,7 +1067,7 @@ select:focus {
 
 .chip {
   padding: 0.05rem 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--chip);
   color: var(--muted);
   font-size: 0.78rem;
@@ -679,8 +1247,29 @@ select:focus {
     flex-wrap: wrap;
   }
 
-  .field-town {
-    flex-basis: 12rem;
+  .field-search {
+    flex-basis: 16rem;
+  }
+
+  .picker {
+    flex: 0 1 12rem;
+  }
+
+  .picker-anchor,
+  .subscribe {
+    position: relative;
+  }
+
+  /* Right-aligned so a panel never runs past the filters' right edge. */
+  .picker-panel {
+    left: auto;
+    width: 22rem;
+  }
+
+  .subscribe-panel {
+    right: 0;
+    left: auto;
+    width: 26rem;
   }
 
   .colophon-grid {
@@ -692,4 +1281,9 @@ select:focus {
   * {
     transition: none !important;
   }
+}
+
+/* Headings focused by script (tabindex="-1") need no focus ring. */
+[tabindex="-1"]:focus {
+  outline: none;
 }
