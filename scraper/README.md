@@ -36,8 +36,9 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
 - **`pipeline.build`**:
   1. Resolves venues (by id, name, alias or street address).
   2. Classifies each event as jazz, adjacent or other (`classify.py`).
-  3. Merges duplicates across sources (same venue and day, start within an hour, similar
-     title).
+  3. Merges duplicates across sources (same venue and night, start within an hour, similar
+     title). A set starting before 4 am belongs to the previous night (`config.night_of`), as
+     on the site.
   4. Drops past events.
 
 ### Weekly regulars
