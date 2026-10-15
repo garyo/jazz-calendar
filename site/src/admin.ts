@@ -4,7 +4,7 @@
  * closes; every API call sends it.
  */
 
-import { h } from "./render";
+import { byId, h, safeUrl } from "./dom";
 import {
   type FieldErrors,
   STATUSES,
@@ -17,12 +17,6 @@ import type { EventsFile, Venue } from "./types";
 
 const TOKEN_KEY = "admin-token";
 const API = "/api/admin/submissions";
-
-function byId<T extends HTMLElement>(id: string): T {
-  const el = document.getElementById(id);
-  if (!el) throw new Error(`Missing #${id}`);
-  return el as T;
-}
 
 const signin = byId<HTMLFormElement>("signin");
 const tokenInput = byId<HTMLInputElement>("admin-token");
@@ -168,11 +162,10 @@ function relevanceChoice(s: Submission): Node {
 function renderCard(s: Submission): HTMLLIElement {
   const tba = h("input", { type: "checkbox", name: "time_tba" });
   tba.checked = s.start_time === null;
-  const confirmation = h(
-    "a",
-    { href: s.url, target: "_blank", rel: "noopener noreferrer" },
-    s.url,
-  );
+  const href = safeUrl(s.url);
+  const confirmation = href
+    ? h("a", { href, target: "_blank", rel: "noopener noreferrer" }, s.url)
+    : s.url;
   const meta = h(
     "header",
     { class: "review-meta" },

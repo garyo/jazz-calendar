@@ -5,7 +5,7 @@
  * visitors who never submit don't fetch it.
  */
 
-import { h } from "./render";
+import { byId, h } from "./dom";
 import {
   type FieldErrors,
   MAX_DAYS_AHEAD,
@@ -93,12 +93,6 @@ export function showFieldErrors(
     first ??= field;
   }
   return first;
-}
-
-function byId<T extends HTMLElement>(id: string): T {
-  const el = document.getElementById(id);
-  if (!el) throw new Error(`Missing #${id}`);
-  return el as T;
 }
 
 export interface SubmitDialog {

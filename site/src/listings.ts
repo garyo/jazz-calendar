@@ -355,6 +355,11 @@ export function sortName(name: string): string {
   return normalize(name).replace(/^the\s+/, "");
 }
 
+/** "1 show", "3 shows". */
+export function showCount(count: number): string {
+  return `${count} ${count === 1 ? "show" : "shows"}`;
+}
+
 /** Venues with at least one of the given listings, by town and then name. */
 export function venuesWithListings(
   listings: readonly { venue: string }[],
