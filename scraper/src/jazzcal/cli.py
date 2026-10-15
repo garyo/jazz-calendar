@@ -17,6 +17,9 @@ from jazzcal.models import feed_schema
 from jazzcal.store import Store
 
 OUT_DIR = VAR_DIR / "out"
+DB = VAR_DIR / "jazzcal.db"
+MAX_AGE_HOURS = 6.0
+"""Reuse pages fetched within this many hours."""
 
 
 def main() -> None:
@@ -31,7 +34,10 @@ def main() -> None:
         p.add_argument("--source", action="append", help="only this source (repeatable)")
         p.add_argument("--offline", action="store_true", help="use only cached pages")
         p.add_argument(
-            "--max-age", type=float, default=6, help="reuse pages fetched within this many hours"
+            "--max-age",
+            type=float,
+            default=MAX_AGE_HOURS,
+            help="reuse pages fetched within this many hours",
         )
     build = commands.add_parser("build", help="build the published files from the store")
     evaluation = commands.add_parser("eval", help="score classification against eval/labels.yaml")
@@ -59,7 +65,7 @@ def main() -> None:
     match args.command:
         case "run" | "scrape":
             registry = Registry.load()
-            store = Store(VAR_DIR / "jazzcal.db")
+            store = Store(DB)
             with _http(args.offline, args.max_age) as http:
                 pipeline.scrape(registry, store, http, set(args.source or []) or None)
             if not args.offline:
@@ -69,15 +75,15 @@ def main() -> None:
                 if args.publish:
                     export.publish(OUT_DIR)
         case "build":
-            _build(Registry.load(), Store(VAR_DIR / "jazzcal.db"), _classifier(args.classifier))
+            _build(Registry.load(), Store(DB), _classifier(args.classifier))
         case "eval":
-            store = Store(VAR_DIR / "jazzcal.db")
+            store = Store(DB)
             print(evaluate.report(Registry.load(), store, _classifier(args.classifier)))
         case "publish":
             export.publish(OUT_DIR)
         case "show":
             source = Registry.load().source(args.source)
-            with _http(args.offline, 6) as http:
+            with _http(args.offline, MAX_AGE_HOURS) as http:
                 for e in get_adapter(source.adapter)(source, http):
                     print(e.model_dump_json(exclude={"text"}, exclude_none=True))
         case "schema":
