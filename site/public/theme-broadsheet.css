@@ -1,0 +1,170 @@
+/*
+ * Broadsheet: Program's grid as a newspaper's listings page. Caslon for
+ * the nameplate and acts, Franklin for everything else, letter-spaced day
+ * labels between a heavy rule and a hairline, newsprint tint, one green.
+ */
+
+:root[data-theme="broadsheet"] {
+  --bg: #f6f3eb;
+  --surface: #ece7da;
+  --ink: #1b1a17;
+  --muted: #57534a;
+  --rule: #d3ccbc;
+  --rule-strong: #1b1a17;
+  --accent: #1e5a3c;
+  --accent-ink: #ffffff;
+  --adjacent: #7a3e12;
+  --focus: #1f4fbf;
+  --cancelled: #a3231a;
+  --chip: #ece7da;
+  --shadow-popover: 0 0.5rem 1.25rem rgb(27 26 23 / 0.14);
+
+  --font-text: "Libre Franklin", "Franklin Gothic Book", system-ui, sans-serif;
+  --font-display: "Libre Caslon Text", "Big Caslon", Georgia, serif;
+  --font-time: var(--font-text);
+  --radius: 0;
+  --radius-control: 0;
+
+  color-scheme: light;
+
+  @media (prefers-color-scheme: dark) {
+    --bg: #1a1916;
+    --surface: #24231f;
+    --ink: #ebe6da;
+    --muted: #aca595;
+    --rule: #3b3933;
+    --rule-strong: #ebe6da;
+    --accent: #85c8a0;
+    --accent-ink: #0d1a12;
+    --adjacent: #e6ab7a;
+    --focus: #9cb9ff;
+    --cancelled: #ff9a8a;
+    --chip: #24231f;
+    --shadow-popover: 0 0.5rem 1.5rem rgb(0 0 0 / 0.5);
+
+    color-scheme: dark;
+  }
+
+  body {
+    font-size: 0.9375rem;
+  }
+
+  a {
+    text-decoration-thickness: 1px;
+  }
+
+  /* Header: a Caslon nameplate over a thick-and-thin rule. */
+
+  .masthead {
+    border-bottom: 0;
+    box-shadow:
+      0 1px 0 var(--rule-strong),
+      0 4px 0 var(--bg),
+      0 5px 0 var(--rule-strong);
+    margin-bottom: 0.75rem;
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    text-transform: none;
+
+    @media (max-width: 39.99rem) {
+      font-size: 1.1875rem;
+    }
+  }
+
+  .updated {
+    font-family: var(--font-text);
+    font-style: italic;
+  }
+
+  /* Day strip: hairline boxes, today reversed in green. */
+
+  .strip-weekday {
+    font-weight: 600;
+    letter-spacing: 0.12em;
+  }
+
+  .strip-date {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  & .presets span,
+  & .segmented span {
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  /* Day labels: heavy rule above, hairline below, no tint. */
+
+  .day {
+    margin-bottom: 0.25rem;
+  }
+
+  .day-heading {
+    padding-block: 0.4rem 0.3rem;
+    border-top: 2px solid var(--rule-strong);
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg);
+    box-shadow: 0 0 0 100vmax var(--bg);
+    font-family: var(--font-text);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+  }
+
+  .day-long {
+    display: inline;
+  }
+
+  .day-short {
+    display: none;
+  }
+
+  .day-relative {
+    font-weight: 600;
+  }
+
+  /* Rows: Caslon acts, Franklin times and venues. */
+
+  .event-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .event-artists {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .event-time {
+    font-weight: 600;
+  }
+
+  .event-end {
+    font-weight: 400;
+  }
+
+  .event-tickets {
+    color: var(--accent);
+  }
+
+  & .month-heading,
+  & .notice-title,
+  & .popover-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  .month-grid th {
+    letter-spacing: 0.14em;
+    color: var(--ink);
+  }
+}

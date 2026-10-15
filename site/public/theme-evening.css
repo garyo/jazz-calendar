@@ -1,0 +1,171 @@
+/*
+ * Evening: Program's grid after dark, but calm. Deep slate-indigo
+ * surfaces, cream type and a brass accent; by day, cool grey-blue paper.
+ * Jost's jazz-age geometry for acts and day heads, Plex Mono for times.
+ */
+
+:root[data-theme="evening"] {
+  --bg: #eef1f6;
+  --surface: #e0e5ee;
+  --ink: #1c2233;
+  --muted: #4e586c;
+  --rule: #d0d7e2;
+  --accent: #835400;
+  --accent-ink: #fffaf0;
+  --adjacent: #5b3f9a;
+  --focus: #2f5fd0;
+  --cancelled: #a8261c;
+  --chip: #e0e5ee;
+  --brass: #b98326;
+  --header: #e3e8f0;
+  --highlight: color-mix(in srgb, var(--brass) 16%, var(--bg));
+  --shadow-popover: 0 0.5rem 1.5rem rgb(28 34 51 / 0.16);
+
+  --font-text: "IBM Plex Sans", system-ui, sans-serif;
+  --font-display: "Jost", "Futura", system-ui, sans-serif;
+  --font-time: "IBM Plex Mono", ui-monospace, monospace;
+  --radius: 6px;
+  --radius-control: 6px;
+
+  color-scheme: light;
+
+  @media (prefers-color-scheme: dark) {
+    --bg: #1a1f2d;
+    --surface: #232a3b;
+    --ink: #f1e9d9;
+    --muted: #a9b0c2;
+    --rule: #323a4f;
+    --accent: #e3b765;
+    --accent-ink: #1d1505;
+    --adjacent: #bba9f0;
+    --focus: #9db8ff;
+    --cancelled: #ff998a;
+    --chip: #232a3b;
+    --brass: #e3b765;
+    --header: #20263a;
+    --shadow-popover: 0 0.75rem 2rem rgb(5 8 18 / 0.6);
+
+    color-scheme: dark;
+  }
+
+  /* Header: a soft band of the surface color, edged in brass. */
+
+  .masthead {
+    border-bottom: 1px solid color-mix(in srgb, var(--brass) 60%, var(--bg));
+    background: var(--header);
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+
+    @media (max-width: 39.99rem) {
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+    }
+  }
+
+  /* Day strip: rounded tiles, today in brass. */
+
+  .strip-day {
+    border-color: var(--rule);
+    background: var(--surface);
+  }
+
+  .strip-day.is-today {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .strip-day.is-empty {
+    background: none;
+  }
+
+  .strip-date {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+  }
+
+  & .presets span,
+  & .segmented span {
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    letter-spacing: 0.1em;
+  }
+
+  & .presets input:checked + span,
+  & .segmented input:checked + span {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* Day heads: letter-spaced caps on a quiet band with a brass edge. */
+
+  .day-heading {
+    padding-block: 0.45rem;
+    box-shadow: none;
+    /* The band and its brass top edge, both run out to the window edges. */
+    border-image:
+      linear-gradient(
+        color-mix(in srgb, var(--brass) 45%, var(--surface)) 0 1px,
+        var(--surface) 0
+      )
+      fill 0 / / 0 100vmax;
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+  }
+
+  .day-relative {
+    font-weight: 500;
+  }
+
+  /* Rows: Jost acts, brass times. */
+
+  .event-title {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+  }
+
+  .event-artists {
+    font-family: var(--font-text);
+  }
+
+  .event-time {
+    color: var(--accent);
+  }
+
+  .event-end {
+    color: var(--muted);
+  }
+
+  .event.is-now .event-time {
+    border-radius: var(--radius);
+    color: var(--accent-ink);
+  }
+
+  .event-tickets {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  & .month-heading,
+  & .notice-title,
+  & .popover-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .month-grid th {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+  }
+}

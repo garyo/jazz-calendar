@@ -1,0 +1,154 @@
+/*
+ * Liner Notes: Program's grid set like the back of an LP sleeve. Serif act
+ * names and day heads on warm paper, mono times, an oxblood accent and
+ * delicate rules.
+ */
+
+:root[data-theme="liner"] {
+  --bg: #fbf7ef;
+  --surface: #f2eadb;
+  --ink: #241d17;
+  --muted: #655a4d;
+  --rule: #e3d9c7;
+  --rule-strong: #241d17;
+  --accent: #7c2231;
+  --accent-ink: #fffaf3;
+  --adjacent: #2d5a6e;
+  --focus: #2f5d9e;
+  --cancelled: #a3231a;
+  --chip: #f2eadb;
+  --shadow-popover: 0 0.5rem 1.5rem rgb(60 40 20 / 0.14);
+
+  --font-text: "IBM Plex Sans", system-ui, sans-serif;
+  --font-display: "Source Serif 4", Georgia, serif;
+  --font-time: "IBM Plex Mono", ui-monospace, monospace;
+  --radius: 3px;
+  --radius-control: 3px;
+
+  color-scheme: light;
+
+  @media (prefers-color-scheme: dark) {
+    --bg: #1b1815;
+    --surface: #26211c;
+    --ink: #efe6d8;
+    --muted: #b3a795;
+    --rule: #3a322a;
+    --rule-strong: #efe6d8;
+    --accent: #e0a39a;
+    --accent-ink: #2a0f13;
+    --adjacent: #93c3d3;
+    --focus: #9cb9ff;
+    --cancelled: #ff9a8a;
+    --chip: #26211c;
+    --shadow-popover: 0 0.5rem 1.5rem rgb(0 0 0 / 0.5);
+
+    color-scheme: dark;
+  }
+
+  a {
+    text-decoration-thickness: 1px;
+  }
+
+  /* Header: a serif wordmark over a fine double rule. */
+
+  .masthead {
+    border-bottom: 3px double var(--rule-strong);
+  }
+
+  .wordmark {
+    font-size: 1.375rem;
+    font-weight: 600;
+    font-variation-settings: "opsz" 40;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* Day strip: serif dates; today in oxblood. */
+
+  .strip-date {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  & .presets input:checked + span,
+  & .segmented input:checked + span {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* Day heads: the long date in serif on a deeper band of paper. */
+
+  .day-heading {
+    padding-block: 0.4rem;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .day-long {
+    display: inline;
+  }
+
+  .day-short {
+    display: none;
+  }
+
+  .day-relative {
+    font-style: italic;
+    font-weight: 400;
+    text-transform: lowercase;
+  }
+
+  /* Rows: serif acts, sidemen in italic, hairlines between. */
+
+  .event-title {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    font-variation-settings: "opsz" 20;
+  }
+
+  .event-artists {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.9375rem;
+  }
+
+  .event-time {
+    color: var(--accent);
+  }
+
+  .event-end {
+    color: var(--muted);
+  }
+
+  .event.is-now .event-time {
+    color: var(--accent-ink);
+  }
+
+  & .event,
+  & .regular {
+    border-bottom-color: color-mix(in srgb, var(--rule) 70%, var(--bg));
+  }
+
+  .event-tickets {
+    color: var(--accent);
+  }
+
+  & .notice-title,
+  & .month-heading,
+  & .popover-title {
+    font-weight: 600;
+  }
+
+  .month-grid th {
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+}

@@ -50,6 +50,13 @@ describe("pre-paint theme script", () => {
     expect(runInline("", null).theme).toBe(DEFAULT_THEME);
   });
 
+  test("every theme has a stylesheet and a switcher button", () => {
+    for (const theme of THEMES) {
+      expect(html).toContain(`href="/theme-${theme}.css"`);
+      expect(html).toContain(`data-theme-choice="${theme}"`);
+    }
+  });
+
   test("saves a theme from the query string", () => {
     expect(runInline("?when=week&theme=guide", "club")).toEqual({
       theme: "guide",

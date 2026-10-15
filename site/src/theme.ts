@@ -4,7 +4,16 @@
  * before first paint; this module handles switching afterwards.
  */
 
-export const THEMES = ["guide", "program", "lateset", "club"] as const;
+export const THEMES = [
+  "guide",
+  "program",
+  "lateset",
+  "club",
+  "liner",
+  "bluenote",
+  "evening",
+  "broadsheet",
+] as const;
 export type Theme = (typeof THEMES)[number];
 
 export const DEFAULT_THEME: Theme = "program";

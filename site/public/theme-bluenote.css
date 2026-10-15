@@ -1,0 +1,201 @@
+/*
+ * Blue Note: Program's grid with the confidence of a 1950s jazz sleeve.
+ * One grotesk throughout, day heads as solid blue bands with knocked-out
+ * caps, a single tangerine accent on cream.
+ */
+
+:root[data-theme="bluenote"] {
+  --bg: #f6efdf;
+  --surface: #ede2c9;
+  --ink: #131b2b;
+  --muted: #4c5262;
+  --rule: #dccfb3;
+  --accent: #b4470c;
+  --accent-ink: #fffaf0;
+  --adjacent: #1f6560;
+  --focus: #1d4ed8;
+  --cancelled: #a51d14;
+  --chip: #ede2c9;
+  /* Day bands: a solid block with the page color knocked out of it. */
+  --band: #1d3a66;
+  --band-ink: #f6efdf;
+  --band-accent: #ffaa55;
+  --tangerine: #f08a2c;
+  --tangerine-ink: #131b2b;
+  --shadow-popover: 0 0.5rem 1.5rem rgb(19 27 43 / 0.16);
+
+  --font-text: "Archivo", system-ui, sans-serif;
+  --font-display: var(--font-text);
+  --font-time: var(--font-text);
+  --radius: 2px;
+  --radius-control: 2px;
+
+  color-scheme: light;
+
+  @media (prefers-color-scheme: dark) {
+    --bg: #0f1522;
+    --surface: #18202f;
+    --ink: #f3ecdc;
+    --muted: #a8adba;
+    --rule: #2a3343;
+    --accent: #f59a45;
+    --accent-ink: #1a0d02;
+    --adjacent: #7fd0c6;
+    --focus: #8fb4ff;
+    --cancelled: #ff9282;
+    --chip: #18202f;
+    --band: #22406e;
+    --band-ink: #f3ecdc;
+    --band-accent: #ffb26b;
+    --tangerine: #f59a45;
+    --tangerine-ink: #0f1522;
+    --shadow-popover: 0 0.5rem 1.5rem rgb(0 0 0 / 0.55);
+
+    color-scheme: dark;
+  }
+
+  body {
+    font-variation-settings: "wdth" 100;
+  }
+
+  /* Header: cream, a heavy wordmark, a tangerine rule. */
+
+  .masthead {
+    border-bottom: 4px solid var(--tangerine);
+  }
+
+  .wordmark {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+
+    @media (max-width: 39.99rem) {
+      font-size: 1.0625rem;
+    }
+  }
+
+  .button {
+    font-weight: 700;
+  }
+
+  /* Day strip: square blocks, today in tangerine. */
+
+  .strip-day {
+    border-color: var(--rule);
+  }
+
+  .strip-weekday {
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  .strip-date {
+    font-size: 1.125rem;
+    font-weight: 800;
+  }
+
+  .strip-day.is-today {
+    border-color: var(--tangerine);
+    background: var(--tangerine);
+    color: var(--tangerine-ink);
+  }
+
+  & .presets span,
+  & .segmented span {
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  & .presets input:checked + span,
+  & .segmented input:checked + span {
+    border-color: var(--band);
+    background: var(--band);
+    color: var(--band-ink);
+  }
+
+  .toggle input:checked {
+    border-color: var(--band);
+    background: var(--band);
+  }
+
+  .toggle input:checked::before {
+    background: var(--band-ink);
+  }
+
+  .count {
+    font-weight: 600;
+  }
+
+  /* Day heads: solid bands, knocked-out caps. */
+
+  .day {
+    margin-bottom: 0.75rem;
+  }
+
+  .day-heading {
+    padding-block: 0.45rem;
+    background: var(--band);
+    box-shadow: 0 0 0 100vmax var(--band);
+    color: var(--band-ink);
+    font-size: 0.9375rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+
+  .day-relative {
+    color: var(--band-accent);
+  }
+
+  .day-relative::before {
+    color: inherit;
+  }
+
+  /* Rows: bold acts, times set heavy in the column. */
+
+  .event-time {
+    font-weight: 700;
+  }
+
+  .event-end {
+    font-weight: 400;
+  }
+
+  .event-title {
+    font-weight: 700;
+    letter-spacing: -0.005em;
+  }
+
+  .event-tickets {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .event.is-now .event-time {
+    background: var(--tangerine);
+    color: var(--tangerine-ink);
+  }
+
+  .mark-now::before {
+    color: var(--tangerine);
+  }
+
+  .event-tag {
+    font-weight: 500;
+  }
+
+  & .month-heading,
+  & .notice-title {
+    font-weight: 800;
+    letter-spacing: 0.01em;
+  }
+
+  .month-grid th {
+    font-weight: 800;
+    color: var(--ink);
+  }
+
+  .is-today .month-date {
+    background: var(--tangerine);
+    color: var(--tangerine-ink);
+  }
+}

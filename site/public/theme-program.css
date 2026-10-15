@@ -2,6 +2,10 @@
  * Program: a utilitarian program guide. A grotesk face, a fixed time column
  * and one row per gig; mono for times and counts, one orange accent.
  * Also the default when no theme is set.
+ *
+ * The layout below the colors is shared with Program's variants (Liner
+ * Notes, Blue Note, Evening, Broadsheet); each of their theme-*.css files
+ * loads after this one and adds only colors, fonts and a few flourishes.
  */
 
 :root:not([data-theme]),
@@ -20,12 +24,8 @@
   --font-text: "IBM Plex Sans", system-ui, sans-serif;
   --font-display: var(--font-text);
   --font-time: "IBM Plex Mono", ui-monospace, monospace;
-  --measure: 64rem;
-  --measure-wide: 64rem;
   --radius: 2px;
   --radius-control: 2px;
-  --time-col: 5.5rem;
-  --row-pad: 0.375rem;
 
   color-scheme: light;
 
@@ -44,6 +44,20 @@
 
     color-scheme: dark;
   }
+}
+
+:root:is(
+  :not([data-theme]),
+  [data-theme="program"],
+  [data-theme="liner"],
+  [data-theme="bluenote"],
+  [data-theme="evening"],
+  [data-theme="broadsheet"]
+) {
+  --measure: 64rem;
+  --measure-wide: 64rem;
+  --time-col: 5.5rem;
+  --row-pad: 0.375rem;
 
   body {
     line-height: 1.35;
@@ -369,13 +383,21 @@
 
     .regular-row {
       grid-template-columns: 12rem minmax(0, 1fr) 15rem;
-      grid-template-areas: "when title venue" "when checked venue";
+      grid-template-areas:
+        "when title venue"
+        "when extra venue"
+        "when checked venue";
       column-gap: 1rem;
       align-items: baseline;
     }
 
     .regular-when {
       font-family: var(--font-text);
+    }
+
+    .regular-row > .event-extra {
+      grid-area: extra;
+      text-align: left;
     }
   }
 }
