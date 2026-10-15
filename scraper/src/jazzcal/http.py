@@ -66,7 +66,14 @@ class _CacheEntry:
 
 
 class Http:
-    def __init__(self, cache_dir: Path, *, offline: bool = False, max_age: timedelta) -> None:
+    def __init__(
+        self,
+        cache_dir: Path,
+        *,
+        offline: bool = False,
+        max_age: timedelta,
+        transport: httpx.BaseTransport | None = None,
+    ) -> None:
         self.cache_dir = cache_dir
         self.offline = offline
         self.max_age = max_age
@@ -75,6 +82,7 @@ class Http:
             headers={"User-Agent": USER_AGENT, "Accept-Encoding": "gzip, deflate"},
             follow_redirects=True,
             timeout=30,
+            transport=transport,
         )
         self._robots: dict[str, Protego | None] = {}
         self._last_request: dict[str, float] = {}
