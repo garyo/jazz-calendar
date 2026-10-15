@@ -29,11 +29,11 @@ import { submitDialog } from "./submit";
 import { themeSwitcher } from "./theme";
 import {
   type DayKey,
-  dayKey,
   formatDayHeading,
   formatMonth,
   formatUpdated,
   monthOf,
+  nightOf,
 } from "./time";
 import type { CalendarEvent, EventsFile, Regular, Venue } from "./types";
 import {
@@ -348,7 +348,7 @@ function renderMonthView(now: Date, today: DayKey): void {
 function render(): void {
   if (!feed) return;
   const now = new Date();
-  const today = dayKey(now);
+  const today = nightOf(now);
   const month = state.view === "month";
   presets.hidden = month;
   listings.classList.toggle("is-month", month);

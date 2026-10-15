@@ -1,10 +1,18 @@
 /**
  * Pure listing logic: which events are upcoming, which events and regulars
- * match the filters, and how events group into Boston-local days.
+ * match the filters, and how events group into nights: a Boston-local day
+ * plus its small hours (see NIGHT_CUTOFF_HOUR).
  */
 
 import { matchesSelection } from "./selection";
-import { addDays, type DayKey, dayKey, weekday } from "./time";
+import {
+  addDays,
+  type DayKey,
+  dayKey,
+  eventNight,
+  nightOf,
+  weekday,
+} from "./time";
 import type { CalendarEvent, Regular, Venue } from "./types";
 import type { DatePreset, ViewState } from "./url-state";
 
@@ -16,8 +24,8 @@ export interface DayGroup {
   events: CalendarEvent[];
 }
 
-/** Inclusive range of Boston-local days. */
-interface DayRange {
+/** Inclusive range of nights. */
+export interface DayRange {
   from: DayKey;
   to: DayKey;
 }
@@ -43,13 +51,17 @@ export function isOnNow(event: CalendarEvent, now: Date): boolean {
   );
 }
 
-/** The day an event is listed under: its start day, or today if still running. */
+/** The night an event is listed under: its own, or tonight if still running. */
 export function listingDay(event: CalendarEvent, today: DayKey): DayKey {
-  const start = dayKey(new Date(event.start));
-  return start < today ? today : start;
+  const night = eventNight(event);
+  return night < today ? today : night;
 }
 
-/** The days a preset covers, or null for no limit. Friday counts as weekend. */
+/**
+ * The nights a preset covers, or null for no limit. Friday counts as
+ * weekend. `today` is tonight (see nightOf), so at 1 am it is still the
+ * evening's date.
+ */
 export function presetRange(
   preset: DatePreset,
   today: DayKey,
@@ -88,8 +100,8 @@ function matchesTerms(texts: readonly string[], terms: string[]): boolean {
   return terms.every((term) => haystack.includes(term));
 }
 
-/** The list view's days: the chosen day, else the date preset's. */
-function listRange(state: ViewState, today: DayKey): DayRange | null {
+/** The list view's nights: the chosen day, else the date preset's. */
+export function listRange(state: ViewState, today: DayKey): DayRange | null {
   return state.day
     ? { from: state.day, to: state.day }
     : presetRange(state.when, today);
@@ -121,7 +133,7 @@ export function filterEvents(
   state: ViewState,
   now: Date,
 ): CalendarEvent[] {
-  const today = dayKey(now);
+  const today = nightOf(now);
   const range = listRange(state, today);
   const upcoming = events.filter((event) => {
     if (!isUpcoming(event, now)) return false;
@@ -148,19 +160,26 @@ export function filterRegulars(
   });
 }
 
-/** Consecutive runs of same-day events; input is sorted by start. */
+/**
+ * Events grouped by the night they're listed under, nights in order and
+ * each night's events in input order (sorted by start). An all-day listing
+ * at midnight sorts between a night's evening and its late sets, so a
+ * night's events aren't always consecutive.
+ */
 export function groupByDay(
   events: readonly CalendarEvent[],
   today: DayKey,
 ): DayGroup[] {
-  const groups: DayGroup[] = [];
+  const groups = new Map<DayKey, CalendarEvent[]>();
   for (const event of events) {
     const day = listingDay(event, today);
-    const last = groups.at(-1);
-    if (last?.day === day) last.events.push(event);
-    else groups.push({ day, events: [event] });
+    const group = groups.get(day);
+    if (group) group.push(event);
+    else groups.set(day, [event]);
   }
-  return groups;
+  return [...groups]
+    .map(([day, events]) => ({ day, events }))
+    .sort((a, b) => a.day.localeCompare(b.day));
 }
 
 export interface StripDay {

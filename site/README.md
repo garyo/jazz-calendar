@@ -12,7 +12,8 @@ migrations/      D1 schema for gig submissions
 src/main.ts      front-end entry: fetches /data/events.json, wires controls, renders
 src/render.ts    DOM construction (text only, never innerHTML), incl. the month grid
 src/picker.ts    multi-select (venues, towns); src/disclosure.ts: popover toggling
-src/listings.ts  pure logic: upcoming, filtering, grouping by Boston-local day
+src/listings.ts  pure logic: upcoming, filtering, grouping by night (a set
+                 before 4 am belongs to the evening before; see time.ts)
 src/month.ts     pure logic: the month view's Sunday-first grid
 src/selection.ts venue/town/jazz-adjacent selection: matching, parsing, feed names
                  (shared by the front end and the Worker)

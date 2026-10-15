@@ -207,6 +207,24 @@
    ]
   },
   {
+   "id": "e1ac",
+   "title": "The Midnight Hour",
+   "start": "2026-10-17T00:00:00-04:00",
+   "end": "2026-10-17T02:00:00-04:00",
+   "all_day": false,
+   "venue": "square-root",
+   "url": "https://squarerootrozzie.com/events/",
+   "ticket_url": null,
+   "price": "No cover",
+   "artists": [],
+   "relevance": "jazz",
+   "tags": [],
+   "cancelled": false,
+   "sources": [
+    "submissions"
+   ]
+  },
+  {
    "id": "e1a7",
    "title": "Saturday Jazz Brunch",
    "start": "2026-10-17T11:00:00-04:00",

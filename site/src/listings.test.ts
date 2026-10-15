@@ -121,10 +121,35 @@ describe("filterEvents", () => {
     expect(shown({ when: "weekend" }, evening)).toEqual([
       "e1a5",
       "e1a6",
+      "e1ac",
       "e1a7",
       "e1a8",
     ]);
     expect(shown({ when: "week" }, evening)).not.toContain("e1ab");
+  });
+
+  test("tonight includes its after-midnight sets", () => {
+    const friday = "2026-10-16T19:00:00-04:00";
+    expect(shown({ when: "tonight" }, friday)).toEqual([
+      "e1a5",
+      "e1a6",
+      "e1ac",
+    ]);
+  });
+
+  test("until 4 am, tonight is still the evening before", () => {
+    const small = "2026-10-17T01:00:00-04:00"; // Saturday, 1 am
+    expect(shown({ when: "tonight" }, small)).toEqual(["e1ac"]);
+    expect(shown({ when: "weekend" }, small)).toEqual(["e1ac", "e1a7", "e1a8"]);
+    const dawn = "2026-10-17T04:00:00-04:00";
+    expect(shown({ when: "tonight" }, dawn)).toEqual(["e1a7"]);
+  });
+
+  test("a set crossing midnight stays on its night while it runs", () => {
+    expect(shown({ when: "tonight" }, "2026-10-17T01:59:00-04:00")).toEqual([
+      "e1ac",
+    ]);
+    expect(shown({ when: "tonight" }, "2026-10-17T02:00:00-04:00")).toEqual([]);
   });
 
   test("jazz-adjacent toggle", () => {
@@ -162,7 +187,9 @@ describe("filterEvents", () => {
     expect(shown({ day: "2026-10-16", when: "tonight" }, evening)).toEqual([
       "e1a5",
       "e1a6",
+      "e1ac",
     ]);
+    expect(shown({ day: "2026-10-17" }, evening)).toEqual(["e1a7"]);
     expect(shown({ day: "2026-10-14" }, evening)).toEqual([]);
   });
 
@@ -243,11 +270,11 @@ describe("matchingEvents", () => {
 });
 
 describe("groupByDay", () => {
-  test("groups sorted events by Boston-local day", () => {
+  test("groups sorted events by night", () => {
     const groups = groupByDay(sample.events, "2026-10-15");
     expect(groups.map((g) => [g.day, g.events.length])).toEqual([
       ["2026-10-15", 3],
-      ["2026-10-16", 2],
+      ["2026-10-16", 3],
       ["2026-10-17", 1],
       ["2026-10-18", 1],
       ["2026-10-20", 1],
@@ -259,6 +286,24 @@ describe("groupByDay", () => {
   test("uses Boston days for UTC timestamps near midnight", () => {
     const late = { ...byId("e1a4"), start: "2026-10-16T03:30:00Z" };
     expect(groupByDay([late], "2026-10-15")[0]?.day).toBe("2026-10-15");
+  });
+
+  test("keeps a night together around an all-day listing at midnight", () => {
+    const evening = { ...byId("e1a5"), id: "evening" };
+    const allDay = { ...byId("e1ab"), id: "allday" };
+    const late = { ...byId("e1ac"), id: "late" };
+    const groups = groupByDay(
+      [
+        { ...evening, start: "2026-10-23T21:00:00-04:00" },
+        { ...allDay, start: "2026-10-24T00:00:00-04:00" },
+        { ...late, start: "2026-10-24T00:30:00-04:00" },
+      ],
+      "2026-10-15",
+    );
+    expect(groups.map((g) => [g.day, ids(g.events)])).toEqual([
+      ["2026-10-23", ["evening", "late"]],
+      ["2026-10-24", ["allday"]],
+    ]);
   });
 
   test("lists a still-running show under today", () => {

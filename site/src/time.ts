@@ -10,11 +10,19 @@ export const TIME_ZONE = "America/New_York";
 /** A Boston-local calendar date, "YYYY-MM-DD"; compares correctly as a string. */
 export type DayKey = string;
 
+/**
+ * Shows starting before this hour, Boston time, belong to the previous
+ * night: a 12:30 am set on Saturday is part of Friday night.
+ */
+export const NIGHT_CUTOFF_HOUR = 4;
+
 const dateFormat = new Intl.DateTimeFormat("en-US", {
   timeZone: TIME_ZONE,
   year: "numeric",
   month: "2-digit",
   day: "2-digit",
+  hour: "2-digit",
+  hourCycle: "h23",
 });
 
 const clockFormat = new Intl.DateTimeFormat("en-US", {
@@ -81,6 +89,27 @@ export function addDays(key: DayKey, days: number): DayKey {
   const date = keyToDate(key);
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
+}
+
+/**
+ * The night an instant belongs to: its Boston-local date, or the day before
+ * until NIGHT_CUTOFF_HOUR. Uses the local clock, so DST doesn't move the cutoff.
+ */
+export function nightOf(date: Date): DayKey {
+  const p = partsOf(dateFormat, date);
+  const day = `${p.year}-${p.month}-${p.day}`;
+  return Number(p.hour) < NIGHT_CUTOFF_HOUR ? addDays(day, -1) : day;
+}
+
+/** The night a listing belongs to. All-day listings keep their date. */
+export function eventNight(event: CalendarEvent): DayKey {
+  const start = new Date(event.start);
+  return event.all_day ? dayKey(start) : nightOf(start);
+}
+
+/** A set after midnight, listed with the night before its date. */
+export function isLateSet(event: CalendarEvent): boolean {
+  return eventNight(event) !== dayKey(new Date(event.start));
 }
 
 /** "YYYY-MM": the month a day falls in. */

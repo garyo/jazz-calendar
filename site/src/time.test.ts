@@ -5,6 +5,7 @@ import {
   dayKey,
   dayParts,
   eventEndLabel,
+  eventNight,
   eventTimeLabel,
   formatClock,
   formatDate,
@@ -12,7 +13,9 @@ import {
   formatMonth,
   formatShortClock,
   formatUpdated,
+  isLateSet,
   monthOf,
+  nightOf,
   weekday,
 } from "./time";
 import type { CalendarEvent } from "./types";
@@ -33,6 +36,50 @@ describe("dayKey", () => {
     // 04:30Z is 00:30 EDT on Nov 1; 04:30Z a day later is 23:30 EST on Nov 1.
     expect(dayKey(at("2026-11-01T04:30:00Z"))).toBe("2026-11-01");
     expect(dayKey(at("2026-11-02T04:30:00Z"))).toBe("2026-11-01");
+  });
+});
+
+describe("nights", () => {
+  const show = (start: string, all_day = false): CalendarEvent => ({
+    id: "x",
+    title: "Set",
+    start,
+    all_day,
+    venue: "v",
+    url: "https://example.com",
+    relevance: "jazz",
+    sources: [],
+  });
+
+  test("a set before the cutoff belongs to the night before", () => {
+    expect(nightOf(at("2026-10-16T23:30:00-04:00"))).toBe("2026-10-16");
+    expect(nightOf(at("2026-10-17T00:00:00-04:00"))).toBe("2026-10-16");
+    expect(nightOf(at("2026-10-17T03:59:00-04:00"))).toBe("2026-10-16");
+    expect(nightOf(at("2026-10-17T04:00:00-04:00"))).toBe("2026-10-17");
+    expect(nightOf(at("2026-10-17T07:30:00Z"))).toBe("2026-10-16"); // 3:30 am
+  });
+
+  test("the cutoff stays at 4 am local across DST", () => {
+    // Fall back: 1:30 am comes twice, and 3:30 EST is 8:30Z.
+    expect(nightOf(at("2026-11-01T05:30:00Z"))).toBe("2026-10-31");
+    expect(nightOf(at("2026-11-01T06:30:00Z"))).toBe("2026-10-31");
+    expect(nightOf(at("2026-11-01T08:30:00Z"))).toBe("2026-10-31");
+    expect(nightOf(at("2026-11-01T09:00:00Z"))).toBe("2026-11-01");
+    // Spring forward: 2–3 am is skipped.
+    expect(nightOf(at("2027-03-14T07:30:00Z"))).toBe("2027-03-13"); // 3:30 EDT
+    expect(nightOf(at("2027-03-14T08:00:00Z"))).toBe("2027-03-14"); // 4:00 EDT
+  });
+
+  test("eventNight and isLateSet; all-day listings keep their date", () => {
+    const late = show("2026-10-17T00:30:00-04:00");
+    expect(eventNight(late)).toBe("2026-10-16");
+    expect(isLateSet(late)).toBe(true);
+    const evening = show("2026-10-16T22:00:00-04:00");
+    expect(eventNight(evening)).toBe("2026-10-16");
+    expect(isLateSet(evening)).toBe(false);
+    const allDay = show("2026-10-17T00:00:00-04:00", true);
+    expect(eventNight(allDay)).toBe("2026-10-17");
+    expect(isLateSet(allDay)).toBe(false);
   });
 });
 
