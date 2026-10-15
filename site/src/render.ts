@@ -1,33 +1,34 @@
-/** DOM construction for the listings. All data is inserted as text, never HTML. */
+/**
+ * DOM construction for the listings, the regulars and the list of sources.
+ * All data is inserted as text, never HTML.
+ */
 
-import { buildCalendar, googleEventUrl } from "./calendar-export";
+import { renderAddToCalendar } from "./calendar-menu";
 import {
   type Credits,
   type SourceEntry,
   type SourceList,
   viaCredits,
 } from "./credits";
+import { type Child, h, safeUrl, srOnly } from "./dom";
 import {
-  ASSUMED_DURATION_MS,
   type DayGroup,
   extraArtists,
   isOnNow,
-  normalize,
   type StripDay,
+  showCount,
   venueLocation,
 } from "./listings";
-import type { MonthDay } from "./month";
 import {
   addDays,
-  addMonths,
   type DayKey,
   dayParts,
   eventEndLabel,
   eventTimeLabel,
   formatDate,
   formatDayHeading,
-  formatMonth,
   formatShortClock,
+  formatUpdated,
   isLateSet,
 } from "./time";
 import type {
@@ -37,39 +38,6 @@ import type {
   SourceCredit,
   Venue,
 } from "./types";
-
-/** Entries listed in a month-grid cell before "+N more". */
-export const MONTH_CELL_ENTRIES = 8;
-
-type Child = Node | string | null | undefined | false;
-
-export function h<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  attrs: Record<string, string | null | undefined> = {},
-  ...children: Child[]
-): HTMLElementTagNameMap[K] {
-  const el = document.createElement(tag);
-  for (const [name, value] of Object.entries(attrs)) {
-    if (value != null) el.setAttribute(name, value);
-  }
-  for (const child of children) if (child) el.append(child);
-  return el;
-}
-
-/** Only http(s) links from scraped data become hrefs. */
-function safeUrl(url: string | null | undefined): string | null {
-  if (!url) return null;
-  try {
-    const { protocol, href } = new URL(url);
-    return protocol === "https:" || protocol === "http:" ? href : null;
-  } catch {
-    return null;
-  }
-}
-
-function srOnly(text: string): HTMLSpanElement {
-  return h("span", { class: "sr-only" }, text);
-}
 
 /** Links that leave the site open in a new tab, and say so to screen readers. */
 function external(
@@ -201,76 +169,6 @@ function renderExtra(
       ),
     renderVia(via),
     ...renderTags(event.relevance, tags),
-  );
-}
-
-/** Saves text as a file via a temporary object URL. */
-function downloadFile(name: string, text: string, type: string): void {
-  const url = URL.createObjectURL(new Blob([text], { type }));
-  h("a", { href: url, download: name }).click();
-  setTimeout(() => URL.revokeObjectURL(url), 0);
-}
-
-/** "Lilypad Jam Session" -> "lilypad-jam-session". */
-function fileSlug(text: string): string {
-  const slug = normalize(text)
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-  return slug || "event";
-}
-
-/** A small menu: a Google Calendar link and an .ics download. */
-function renderAddToCalendar(
-  event: CalendarEvent,
-  venue: Venue | undefined,
-  about: string,
-  credits: Credits,
-  via: readonly SourceCredit[],
-): HTMLDetailsElement {
-  const download = h(
-    "button",
-    { type: "button", class: "menu-item" },
-    "Apple, Outlook (.ics)",
-  );
-  download.addEventListener("click", () => {
-    const venues = new Map(venue ? [[venue.id, venue]] : []);
-    const ics = buildCalendar([event], venues, {
-      name: event.title,
-      stamp: new Date(),
-      credits,
-    });
-    downloadFile(`${fileSlug(event.title)}.ics`, ics, "text/calendar");
-  });
-  return h(
-    "details",
-    { class: "add-to-calendar" },
-    h(
-      "summary",
-      { class: "add-to-calendar-toggle", title: "Add to calendar" },
-      h("span", { class: "icon icon-calendar", "aria-hidden": "true" }),
-      h("span", { class: "add-to-calendar-label" }, "Add to calendar"),
-      srOnly(about),
-    ),
-    h(
-      "ul",
-      { class: "popover menu" },
-      h(
-        "li",
-        {},
-        h(
-          "a",
-          {
-            class: "menu-item",
-            href: googleEventUrl(event, venue, ASSUMED_DURATION_MS, via),
-            target: "_blank",
-            rel: "noopener",
-          },
-          "Google Calendar",
-        ),
-      ),
-      h("li", {}, download),
-    ),
   );
 }
 
@@ -421,20 +319,21 @@ export function renderDays(
   const fragment = document.createDocumentFragment();
   for (const { day, events } of groups) {
     const headingId = `day-${day}`;
-    fragment.append(
+    const section = h(
+      "section",
+      { class: "day", "aria-labelledby": headingId },
+      renderDayHeading(headingId, day, today),
       h(
-        "section",
-        { class: "day", "aria-labelledby": headingId },
-        renderDayHeading(headingId, day, today),
-        h(
-          "ol",
-          { class: "events" },
-          ...events.map((event) =>
-            renderEvent(event, venues.get(event.venue), credits, now),
-          ),
+        "ol",
+        { class: "events" },
+        ...events.map((event) =>
+          renderEvent(event, venues.get(event.venue), credits, now),
         ),
       ),
     );
+    // Sizes the placeholder of a day that hasn't been laid out yet.
+    section.style.setProperty("--day-events", String(events.length));
+    fragment.append(section);
   }
   return fragment;
 }
@@ -513,192 +412,24 @@ export function renderSourceList({ own, via }: SourceList): HTMLElement[] {
   ];
 }
 
-export interface MonthLinks {
-  /** Where a day's cell leads: that day's listings. */
-  day(day: DayKey): string;
-  /** The month view for another month. */
-  month(month: string): string;
-}
+/** A feed older than this gets a "may be out of date" warning. */
+const STALE_AFTER_MS = 36 * 60 * 60 * 1000;
 
-function monthEntry(event: CalendarEvent): HTMLSpanElement {
-  const classes = ["month-entry", event.relevance];
-  if (event.cancelled) classes.push("cancelled");
-  const time = event.all_day ? "" : formatShortClock(new Date(event.start));
-  return h(
-    "span",
-    { class: classes.join(" "), title: event.title },
-    time && h("span", { class: "month-entry-time" }, time),
-    h("span", { class: "month-entry-title" }, event.title),
+/** "Updated today at 6 am", with a warning when the feed is stale. */
+export function renderUpdated(
+  target: HTMLElement,
+  generatedAt: string,
+  now: Date,
+): void {
+  const date = new Date(generatedAt);
+  if (Number.isNaN(date.getTime())) return;
+  const stale = now.getTime() - date.getTime() > STALE_AFTER_MS;
+  target.replaceChildren(
+    "Updated ",
+    h("time", { datetime: generatedAt }, formatUpdated(date, now)),
+    ...(stale ? [". Listings may be out of date."] : []),
   );
-}
-
-/** "1 show", "3 shows". */
-export function showCount(count: number): string {
-  return `${count} ${count === 1 ? "show" : "shows"}`;
-}
-
-function renderMonthCell(
-  { day, inMonth, events }: MonthDay,
-  today: DayKey,
-  selected: DayKey | "",
-  links: MonthLinks,
-): HTMLTableCellElement {
-  const classes = ["month-cell"];
-  if (!inMonth) classes.push("is-outside");
-  if (day < today) classes.push("is-past");
-  if (day === today) classes.push("is-today");
-  if (day === selected) classes.push("is-selected");
-  const date = h("span", { class: "month-date" }, String(Number(day.slice(8))));
-  if (events.length === 0) {
-    return h(
-      "td",
-      { class: classes.join(" ") },
-      h(
-        "span",
-        {
-          class: "month-day",
-          "aria-current": day === today ? "date" : null,
-        },
-        date,
-      ),
-    );
-  }
-  const shown = events.slice(0, MONTH_CELL_ENTRIES);
-  const more = events.length - shown.length;
-  return h(
-    "td",
-    { class: classes.join(" ") },
-    h(
-      "a",
-      {
-        class: "month-day",
-        id: `month-day-${day}`,
-        href: links.day(day),
-        "data-nav": "day",
-        "aria-label": `${formatDayHeading(day)}: ${showCount(events.length)}`,
-        "aria-current": day === today ? "date" : null,
-      },
-      date,
-      h(
-        "span",
-        { class: "month-count", "aria-hidden": "true" },
-        String(events.length),
-      ),
-      h(
-        "span",
-        { class: "month-entries", "aria-hidden": "true" },
-        ...shown.map(monthEntry),
-        more > 0 && h("span", { class: "month-more" }, `+${more} more`),
-      ),
-    ),
-  );
-}
-
-const WEEKDAYS = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-
-function monthNavLink(
-  id: string,
-  href: string,
-  label: string,
-  text: string,
-): HTMLAnchorElement {
-  return h(
-    "a",
-    { id, class: "button month-step", href, "data-nav": "replace" },
-    h("span", { "aria-hidden": "true" }, text),
-    srOnly(label),
-  );
-}
-
-/** The month grid, with previous/next/today navigation. */
-export function renderMonth(
-  month: string,
-  weeks: readonly MonthDay[][],
-  today: DayKey,
-  selected: DayKey | "",
-  links: MonthLinks,
-): HTMLElement {
-  const prev = addMonths(month, -1);
-  const next = addMonths(month, 1);
-  const current = today.slice(0, 7);
-  return h(
-    "section",
-    { class: "month", "aria-labelledby": "month-heading" },
-    h(
-      "div",
-      { class: "month-nav" },
-      h(
-        "h2",
-        { class: "month-heading", id: "month-heading" },
-        formatMonth(month),
-      ),
-      h(
-        "p",
-        { class: "month-steps" },
-        monthNavLink(
-          "month-prev",
-          links.month(prev),
-          `Previous month, ${formatMonth(prev)}`,
-          "‹",
-        ),
-        h(
-          "a",
-          {
-            id: "month-today",
-            class: "button",
-            href: links.month(current),
-            "data-nav": "replace",
-            "aria-disabled": month === current ? "true" : null,
-          },
-          "Today",
-        ),
-        monthNavLink(
-          "month-next",
-          links.month(next),
-          `Next month, ${formatMonth(next)}`,
-          "›",
-        ),
-      ),
-    ),
-    h(
-      "table",
-      { class: "month-grid" },
-      h(
-        "thead",
-        {},
-        h(
-          "tr",
-          {},
-          ...WEEKDAYS.map((name) =>
-            h(
-              "th",
-              { scope: "col" },
-              h("abbr", { title: name }, name.slice(0, 3)),
-            ),
-          ),
-        ),
-      ),
-      h(
-        "tbody",
-        {},
-        ...weeks.map((week) =>
-          h(
-            "tr",
-            {},
-            ...week.map((day) => renderMonthCell(day, today, selected, links)),
-          ),
-        ),
-      ),
-    ),
-  );
+  target.classList.toggle("stale", stale);
 }
 
 /** A centered notice for the loading, empty and error states. */

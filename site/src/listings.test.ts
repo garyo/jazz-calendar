@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  byName,
   extraArtists,
   filterEvents,
   filterRegulars,
@@ -460,6 +461,14 @@ describe("display helpers", () => {
   test("sortName", () => {
     expect(sortName("The Lilypad")).toBe("lilypad");
     expect(sortName("Theatre Bar")).toBe("theatre bar");
+  });
+
+  test("byName files a leading The under the next word", () => {
+    expect(["The Lilypad", "Jazz Lab", "the Abbey"].sort(byName)).toEqual([
+      "the Abbey",
+      "Jazz Lab",
+      "The Lilypad",
+    ]);
   });
 });
 

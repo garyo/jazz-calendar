@@ -5,8 +5,8 @@
  */
 
 import { disclosure } from "./disclosure";
+import { h } from "./dom";
 import { normalize } from "./listings";
-import { h } from "./render";
 
 export interface PickerOption {
   value: string;

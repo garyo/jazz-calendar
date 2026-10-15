@@ -5,7 +5,7 @@
   "description": "bostonjazzcalendar.com: Cloudflare Worker and static front end",
   "type": "module",
   "scripts": {
-    "build": "mkdir -p dist && rm -rf dist/* && bun build ./src/main.ts ./src/admin.ts --outdir dist --target browser --minify --sourcemap=linked && cp -R public/. dist/",
+    "build": "bun scripts/build.ts",
     "dev": "bun run build && wrangler dev",
     "seed:local": "wrangler r2 object put bostonjazzcalendar-data/events.json --local --file ../schema/sample-events.json --content-type 'application/json; charset=utf-8'",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.worker.json --noEmit",

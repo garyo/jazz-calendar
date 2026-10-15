@@ -1288,6 +1288,25 @@ a.month-day:focus-visible {
   list-style: none;
 }
 
+/*
+ * A day's shows skip layout and paint while off screen, standing in as a
+ * box sized from their count (--day-events, set by render.ts) until first
+ * shown. That containment clips to the padding box, so the padding,
+ * cancelled by the negative margin, leaves room for focus rings; an open
+ * add-to-calendar menu lifts it so the menu can hang below the list.
+ */
+.day > .events {
+  --clip-room: 0.375rem;
+  margin: calc(-1 * var(--clip-room));
+  padding: var(--clip-room);
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto calc(var(--day-events, 4) * 4.5rem);
+}
+
+.day > .events:has(.add-to-calendar[open]) {
+  content-visibility: visible;
+}
+
 /* Events. Each theme lays out .event-row; this is the plain default. */
 
 .event,

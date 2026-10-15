@@ -54,10 +54,6 @@
     color-scheme: dark;
   }
 
-  body {
-    font-variation-settings: "wdth" 100;
-  }
-
   /* Header: cream, a heavy wordmark, a tangerine rule. */
 
   .masthead {
