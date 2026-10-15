@@ -331,6 +331,8 @@ export function renderDays(
         ),
       ),
     );
+    // Sizes the placeholder of a day that hasn't been laid out yet.
+    section.style.setProperty("--day-events", String(events.length));
     fragment.append(section);
   }
   return fragment;
