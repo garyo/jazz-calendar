@@ -317,10 +317,11 @@
       z-index: 4;
       margin-bottom: 0.25rem;
       padding-block: 0.5rem;
-      border-bottom: 1px solid var(--rule);
       background: var(--bg);
-      box-shadow: 0 0 0 100vmax var(--bg);
-      clip-path: inset(0 -100vmax);
+      /* A full-width background that clips nothing, so the venue and town
+         popovers can open below the bar. */
+      border-image: conic-gradient(var(--bg) 0 0) fill 0 // 0 100vmax;
+      box-shadow: inset 0 -1px var(--rule);
     }
 
     .filters {
