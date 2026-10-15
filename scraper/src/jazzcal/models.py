@@ -4,10 +4,14 @@
 schema/events.schema.json. Change it compatibly, or bump `FEED_VERSION`.
 """
 
+import logging
 from datetime import date
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
+from urllib.parse import urlsplit
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, AwareDatetime, BaseModel, ConfigDict, Field
+
+log = logging.getLogger(__name__)
 
 FEED_VERSION = 1
 
@@ -65,6 +69,38 @@ class Source(Model):
     notes: str | None = None
 
 
+def _is_web_url(url: str) -> bool:
+    parts = urlsplit(url)
+    return parts.scheme.lower() in ("http", "https") and bool(parts.netloc)
+
+
+_dropped_schemes: set[str] = set()
+
+
+def _web_url_or_none(url: str | None) -> str | None:
+    """The URL if it's http(s); anything else (javascript:, mailto:...) becomes None, logged
+    once per scheme, so one odd link doesn't sink a whole source."""
+    if url is None or _is_web_url(url):
+        return url
+    scheme = urlsplit(url).scheme.lower()
+    if scheme not in _dropped_schemes:
+        _dropped_schemes.add(scheme)
+        log.warning(
+            "dropping non-http(s) link %.80r (further %r links dropped quietly)", url, scheme
+        )
+    return None
+
+
+def _web_url(url: str) -> str:
+    if not _is_web_url(url):
+        raise ValueError(f"not an http(s) URL: {url!r}")
+    return url
+
+
+WebUrl = Annotated[str, AfterValidator(_web_url)]
+OptionalWebUrl = Annotated[str | None, AfterValidator(_web_url_or_none)]
+
+
 class ScrapedEvent(Model):
     """An event as one adapter found it, before venue resolution, classification and dedup."""
 
@@ -75,8 +111,8 @@ class ScrapedEvent(Model):
     all_day: bool = False
     venue: str | None = Field(None, description="Venue id, when the adapter knows it")
     venue_name: str | None = Field(None, description="Venue as the source gives it")
-    url: str | None = Field(None, description="Event page at the source")
-    ticket_url: str | None = None
+    url: OptionalWebUrl = Field(None, description="Event page at the source")
+    ticket_url: OptionalWebUrl = None
     price: str | None = None
     artists: list[str] = Field(default_factory=list)
     categories: list[str] = Field(default_factory=list, description="Source's own tags")
@@ -96,8 +132,8 @@ class Event(Model):
     end: AwareDatetime | None = None
     all_day: bool = Field(False, description="True when no start time is known")
     venue: str = Field(description="Venue id; see EventsFile.venues")
-    url: str = Field(description="Where to read about the event: the venue's or source's page")
-    ticket_url: str | None = None
+    url: WebUrl = Field(description="Where to read about the event: the venue's or source's page")
+    ticket_url: OptionalWebUrl = None
     price: str | None = Field(None, description="Free text, e.g. '$20', 'Free', '$15-25'")
     artists: list[str] = Field(default_factory=list)
     relevance: Listed
