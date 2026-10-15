@@ -4,6 +4,7 @@
  * list of sources. Pure logic, shared by the front end and the Worker.
  */
 
+import { byName } from "./listings";
 import type { CalendarEvent, SourceCredit, Venue } from "./types";
 
 export type Credits = ReadonlyMap<string, SourceCredit>;
@@ -47,12 +48,6 @@ export interface SourceList {
   own: SourceEntry[];
   /** Ticket sellers and other services. */
   via: SourceEntry[];
-}
-
-/** Compares names with "The Lilypad" under L. */
-function byName(a: string, b: string): number {
-  const key = (name: string) => name.replace(/^the\s+/i, "");
-  return key(a).localeCompare(key(b));
 }
 
 /**

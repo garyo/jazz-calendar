@@ -25,11 +25,19 @@ const dateFormat = new Intl.DateTimeFormat("en-US", {
   hourCycle: "h23",
 });
 
-const clockFormat = new Intl.DateTimeFormat("en-US", {
-  timeZone: TIME_ZONE,
+const clockOptions: Intl.DateTimeFormatOptions = {
   hour: "numeric",
   minute: "2-digit",
   hour12: true,
+};
+const clockFormat = new Intl.DateTimeFormat("en-US", {
+  ...clockOptions,
+  timeZone: TIME_ZONE,
+});
+// Wall-clock times ("20:30") have no date, so they are formatted as UTC.
+const wallClockFormat = new Intl.DateTimeFormat("en-US", {
+  ...clockOptions,
+  timeZone: "UTC",
 });
 
 // Day keys are pure calendar dates, so they are formatted as UTC noon.
@@ -169,18 +177,31 @@ export function formatDate(key: string): string | null {
     : null;
 }
 
+/** A clock time without ":00", and its "am" or "pm". */
+function clockParts(parts: Parts): { time: string; period: string } {
+  const { hour, minute, dayPeriod = "" } = parts;
+  const time = minute === "00" ? `${hour}` : `${hour}:${minute}`;
+  return { time, period: dayPeriod.toLowerCase() };
+}
+
 /** "8 pm", "8:15 pm". */
 export function formatClock(date: Date): string {
-  const { hour, minute, dayPeriod } = partsOf(clockFormat, date);
-  const time = minute === "00" ? hour : `${hour}:${minute}`;
-  return `${time} ${dayPeriod?.toLowerCase()}`;
+  const { time, period } = clockParts(partsOf(clockFormat, date));
+  return `${time} ${period}`;
 }
 
 /** "8p", "8:15p", "11a": for tight spaces like the month grid. */
 export function formatShortClock(date: Date): string {
-  const { hour, minute, dayPeriod } = partsOf(clockFormat, date);
-  const time = minute === "00" ? hour : `${hour}:${minute}`;
-  return `${time}${dayPeriod?.charAt(0).toLowerCase()}`;
+  const { time, period } = clockParts(partsOf(clockFormat, date));
+  return `${time}${period.charAt(0)}`;
+}
+
+/** "8 pm", "8:30 pm" from a 24-hour wall-clock time, "20:30". */
+export function formatWallClock(hhmm: string): string {
+  const [hour, minute] = hhmm.split(":").map(Number);
+  const date = new Date(Date.UTC(2000, 0, 1, hour, minute));
+  const { time, period } = clockParts(partsOf(wallClockFormat, date));
+  return `${time} ${period}`;
 }
 
 /**

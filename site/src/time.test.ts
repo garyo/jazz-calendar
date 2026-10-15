@@ -13,6 +13,7 @@ import {
   formatMonth,
   formatShortClock,
   formatUpdated,
+  formatWallClock,
   isLateSet,
   monthOf,
   nightOf,
@@ -128,6 +129,13 @@ describe("clock formatting", () => {
     expect(formatClock(at("2026-10-15T20:15:00-04:00"))).toBe("8:15 pm");
     expect(formatClock(at("2026-10-17T11:00:00-04:00"))).toBe("11 am");
     expect(formatClock(at("2026-10-17T00:00:00-04:00"))).toBe("12 am");
+  });
+
+  test("formatWallClock reads a 24-hour time", () => {
+    expect(formatWallClock("20:00")).toBe("8 pm");
+    expect(formatWallClock("20:30")).toBe("8:30 pm");
+    expect(formatWallClock("00:05")).toBe("12:05 am");
+    expect(formatWallClock("12:00")).toBe("12 pm");
   });
 
   test("converts UTC instants with the right offset on each side of DST", () => {

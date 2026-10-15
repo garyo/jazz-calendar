@@ -350,9 +350,14 @@ export function venueLocation(venue: Venue): string {
     : town;
 }
 
-/** A venue name for sorting: "The Lilypad" sorts as "Lilypad". */
+/** A name for sorting: "The Lilypad" sorts as "Lilypad". */
 export function sortName(name: string): string {
   return normalize(name).replace(/^the\s+/, "");
+}
+
+/** Compares names by sortName, so "The Lilypad" files under L. */
+export function byName(a: string, b: string): number {
+  return sortName(a).localeCompare(sortName(b));
 }
 
 /** "1 show", "3 shows". */
@@ -368,9 +373,5 @@ export function venuesWithListings(
   const ids = new Set(listings.map((listing) => listing.venue));
   return [...venues.values()]
     .filter((venue) => ids.has(venue.id))
-    .sort(
-      (a, b) =>
-        a.town.localeCompare(b.town) ||
-        sortName(a.name).localeCompare(sortName(b.name)),
-    );
+    .sort((a, b) => a.town.localeCompare(b.town) || byName(a.name, b.name));
 }

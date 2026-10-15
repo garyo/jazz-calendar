@@ -12,7 +12,7 @@ import {
   type Submission,
 } from "./submission";
 import { showFieldErrors, venueOptions } from "./submit";
-import { formatDate, TIME_ZONE } from "./time";
+import { formatDate, formatWallClock, TIME_ZONE } from "./time";
 import type { EventsFile, Venue } from "./types";
 
 const TOKEN_KEY = "admin-token";
@@ -82,14 +82,6 @@ async function api(path: string, body?: unknown): Promise<ApiResult> {
   };
 }
 
-/** "8 pm", "8:30 pm" from "20:00", "20:30". */
-function clock(hhmm: string): string {
-  const [hour, minute] = hhmm.split(":").map(Number);
-  const h12 = hour % 12 || 12;
-  const time = minute ? `${h12}:${String(minute).padStart(2, "0")}` : h12;
-  return `${time} ${hour < 12 ? "am" : "pm"}`;
-}
-
 const stampFormat = new Intl.DateTimeFormat("en-US", {
   timeZone: TIME_ZONE,
   dateStyle: "medium",
@@ -103,8 +95,8 @@ function stamp(iso: string): string {
 function when(s: Submission): string {
   const day = formatDate(s.date) ?? s.date;
   if (!s.start_time) return `${day}, time TBA`;
-  const end = s.end_time ? `–${clock(s.end_time)}` : "";
-  return `${day}, ${clock(s.start_time)}${end}`;
+  const end = s.end_time ? `–${formatWallClock(s.end_time)}` : "";
+  return `${day}, ${formatWallClock(s.start_time)}${end}`;
 }
 
 function where(s: Submission): string {
