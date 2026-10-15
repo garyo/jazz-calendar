@@ -14,7 +14,12 @@ export const sample: EventsFile = await Bun.file(
 
 /** Registers happy-dom globals for the tests in this file. */
 export function useDom(url = "https://bostonjazzcalendar.com/"): void {
-  beforeAll(() => GlobalRegistrator.register({ url }));
+  beforeAll(() =>
+    GlobalRegistrator.register({
+      url,
+      settings: { disableCSSFileLoading: true },
+    }),
+  );
   afterAll(() => GlobalRegistrator.unregister());
 }
 

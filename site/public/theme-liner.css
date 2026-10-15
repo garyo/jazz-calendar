@@ -58,7 +58,6 @@
   .wordmark {
     font-size: 1.375rem;
     font-weight: 600;
-    font-variation-settings: "opsz" 40;
     letter-spacing: 0;
     text-transform: none;
   }
@@ -108,7 +107,6 @@
   .event-title {
     font-size: 1.0625rem;
     font-weight: 600;
-    font-variation-settings: "opsz" 20;
   }
 
   .event-artists {

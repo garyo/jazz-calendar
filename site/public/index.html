@@ -21,12 +21,6 @@
     <link rel="alternate" type="text/calendar" title="Boston Jazz Calendar" href="/calendar.ics" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Every theme's families in one request; browsers download only the
-         font files the active theme uses. -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,400..800&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Jost:wght@400..600&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:wght@400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400&display=swap"
-    />
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/theme-guide.css" />
     <link rel="stylesheet" href="/theme-program.css" />
@@ -37,9 +31,11 @@
     <link rel="stylesheet" href="/theme-hardbop.css" />
     <link rel="stylesheet" href="/theme-evening.css" />
     <link rel="stylesheet" href="/theme-broadsheet.css" />
-    <!-- Sets data-theme before first paint: ?theme=, then the saved choice.
-         Its sha256 is allowed by the CSP in _headers (see theme.test.ts). -->
-    <script>(()=>{let t;const ok=/^(guide|program|lateset|club|liner|hardbop|evening|broadsheet)$/;try{t=new URLSearchParams(location.search).get("theme");if(ok.test(t))localStorage.setItem("theme",t);else t=localStorage.getItem("theme")}catch{}document.documentElement.dataset.theme=ok.test(t)?t:"liner"})()</script>
+    <!-- Sets data-theme before first paint (?theme=, then the saved choice)
+         and loads only that theme's fonts; its table is THEME_FONTS in
+         theme.ts. Its sha256 is allowed by the CSP in _headers (see
+         theme.test.ts). -->
+    <script>(()=>{const f={guide:"Source+Serif+4:wght@500..650",program:"IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600",lateset:"Archivo:wdth,wght@62..100,400..800",club:"Fraunces:ital,wght@0,400..600;1,400",liner:"IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:ital,wght@0,600;1,400",hardbop:"Archivo:wght@400..800",evening:"IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Jost:wght@500..600",broadsheet:"Libre+Caslon+Text:ital,wght@0,700;1,400&family=Libre+Franklin:wght@400..700"};let t;try{t=new URLSearchParams(location.search).get("theme");if(Object.hasOwn(f,t))localStorage.setItem("theme",t);else t=localStorage.getItem("theme")}catch{}if(!Object.hasOwn(f,t))t="liner";document.documentElement.dataset.theme=t;const l=document.createElement("link");l.rel="stylesheet";l.href=`https://fonts.googleapis.com/css2?family=${f[t]}&display=swap`;l.dataset.themeFonts=t;document.head.append(l)})()</script>
     <link rel="preload" href="/data/events.json" as="fetch" crossorigin />
     <script type="module" src="/main.js"></script>
   </head>
