@@ -6,7 +6,7 @@
 from datetime import UTC, datetime
 from urllib.parse import urlencode
 
-from jazzcal.adapters import HORIZON, adapter, clean, html_to_text, to_local
+from jazzcal.adapters import HORIZON, adapter, clean, html_to_text, is_cancelled, to_local
 from jazzcal.config import TZ
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
@@ -62,7 +62,7 @@ def _parse_event(item: dict) -> ScrapedEvent | None:
         price=clean(item.get("cost")),
         categories=[c for t in terms if (c := clean(t))],
         text=html_to_text(item.get("description") or ""),
-        cancelled="cancel" in title.lower(),
+        cancelled=is_cancelled(title),
     )
 
 

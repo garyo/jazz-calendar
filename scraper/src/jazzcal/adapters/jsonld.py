@@ -15,7 +15,6 @@ Some sites' JSON-LD is incomplete; these fill the gaps from the page itself:
   no_price: true when the site's offers carry a placeholder price.
 """
 
-import json
 import logging
 import re
 from collections.abc import Iterator, Mapping
@@ -28,7 +27,16 @@ from dateutil.parser import ParserError, isoparse
 from dateutil.parser import parse as parse_date
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
-from jazzcal.adapters import DETAIL_MAX_AGE, adapter, clean, html_to_text, to_local
+from jazzcal.adapters import (
+    DETAIL_MAX_AGE,
+    adapter,
+    clean,
+    html_to_text,
+    json_ld,
+    to_local,
+    unique_urls,
+)
+from jazzcal.adapters.times import parse_times
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
 
@@ -45,7 +53,6 @@ EVENT_TYPES = {
     "LiteraryEvent",
     "PublicationEvent",
 }
-TIME = re.compile(r"\b(\d{1,2})(?::(\d\d))?\s*([ap])\.?m\b", re.IGNORECASE)
 
 log = logging.getLogger(__name__)
 
@@ -56,14 +63,9 @@ def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
     selector = source.options.get("follow")
     if not selector:
         return parse(page, base_url=source.url, options=source.options)
-    # Keyed without the trailing slash, which some sites use for the same page both ways.
-    links: dict[str, str] = {}
-    for node in HTMLParser(page).css(selector):
-        if href := node.attributes.get("href"):
-            url = urljoin(source.url, href)
-            links.setdefault(url.rstrip("/"), url)
+    hrefs = [href for a in HTMLParser(page).css(selector) if (href := a.attributes.get("href"))]
     events = []
-    for link in list(links.values())[: source.options.get("max_follow", 60)]:
+    for link in unique_urls(hrefs, base_url=source.url)[: source.options.get("max_follow", 60)]:
         detail = http.get(link, max_age=DETAIL_MAX_AGE).text
         events += parse(detail, base_url=link, options=source.options)
     return events
@@ -85,11 +87,7 @@ def parse(
     tree = HTMLParser(page)
     hints = _hints(tree, options or {})
     events = {}
-    for node in tree.css('script[type="application/ld+json"]'):
-        try:
-            data = json.loads(node.text(strip=False))
-        except json.JSONDecodeError:
-            continue
+    for data in json_ld(tree):
         for item in _event_items(data):
             try:
                 event = _parse_event(item, base_url, hints)
@@ -106,10 +104,7 @@ def _hints(tree: HTMLParser, options: Mapping[str, Any]) -> _PageHints:
         title_strip=options.get("title_strip"), no_price=bool(options.get("no_price"))
     )
     if (selector := options.get("time_selector")) and (node := tree.css_first(selector)):
-        hints.times = [
-            time((int(h) % 12) + (12 if ampm.lower() == "p" else 0), int(m or 0))
-            for h, m, ampm in TIME.findall(node.text())
-        ]
+        hints.times = parse_times(node.text(), require_meridiem=True)
     if (selector := options.get("venue_selector")) and (node := tree.css_first(selector)):
         venue = node.attributes.get("content") or node.text()
         if venue and (pattern := options.get("venue_pattern")):
@@ -134,7 +129,7 @@ def _event_items(data: Any) -> Iterator[dict]:
 
 
 def _parse_event(item: dict, base_url: str, hints: _PageHints) -> ScrapedEvent | None:
-    title = _text(item.get("name"))
+    title = _string(item.get("name"))
     title = html_to_text(title) if title and "<" in title else clean(title)
     if title and hints.title_strip:
         title = clean(re.sub(hints.title_strip, "", title))
@@ -156,16 +151,16 @@ def _parse_event(item: dict, base_url: str, hints: _PageHints) -> ScrapedEvent |
         start=start,
         end=end,
         all_day=all_day,
-        venue_name=clean(_text(_first(item.get("location"), "name"))) or hints.venue,
+        venue_name=clean(_string(_first(item.get("location"), "name"))) or hints.venue,
         url=url,
         ticket_url=offers.get("url") if isinstance(offers, dict) else None,
         price=_price(offers) if isinstance(offers, dict) and not hints.no_price else None,
         artists=[
             name
             for p in (performers if isinstance(performers, list) else [performers])
-            if (name := clean(_text(p.get("name") if isinstance(p, dict) else p)))
+            if (name := clean(_string(p.get("name") if isinstance(p, dict) else p)))
         ],
-        text=html_to_text(_text(item.get("description")) or ""),
+        text=html_to_text(_string(item.get("description")) or ""),
         cancelled=status.endswith("EventCancelled"),
     )
 
@@ -190,7 +185,7 @@ def _first(value: Any, key: str | None = None) -> Any:
     return value
 
 
-def _text(value: Any) -> str | None:
+def _string(value: Any) -> str | None:
     return value if isinstance(value, str) else None
 
 

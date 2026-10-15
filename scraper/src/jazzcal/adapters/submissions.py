@@ -9,9 +9,10 @@ to confirm the gig.
 
 import logging
 import os
-from datetime import date, datetime, time, timedelta
+from datetime import date, time, timedelta
 
-from jazzcal.adapters import adapter, clean, to_local
+from jazzcal.adapters import adapter, clean
+from jazzcal.adapters.times import schedule
 from jazzcal.export import site_url
 from jazzcal.http import FetchError, Http
 from jazzcal.models import ScrapedEvent, Source
@@ -49,17 +50,10 @@ def _event(item: dict) -> ScrapedEvent:
     title = clean(item["title"])
     if not title:
         raise ValueError("no title")
-    day = date.fromisoformat(item["date"])
-    start, all_day = to_local(day)
-    end = None
-    if starts := item.get("start_time"):
-        start_time = time.fromisoformat(starts)
-        start, all_day = to_local(datetime.combine(day, start_time))
-        if ends := item.get("end_time"):
-            end_time = time.fromisoformat(ends)
-            # An end before the start is after midnight.
-            end_day = day + timedelta(days=1) if end_time <= start_time else day
-            end = to_local(datetime.combine(end_day, end_time))[0]
+    times = [time.fromisoformat(item["start_time"])] if item.get("start_time") else []
+    if times and item.get("end_time"):
+        times.append(time.fromisoformat(item["end_time"]))
+    start, end, all_day = schedule(date.fromisoformat(item["date"]), times)
     return ScrapedEvent(
         uid=item["id"],
         title=title,

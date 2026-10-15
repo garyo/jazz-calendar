@@ -6,12 +6,16 @@ parse function, which the tests exercise against saved fixtures.
 
 import html
 import importlib
+import json
 import pkgutil
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Iterable, Iterator
 from datetime import date, datetime, time, timedelta
+from typing import Any
+from urllib.parse import urljoin
 
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
+from selectolax.lexbor import LexborNode
 
 from jazzcal.config import TZ
 from jazzcal.http import Http
@@ -73,3 +77,44 @@ def to_local(value: datetime | date) -> tuple[datetime, bool]:
     if value.tzinfo is None:
         return value.replace(tzinfo=TZ), False
     return value.astimezone(TZ), False
+
+
+def uncaps(title: str) -> str:
+    """An all-caps title in title case ("JIMMY'S COUNT-OFF" -> "Jimmy's Count-Off"); any other
+    title as given."""
+    if not title.isupper():
+        return title
+    return re.sub(r"(?<![\w'\u2019])\w", lambda m: m[0].upper(), title.lower())
+
+
+CANCELLED = re.compile(r"\bcancel+ed\b", re.IGNORECASE)
+
+
+def is_cancelled(*texts: str) -> bool:
+    """Whether any of the texts (a title, a subtitle) says the show is cancelled."""
+    return any(CANCELLED.search(text) for text in texts)
+
+
+def text_of(node: LexborNode, selector: str) -> str | None:
+    """The text of the first element matching the selector, words space-separated."""
+    found = node.css_first(selector)
+    return found.text(separator=" ") if found else None
+
+
+def json_ld(tree: HTMLParser) -> Iterator[Any]:
+    """Each JSON-LD block in the page, parsed; blocks that aren't valid JSON are skipped."""
+    for node in tree.css('script[type="application/ld+json"]'):
+        try:
+            yield json.loads(node.text(strip=False))
+        except json.JSONDecodeError:
+            continue
+
+
+def unique_urls(urls: Iterable[str], *, base_url: str) -> list[str]:
+    """Absolute URLs in order, without duplicates. Sites link some pages both with and without
+    a trailing slash, so those count as the same page."""
+    seen: dict[str, str] = {}
+    for url in urls:
+        url = urljoin(base_url, url)
+        seen.setdefault(url.rstrip("/"), url)
+    return list(seen.values())

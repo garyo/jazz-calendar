@@ -10,11 +10,10 @@ credits the listing "via Ticketmaster" (the source's credit in sources.yaml).
 """
 
 import os
-import string
 from datetime import datetime
 from urllib.parse import urlencode
 
-from jazzcal.adapters import HORIZON, adapter, clean, to_local
+from jazzcal.adapters import HORIZON, adapter, clean, to_local, uncaps
 from jazzcal.config import TZ
 from jazzcal.http import FetchError, Http
 from jazzcal.models import ScrapedEvent, Source
@@ -65,7 +64,7 @@ def parse(data: dict) -> list[ScrapedEvent]:
         events.append(
             ScrapedEvent(
                 uid=item["id"],
-                title=string.capwords(title) if title.isupper() else title,
+                title=uncaps(title),
                 start=start[0],
                 all_day=start[1],
                 venue_name=venues[0].get("name") if venues else None,

@@ -8,8 +8,8 @@ from datetime import date, datetime, timedelta
 
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
-from jazzcal.adapters import adapter, clean, to_local
-from jazzcal.adapters.times import parse_times
+from jazzcal.adapters import adapter, clean
+from jazzcal.adapters.times import parse_times, schedule
 from jazzcal.config import TZ
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
@@ -37,13 +37,9 @@ def parse(page: str, *, page_url: str) -> list[ScrapedEvent]:
             when = row.css_first(".flex_item_left")
             act = row.css_first(".event")
             title = clean(act.text()) if act else None
-            times = parse_times(when.text()) if when else []
             if not title:
                 continue
-            start, all_day = to_local(datetime.combine(on, times[0]) if times else on)
-            end = to_local(datetime.combine(on, times[1]))[0] if len(times) > 1 else None
-            if end and end <= start:
-                end += timedelta(days=1)
+            start, end, all_day = schedule(on, parse_times(when.text()) if when else [])
             events.append(
                 ScrapedEvent(
                     uid=f"{on.isoformat()}/{title}",

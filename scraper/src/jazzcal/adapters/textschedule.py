@@ -15,12 +15,13 @@ from datetime import date, datetime, time, timedelta
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from jazzcal.adapters import adapter, clean, to_local
+from jazzcal.adapters.times import parse_times
 from jazzcal.config import TZ
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
 
 DAY = re.compile(r"^(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\s+(\d{1,2})/(\d{1,2})\b", re.IGNORECASE)
-SET = re.compile(r"^(\d{1,2})(?::(\d{2}))?\s*([ap])\.?m\.?\s+(.+)$", re.IGNORECASE)
+SET = re.compile(r"^(\d{1,2}(?::\d{2})?\s*[ap]\.?m\.?)\s+(.+)$", re.IGNORECASE)
 LAST_SET = timedelta(hours=1)
 """Length assumed for a night's last set."""
 
@@ -42,9 +43,8 @@ def parse(text: str, *, page_url: str, today: date) -> list[ScrapedEvent]:
             continue
         if m := DAY.match(line):
             nights.append((_date(int(m[1]), int(m[2]), today), []))
-        elif (m := SET.match(line)) and nights:
-            hour = int(m[1]) % 12 + (12 if m[3].lower() == "p" else 0)
-            nights[-1][1].append((time(hour, int(m[2] or 0)), m[4]))
+        elif nights and (m := SET.match(line)) and (times := parse_times(m[1])):
+            nights[-1][1].append((times[0], m[2]))
     events = []
     for day, sets in nights:
         starts = [to_local(datetime.combine(day, t))[0] for t, _ in sets]

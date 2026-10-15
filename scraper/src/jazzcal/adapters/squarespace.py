@@ -12,7 +12,7 @@ from urllib.parse import parse_qs, urljoin, urlsplit
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 from selectolax.lexbor import LexborNode
 
-from jazzcal.adapters import adapter, clean, to_local
+from jazzcal.adapters import adapter, clean, is_cancelled, text_of, to_local
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
 
@@ -36,7 +36,7 @@ def parse(page: str, *, base_url: str) -> list[ScrapedEvent]:
         if when is None:
             continue
         start, end, all_day = when
-        excerpt = clean(_text(article.css_first(".eventlist-excerpt")))
+        excerpt = clean(text_of(article, ".eventlist-excerpt"))
         events.append(
             ScrapedEvent(
                 uid=urlsplit(url).path,
@@ -49,7 +49,7 @@ def parse(page: str, *, base_url: str) -> list[ScrapedEvent]:
                 price=_price(excerpt),
                 categories=[c for a in article.css(".eventlist-cats a") if (c := clean(a.text()))],
                 text=excerpt,
-                cancelled=bool(re.search(r"\bcancel+ed\b", title, re.IGNORECASE)),
+                cancelled=is_cancelled(title),
             )
         )
     return events
@@ -79,7 +79,7 @@ def _shown_dates(article: LexborNode) -> tuple[datetime, datetime | None, bool] 
     if not iso:
         return None
     start_day = date.fromisoformat(iso)
-    shown = _text(article.css_first(".event-time-24hr-start"))
+    shown = text_of(article, ".event-time-24hr-start")
     if shown and re.fullmatch(r"\d{1,2}:\d\d", shown.strip()):
         return (
             to_local(datetime.combine(start_day, time.fromisoformat(shown.strip())))[0],
@@ -101,7 +101,3 @@ def _venue(article: LexborNode) -> str | None:
     if not address:
         return None
     return clean(address.text(deep=False))
-
-
-def _text(node: LexborNode | None) -> str | None:
-    return node.text(separator=" ") if node else None

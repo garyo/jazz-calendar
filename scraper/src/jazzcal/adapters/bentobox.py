@@ -11,15 +11,13 @@ Options:
   max_follow: cap on event pages fetched per run (default 40). They're cached for 5 days.
 """
 
-import json
 import re
 from datetime import datetime
 from typing import Any
-from urllib.parse import urljoin
 
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
-from jazzcal.adapters import DETAIL_MAX_AGE, adapter, clean, html_to_text
+from jazzcal.adapters import DETAIL_MAX_AGE, adapter, clean, html_to_text, json_ld, unique_urls
 from jazzcal.config import TZ
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
@@ -41,18 +39,9 @@ def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
 def event_urls(page: str, *, base_url: str) -> list[str]:
     """Event page URLs from the list page's JSON-LD, then its links, without duplicates."""
     tree = HTMLParser(page)
-    urls: list[str] = []
-    for node in tree.css('script[type="application/ld+json"]'):
-        try:
-            urls += _event_urls(json.loads(node.text(strip=False)))
-        except json.JSONDecodeError:
-            continue
+    urls = [url for data in json_ld(tree) for url in _event_urls(data)]
     urls += [href for a in tree.css('a[href*="/event/"]') if (href := a.attributes.get("href"))]
-    seen: dict[str, str] = {}
-    for url in urls:
-        url = urljoin(base_url, url)
-        seen.setdefault(url.rstrip("/"), url)
-    return list(seen.values())
+    return unique_urls(urls, base_url=base_url)
 
 
 def _event_urls(data: Any) -> list[str]:
@@ -92,11 +81,7 @@ def parse_event_page(page: str, *, url: str, options: dict[str, Any]) -> Scraped
 
 def _description(tree: HTMLParser) -> str | None:
     """The event's JSON-LD description, used only for classification."""
-    for node in tree.css('script[type="application/ld+json"]'):
-        try:
-            data = json.loads(node.text(strip=False))
-        except json.JSONDecodeError:
-            continue
+    for data in json_ld(tree):
         if isinstance(data, dict) and data.get("@type") == "Event":
             return html_to_text(str(data.get("description") or "")) or None
     return None

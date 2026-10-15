@@ -19,3 +19,4 @@ def test_burren() -> None:
     assert django.venue_name == "The Burren, The Front Room"
     assert all(e.start.year == 2026 for e in events)
     assert len({e.uid for e in events}) == len(events)
+    assert all("'S " not in e.title for e in events)

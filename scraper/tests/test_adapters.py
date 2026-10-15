@@ -2,7 +2,9 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from jazzcal.adapters import clean, ics, jsonld, tribe
+from selectolax.lexbor import LexborHTMLParser as HTMLParser
+
+from jazzcal.adapters import clean, ics, is_cancelled, json_ld, jsonld, tribe, uncaps, unique_urls
 from jazzcal.config import TZ
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -63,3 +65,32 @@ def test_jsonld() -> None:
 def test_clean_repairs_cp1252() -> None:
     assert clean("Fat n\x92  Gristle &amp; Co ") == "Fat n\u2019 Gristle & Co"
     assert clean("  ") is None
+
+
+def test_uncaps() -> None:
+    assert uncaps("PAT DOE'S COUNT-OFF (SOLO) - 10TH ANNUAL") == (
+        "Pat Doe's Count-Off (Solo) - 10th Annual"
+    )
+    assert uncaps("Pat DOE and the B3 Kings") == "Pat DOE and the B3 Kings"
+
+
+def test_is_cancelled() -> None:
+    assert is_cancelled("Pat Doe Trio", "CANCELED: rescheduled to May")
+    assert is_cancelled("Cancelled - Pat Doe Trio")
+    assert not is_cancelled("Pat Doe Trio", "Cancellation policy: none")
+
+
+def test_json_ld_skips_bad_blocks() -> None:
+    page = """<script type="application/ld+json">{"@type": "Event"}</script>
+    <script type="application/ld+json">{not json</script>
+    <script type="application/ld+json">[1]</script>"""
+    assert list(json_ld(HTMLParser(page))) == [{"@type": "Event"}, [1]]
+
+
+def test_unique_urls() -> None:
+    urls = ["/e/1", "https://club.example/e/1/", "/e/2/", "/e/2", "https://other.example/e/1"]
+    assert unique_urls(urls, base_url="https://club.example/calendar") == [
+        "https://club.example/e/1",
+        "https://club.example/e/2/",
+        "https://other.example/e/1",
+    ]
