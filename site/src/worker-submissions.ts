@@ -17,7 +17,7 @@ import {
   type FieldErrors,
   STATUSES,
   type Submission,
-  type ValidationContext,
+  TURNSTILE_ACTION,
   validateApproval,
   validateRejection,
   validateSubmission,
@@ -28,6 +28,7 @@ import {
   hasBearer,
   jsonResponse,
   methodNotAllowed,
+  readCapped,
   unauthorized,
 } from "./worker-http";
 import { type NotifyEnv, notify } from "./worker-notify";
@@ -48,6 +49,14 @@ const APPROVED_PATH = "/api/submissions/approved";
 const ADMIN_PATH = "/api/admin/submissions";
 const SITEVERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const MAX_BODY = 16 * 1024;
+/** Where the form is served; Turnstile reports the page's hostname. */
+const SITE_HOSTS = [
+  "bostonjazzcalendar.com",
+  "www.bostonjazzcalendar.com",
+  "jazz-calendar.garyo.workers.dev",
+];
+/** Cloudflare's always-pass, always-fail and spent-token test secrets. */
+const TEST_SECRET = /^[123]x0+AA$/;
 const MAX_TOKEN = 2048;
 const LIST_LIMIT = 200;
 const ID = /^[0-9a-f-]{36}$/;
@@ -58,20 +67,21 @@ const PUBLIC_COLUMNS =
 
 type Body = Record<string, unknown>;
 
-/** A JSON object body of bounded size, or null. */
-async function readBody(request: Request): Promise<Body | null> {
+/** A JSON object body of at most MAX_BODY bytes, or the error response. */
+async function readBody(request: Request): Promise<Body | Response> {
   const type = request.headers.get("content-type") ?? "";
-  const length = Number(request.headers.get("content-length") ?? 0);
-  if (!type.startsWith("application/json") || length > MAX_BODY) return null;
-  const text = await request.text();
-  if (text.length > MAX_BODY) return null;
+  if (!type.startsWith("application/json")) return badBody();
+  const text = await readCapped(request, MAX_BODY);
+  if (text === null) {
+    return jsonResponse(413, { error: "Keep the request under 16 KB." });
+  }
   try {
     const body: unknown = JSON.parse(text);
     return typeof body === "object" && body !== null && !Array.isArray(body)
       ? (body as Body)
-      : null;
+      : badBody();
   } catch {
-    return null;
+    return badBody();
   }
 }
 
@@ -86,18 +96,24 @@ function invalid(errors: FieldErrors): Response {
   });
 }
 
-/** Today in Boston, and the venues listed in the published feed. */
-async function validationContext(
-  env: SubmissionsEnv,
-): Promise<ValidationContext> {
+/** The venue ids listed in the published feed. */
+async function listedVenues(env: SubmissionsEnv): Promise<Set<string>> {
   const object = await env.DATA.get("events.json");
   const feed = object ? await object.json<Partial<EventsFile>>() : {};
-  return {
-    today: dayKey(new Date()),
-    venues: new Set((feed.venues ?? []).map((venue) => venue.id)),
-  };
+  return new Set((feed.venues ?? []).map((venue) => venue.id));
 }
 
+interface Siteverify {
+  success?: unknown;
+  action?: unknown;
+  hostname?: unknown;
+}
+
+/**
+ * Whether Turnstile vouches for the token: solved by the submission form's
+ * widget on one of the site's own hosts. Cloudflare's test secrets answer
+ * for "example.com" with no action, so with one of those only success counts.
+ */
 async function verifyTurnstile(
   token: unknown,
   secret: string,
@@ -112,8 +128,13 @@ async function verifyTurnstile(
   if (ip) form.append("remoteip", ip);
   try {
     const response = await fetch(SITEVERIFY, { method: "POST", body: form });
-    const outcome = await response.json<{ success?: unknown }>();
-    return outcome.success === true;
+    const outcome = await response.json<Siteverify>();
+    if (outcome.success !== true) return false;
+    if (TEST_SECRET.test(secret)) return true;
+    return (
+      outcome.action === TURNSTILE_ACTION &&
+      SITE_HOSTS.some((host) => host === outcome.hostname)
+    );
   } catch {
     return false;
   }
@@ -129,9 +150,12 @@ async function submit(
     return jsonResponse(503, { error: "Submissions aren’t open yet." });
   }
   const body = await readBody(request);
-  if (!body) return badBody();
-  const checked = validateSubmission(body, await validationContext(env));
-  if (!checked.ok) return invalid(checked.errors);
+  if (body instanceof Response) return body;
+  // Cheapest first: the fields, then Turnstile, and only then the R2 read
+  // for the venue list, so junk never costs a read.
+  const today = dayKey(new Date());
+  const fields = validateSubmission(body, { today });
+  if (!fields.ok) return invalid(fields.errors);
   const human = await verifyTurnstile(
     body.turnstile,
     env.TURNSTILE_SECRET,
@@ -142,6 +166,11 @@ async function submit(
       error: "The spam check didn’t go through. Please try again.",
     });
   }
+  const checked = validateSubmission(body, {
+    today,
+    venues: await listedVenues(env),
+  });
+  if (!checked.ok) return invalid(checked.errors);
   const row = {
     id: crypto.randomUUID(),
     created_at: new Date().toISOString(),
@@ -244,7 +273,7 @@ async function review(
 ): Promise<Response> {
   if (request.method !== "POST") return methodNotAllowed("POST");
   const body = await readBody(request);
-  if (!body) return badBody();
+  if (body instanceof Response) return body;
   const current = ID.test(id)
     ? await env.DB.prepare("SELECT * FROM submissions WHERE id = ?")
         .bind(id)
@@ -254,11 +283,10 @@ async function review(
   const reviewed_at = new Date().toISOString();
 
   if (body.action === "approve") {
-    const checked = validateApproval(
-      current,
-      body.edits,
-      await validationContext(env),
-    );
+    const checked = validateApproval(current, body.edits, {
+      today: dayKey(new Date()),
+      venues: await listedVenues(env),
+    });
     if (!checked.ok) return invalid(checked.errors);
     const { gig, relevance, editor_note } = checked.value;
     // venue_name and venue_town stay as submitted.

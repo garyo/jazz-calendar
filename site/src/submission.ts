@@ -13,6 +13,9 @@ export type Status = (typeof STATUSES)[number];
 /** The venue choice for a room that isn't in the registry yet. */
 export const OTHER_VENUE = "other";
 
+/** The action the form's Turnstile widget declares; the Worker checks it. */
+export const TURNSTILE_ACTION = "submit-gig";
+
 /** The furthest ahead a gig may be. */
 export const MAX_DAYS_AHEAD = 366;
 
@@ -88,13 +91,17 @@ export type Validated<T> =
 export interface ValidationContext {
   /** Boston's date today. */
   today: DayKey;
-  /** Venue ids in the published feed. */
-  venues: ReadonlySet<string>;
+  /**
+   * Venue ids in the published feed. Without them any id passes, so the
+   * Worker can check everything else before it reads the feed.
+   */
+  venues?: ReadonlySet<string>;
 }
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/** No whitespace, and nothing that adds recipients or headers to a mailto: link. */
+const EMAIL = /^[^\s@?&%,;<>]+@[^\s@?&%,;<>]+\.[^\s@?&%,;<>]+$/;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -212,7 +219,7 @@ function readGig(fields: Reader, ctx: ValidationContext): Gig {
   const venue = fields.raw("venue");
   const other = venue === OTHER_VENUE;
   if (!venue) fields.fail("venue", "Choose a venue.");
-  else if (!other && !ctx.venues.has(venue)) {
+  else if (!other && ctx.venues && !ctx.venues.has(venue)) {
     fields.fail("venue", "Choose a venue from the list.");
   }
   return {
@@ -271,7 +278,7 @@ function gigInput(gig: Gig): Record<string, unknown> {
 export function validateApproval(
   current: Submission,
   edits: unknown,
-  ctx: ValidationContext,
+  ctx: Required<ValidationContext>,
 ): Validated<Review> {
   if (edits != null && !isRecord(edits)) {
     return { ok: false, errors: { form: "Bad edits." } };

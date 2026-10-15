@@ -28,6 +28,33 @@ export function jsonResponse(
   });
 }
 
+/**
+ * The body as text, or null once it passes `limit` bytes. Counts what
+ * actually arrives, since Content-Length may be absent or wrong; a declared
+ * length over the limit is refused without reading.
+ */
+export async function readCapped(
+  request: Request,
+  limit: number,
+): Promise<string | null> {
+  if (Number(request.headers.get("content-length")) > limit) return null;
+  if (!request.body) return "";
+  const reader = request.body.getReader();
+  const decoder = new TextDecoder();
+  let size = 0;
+  let text = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) return text + decoder.decode();
+    size += value.byteLength;
+    if (size > limit) {
+      await reader.cancel();
+      return null;
+    }
+    text += decoder.decode(value, { stream: true });
+  }
+}
+
 export function methodNotAllowed(allow: string): Response {
   return textResponse(405, "Method not allowed", { allow });
 }

@@ -33,10 +33,12 @@ function fakeD1(db: Database): D1Database {
 
 function fakeBucket(feed: string | null): R2Bucket {
   return {
-    get: async (key: string) =>
-      key === "events.json" && feed
+    get: async (key: string) => {
+      feedReads++;
+      return key === "events.json" && feed
         ? { json: async () => JSON.parse(feed) }
-        : null,
+        : null;
+    },
   } as unknown as R2Bucket;
 }
 
@@ -44,6 +46,14 @@ let db: Database;
 let env: Env;
 let verified: FormData[];
 let human: boolean;
+type Outcome = { action?: string; hostname?: string };
+/** What siteverify says about a token from the live form. */
+const FROM_FORM: Outcome = {
+  action: "submit-gig",
+  hostname: "bostonjazzcalendar.com",
+};
+let outcome: Outcome;
+let feedReads: number;
 let notices: { auth: string | null; body: Record<string, unknown> }[];
 let waiting: Promise<unknown>[];
 const realFetch = globalThis.fetch;
@@ -63,6 +73,8 @@ beforeEach(() => {
   notices = [];
   waiting = [];
   human = true;
+  outcome = FROM_FORM;
+  feedReads = 0;
   globalThis.fetch = (async (url: string, init?: RequestInit) => {
     if (url === "https://ntfy.example.com") {
       notices.push({
@@ -75,7 +87,7 @@ beforeEach(() => {
       "https://challenges.cloudflare.com/turnstile/v0/siteverify",
     );
     verified.push(init?.body as FormData);
-    return Response.json({ success: human });
+    return Response.json({ success: human, ...outcome });
   }) as typeof fetch;
 });
 
@@ -212,7 +224,7 @@ describe("POST /api/submissions", () => {
       [{ date: "2026-02-30" }, ["date"]],
       [{ start_time: "" }, ["start_time"]],
       [{ start_time: "8pm", end_time: "25:00" }, ["end_time", "start_time"]],
-      [{ venue: "nowhere" }, ["venue"]],
+      [{ venue: "" }, ["venue"]],
       [{ venue: "other" }, ["venue_name", "venue_town"]],
       [{ url: "javascript:alert(1)" }, ["url"]],
       [{ url: "ftp://example.com/x" }, ["url"]],
@@ -225,9 +237,41 @@ describe("POST /api/submissions", () => {
       expect(await errors(res)).toEqual(expected);
     }
     expect(verified).toHaveLength(0);
+    expect(feedReads).toBe(0);
     expect(db.query("SELECT COUNT(*) AS n FROM submissions").get()).toEqual({
       n: 0,
     });
+  });
+
+  test("rejects addresses that could rewrite a mailto: link", async () => {
+    for (const address of [
+      "pat@example.com?cc=x@example.org",
+      "pat@example.com&bcc=x@example.org",
+      "pat@example.com,x@example.org",
+      "pat@example.com;x@example.org",
+      "pat%40example.com@example.org",
+      "<pat@example.com>",
+      "pat @example.com",
+    ]) {
+      const res = await post("/api/submissions", {
+        ...gig,
+        submitter_email: address,
+      });
+      expect(await errors(res)).toEqual(["submitter_email"]);
+    }
+    await submitted({ submitter_email: "pat.o'example+gigs@example.co.uk" });
+  });
+
+  test("reads the venue list only after Turnstile passes", async () => {
+    const unlisted = { ...gig, venue: "nowhere" };
+    human = false;
+    expect((await post("/api/submissions", unlisted)).status).toBe(403);
+    expect(feedReads).toBe(0);
+    human = true;
+    expect(await errors(await post("/api/submissions", unlisted))).toEqual([
+      "venue",
+    ]);
+    expect(feedReads).toBe(1);
   });
 
   test("today and a year ahead are allowed", async () => {
@@ -246,13 +290,35 @@ describe("POST /api/submissions", () => {
     });
   });
 
+  test("403 for a token from another widget or site", async () => {
+    for (const wrong of [
+      { action: "login" },
+      { action: undefined },
+      { hostname: "evil.example.com" },
+      { hostname: undefined },
+    ]) {
+      outcome = { ...FROM_FORM, ...wrong };
+      expect((await post("/api/submissions", gig)).status).toBe(403);
+    }
+    outcome = { ...FROM_FORM, hostname: "jazz-calendar.garyo.workers.dev" };
+    await submitted();
+  });
+
+  test("a test secret skips the action and hostname checks", async () => {
+    env.TURNSTILE_SECRET = "1x0000000000000000000000000000000AA";
+    outcome = { hostname: "example.com" };
+    await submitted();
+    human = false;
+    expect((await post("/api/submissions", gig)).status).toBe(403);
+  });
+
   test("503 until Turnstile is configured", async () => {
     env.TURNSTILE_SECRET = undefined;
     expect((await post("/api/submissions", gig)).status).toBe(503);
   });
 
   test("400 for a body that isn't a JSON object; 405 for GET", async () => {
-    for (const body of ["not json", "[1]", JSON.stringify("x".repeat(20000))]) {
+    for (const body of ["not json", "[1]", ""]) {
       const res = await call("/api/submissions", {
         method: "POST",
         body,
@@ -267,6 +333,40 @@ describe("POST /api/submissions", () => {
     });
     expect(form.status).toBe(400);
     expect((await call("/api/submissions")).status).toBe(405);
+  });
+
+  test("413 past 16 KB, whatever Content-Length says", async () => {
+    const big = JSON.stringify({ ...gig, notes: "x".repeat(17000) });
+    const json = { "content-type": "application/json" };
+    /** A body that arrives in chunks, with no length up front. */
+    const streamed = (text: string) =>
+      new Blob([text]).stream() as ReadableStream<Uint8Array>;
+    const sizes = [
+      await call("/api/submissions", {
+        method: "POST",
+        body: big,
+        headers: json,
+      }),
+      await call("/api/submissions", {
+        method: "POST",
+        body: streamed(big),
+        headers: json,
+      }),
+      await call("/api/submissions", {
+        method: "POST",
+        body: "{}",
+        headers: { ...json, "content-length": "999999" },
+      }),
+    ];
+    expect(sizes.map((res) => res.status)).toEqual([413, 413, 413]);
+    expect(verified).toHaveLength(0);
+
+    const res = await call("/api/submissions", {
+      method: "POST",
+      body: streamed(JSON.stringify(gig)),
+      headers: json,
+    });
+    expect(res.status).toBe(201);
   });
 });
 

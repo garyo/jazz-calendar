@@ -212,13 +212,22 @@ feed:
    its fields with `src/submission.ts`, gets a Cloudflare Turnstile token
    (the widget's script loads only when the dialog first opens), and posts
    JSON to `POST /api/submissions`.
-2. The Worker validates the same way (lengths; a date from today to a year
-   out; a start time unless "Time TBA"; a venue id from `events.json`, or
-   "other" with a name and town; an http(s) confirmation link; name and
-   email), then verifies the token with Turnstile's siteverify, and stores a
-   `pending` row in D1. It answers `201 {"id", "status": "pending"}`, `400`
-   with `fields` for bad input, `403` when Turnstile says no, and `503`
-   until `TURNSTILE_SECRET` is set.
+2. The Worker reads at most 16 KB of body, counting the bytes that arrive
+   rather than trusting `Content-Length`. It validates the same way as the
+   form (lengths; a date from today to a year out; a start time unless "Time
+   TBA"; a venue id, or "other" with a name and town; an http(s)
+   confirmation link; a name, and an email with none of `?&%,;<>` or
+   whitespace, so it can't add recipients or headers to a `mailto:` link).
+   Then it verifies the token with Turnstile's siteverify, which must report
+   success, the widget's action (`submit-gig`) and one of the site's
+   hostnames (`SITE_HOSTS`). Only then does it read `events.json` to check
+   the venue id, so junk posts cost no R2 reads, and it stores a `pending`
+   row in D1. It answers `201 {"id", "status": "pending"}`, `400` with
+   `fields` for bad input, `403` when Turnstile says no, `413` for a body
+   over 16 KB, and `503` until `TURNSTILE_SECRET` is set. With one of
+   Cloudflare's test secrets (the `.dev.vars` one under Development),
+   siteverify reports `example.com` and no action, so only its success
+   counts.
 3. The owner reviews at `/admin` (`public/admin.html`, not linked and
    `noindex`), which shows every field, the submitter's name and email, and
    the confirmation link. Approving saves any edits (title, date, times,

@@ -11,6 +11,7 @@ import {
   MAX_DAYS_AHEAD,
   MAX_LENGTH,
   OTHER_VENUE,
+  TURNSTILE_ACTION,
   validateSubmission,
 } from "./submission";
 import { addDays, dayKey } from "./time";
@@ -170,7 +171,7 @@ export function submitDialog(): SubmitDialog {
       widgetSlot.dataset.state = "ready";
       widget = window.turnstile.render(widgetSlot, {
         sitekey,
-        action: "submit-gig",
+        action: TURNSTILE_ACTION,
         theme: "auto",
         size: "flexible",
         "error-callback": () =>
@@ -228,7 +229,7 @@ export function submitDialog(): SubmitDialog {
     const checked = validateSubmission(input, {
       today: dayKey(new Date()),
       // Before the listings load, any venue id is fine; the server checks.
-      venues: venues.size > 0 ? venues : new Set([venue.value]),
+      venues: venues.size > 0 ? venues : undefined,
     });
     if (!checked.ok) return showErrors(checked.errors);
     showFieldErrors(form, {});
