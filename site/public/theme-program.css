@@ -320,7 +320,7 @@
       background: var(--bg);
       /* A full-width background that clips nothing, so the venue and town
          popovers can open below the bar. */
-      border-image: conic-gradient(var(--bg) 0 0) fill 0 // 0 100vmax;
+      border-image: conic-gradient(var(--bg) 0 0) fill 0 / / 0 100vmax;
       box-shadow: inset 0 -1px var(--rule);
     }
 
