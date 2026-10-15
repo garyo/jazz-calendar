@@ -14,13 +14,20 @@ const PRODID = "-//bostonjazzcalendar.com//site//EN";
 const MAX_LINE_OCTETS = 75;
 const GOOGLE_TEMPLATE = "https://calendar.google.com/calendar/render";
 
+const TEXT_ESCAPES: Readonly<Record<string, string>> = {
+  "\\": "\\\\",
+  ";": "\\;",
+  ",": "\\,",
+  "\n": "\\n",
+  "\r": "\\n",
+  "\r\n": "\\n",
+};
+/** What escapeText rewrites; any other control character is dropped. */
+const TEXT_SPECIAL = /\r\n|[\\;,\n\r]|\p{Cc}/gu;
+
 /** Escapes a TEXT value (RFC 5545 §3.3.11); other control characters are dropped. */
 export function escapeText(text: string): string {
-  return text
-    .replace(/\r\n?/g, "\n")
-    .replace(/[\\;,]/g, (char) => `\\${char}`)
-    .replace(/\n/g, "\\n")
-    .replace(/\p{Cc}/gu, "");
+  return text.replace(TEXT_SPECIAL, (match) => TEXT_ESCAPES[match] ?? "");
 }
 
 function utf8Length(codePoint: number): number {
@@ -29,11 +36,25 @@ function utf8Length(codePoint: number): number {
   return codePoint < 0x10000 ? 3 : 4;
 }
 
+/** Any UTF-16 code unit outside ASCII, surrogates included. */
+const NON_ASCII = /[\u0080-￿]/;
+
+/** ASCII is one octet per character, so it folds by slicing. */
+function foldAscii(line: string): string {
+  if (line.length <= MAX_LINE_OCTETS) return line;
+  const pieces = [line.slice(0, MAX_LINE_OCTETS)];
+  for (let at = MAX_LINE_OCTETS; at < line.length; at += MAX_LINE_OCTETS - 1) {
+    pieces.push(` ${line.slice(at, at + MAX_LINE_OCTETS - 1)}`);
+  }
+  return pieces.join("\r\n");
+}
+
 /**
  * Folds a content line into CRLF-joined pieces of at most 75 octets, each
  * continuation starting with a space. Never splits a UTF-8 sequence.
  */
 export function foldLine(line: string): string {
+  if (!NON_ASCII.test(line)) return foldAscii(line);
   const pieces: string[] = [];
   let piece = "";
   let octets = 0;
@@ -53,10 +74,7 @@ export function foldLine(line: string): string {
 
 /** "20261015T233000Z". */
 export function utcStamp(date: Date): string {
-  return date
-    .toISOString()
-    .replace(/[-:]/g, "")
-    .replace(/\.\d{3}/, "");
+  return date.toISOString().replace(/[-:]|\.\d+/g, "");
 }
 
 function compactDate(key: string): string {

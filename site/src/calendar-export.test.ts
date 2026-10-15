@@ -70,7 +70,9 @@ const only = (events: CalendarEvent[]) =>
 
 describe("escapeText", () => {
   test("escapes backslash, semicolon, comma and newlines", () => {
-    expect(escapeText("a\\b;c,d\ne\r\nf")).toBe("a\\\\b\\;c\\,d\\ne\\nf");
+    expect(escapeText("a\\b;c,d\ne\r\nf\rg")).toBe(
+      "a\\\\b\\;c\\,d\\ne\\nf\\ng",
+    );
   });
 
   test("drops other control characters", () => {
@@ -81,6 +83,10 @@ describe("escapeText", () => {
 describe("foldLine", () => {
   test("leaves short lines alone", () => {
     expect(foldLine("SUMMARY:short")).toBe("SUMMARY:short");
+    const full = `SUMMARY:${"x".repeat(67)}`;
+    expect(foldLine(full)).toBe(full);
+    expect(foldLine(`${full}y`)).toBe(`${full}\r\n y`);
+    expect(foldLine("SUMMARY:Café")).toBe("SUMMARY:Café");
   });
 
   test("folds at 75 octets, continuation lines starting with a space", () => {
