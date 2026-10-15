@@ -17,7 +17,10 @@ export function useDom(url = "https://bostonjazzcalendar.com/"): void {
   beforeAll(() =>
     GlobalRegistrator.register({
       url,
-      settings: { disableCSSFileLoading: true },
+      settings: {
+        disableCSSFileLoading: true,
+        handleDisabledFileLoadingAsSuccess: true,
+      },
     }),
   );
   afterAll(() => GlobalRegistrator.unregister());

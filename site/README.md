@@ -8,9 +8,18 @@ through the publish API below. The worker stores it in R2.
 ```
 public/          static files copied into dist/ (index.html, styles.css, _headers, …)
 public/admin.html  the submissions review page (unlinked, noindex), with admin.css
+scripts/build.ts the build: bundles, copies public/, hashes asset names (below)
 migrations/      D1 schema for gig submissions
-src/main.ts      front-end entry: fetches /data/events.json, wires controls, renders
-src/render.ts    DOM construction (text only, never innerHTML), incl. the month grid
+src/main.ts      front-end entry: keeps the view state in step with the URL,
+                 loads the feed, re-renders on every change
+src/feed.ts      fetches /data/events.json and indexes it for the page
+src/controls.ts  the filters: search (debounced), pickers and chips, presets
+src/view.ts      the list and month views for a view state
+src/render.ts    DOM construction (text only, never innerHTML): shows, days,
+                 regulars, sources; src/month-grid.ts: the month grid
+src/calendar-menu.ts  each show's "Add to calendar" menu, built on first open
+src/subscribe.ts the "Subscribe to this view" panel
+src/dom.ts       DOM helpers: h, byId, srOnly, safeUrl
 src/picker.ts    multi-select (venues, towns); src/disclosure.ts: popover toggling
 src/listings.ts  pure logic: upcoming, filtering, grouping by night (a set
                  before 4 am belongs to the evening before; see time.ts)
@@ -29,7 +38,7 @@ src/worker-http.ts         response and bearer-token helpers for the Worker
 src/worker-notify.ts       ntfy notices to the owner (submissions, stale data)
 src/submission.ts  submission records, limits and validation (shared)
 src/submit.ts    the "Submit a gig" dialog; src/admin.ts: the review page
-src/theme.ts     the review-period theme switcher
+src/theme.ts     the review-period theme switcher and each theme's fonts
 ```
 
 ## Themes
@@ -40,13 +49,25 @@ defines its colors and fonts, light and dark, plus its own layouts, all scoped
 to `:root[data-theme="…"]`. Program's layout is shared by four variants
 (`liner`, `hardbop`, `evening`, `broadsheet`): `theme-program.css` scopes it
 to the whole family, and each variant's file, loaded after it, adds only
-colors, fonts and a few flourishes. A new variant goes in that selector list. A small inline script in `index.html` sets
-`data-theme` before first paint from `?theme=…`, then the choice saved in
-`localStorage`, then the default (`liner`); `_headers` allows that script
-by its sha256, which `theme.test.ts` checks. The footer switcher changes it in
-place. To settle on one theme, delete the other theme files and their
-`<link>`s, the switcher (`#theme-switcher` and `themeSwitcher()` in
-`main.ts`), and fold the remaining theme into `styles.css` if wanted.
+colors, fonts and a few flourishes. A new variant goes in that selector list.
+
+A small inline script in `index.html` sets `data-theme` before first paint
+from `?theme=…`, then the choice saved in `localStorage`, then the default
+(`liner`). It also adds a Google Fonts stylesheet for only that theme's
+families, so a visitor downloads one theme's fonts, not all eight. The
+footer switcher changes the theme in place and loads a newly picked theme's
+fonts then. `THEME_FONTS` in `src/theme.ts` lists each theme's families
+with only the weights and styles its CSS uses (no `opsz` axis); the inline
+script carries a copy of that table. `_headers` allows the script by its
+sha256. After changing the script, update both; `theme.test.ts` checks the
+copy, the hash, and that each theme's fonts match the families its
+stylesheet names.
+
+To settle on one theme: delete the other theme files and their `<link>`s,
+the switcher (`#theme-switcher` and `themeSwitcher()` in `main.ts`), and
+the script's table, leaving a plain `<link>` to the remaining theme's fonts
+(and dropping the script's hash from `_headers` if the script goes too).
+Fold the remaining theme into `styles.css` if wanted.
 
 Page URLs carry the view: `q`, `venue=lilypad,wallys`, `town=Cambridge,Somerville`
 (a single old-style `town=` still works), `adjacent=0`, `when`, `view=month`,
@@ -68,6 +89,16 @@ bun run dev          # build, then wrangler dev on http://localhost:8787
 front-end code, run `bun run build` in another terminal. Local R2 data lives
 in `.wrangler/state` and persists between runs.
 
+`bun run build` (`scripts/build.ts`) copies `public/` into `dist/`, bundles
+`src/main.ts` and `src/admin.ts`, and moves every script and stylesheet to
+`dist/assets/` under a content-hashed name (`main-8b92fb4m.js`,
+`styles-cce4c0b8c2.css`), rewriting the references in `index.html` and
+`admin.html`. `_headers` serves `/assets/*` with
+`Cache-Control: public, max-age=31536000, immutable`; the pages and
+everything else keep Cloudflare's default, `max-age=0, must-revalidate`, so
+a deploy reaches visitors on their next load. Source files keep their plain
+names: in `public/`, refer to `/styles.css` or `/main.js` as usual.
+
 To try the publish and submission APIs locally, create `.dev.vars`
 (gitignored). The Turnstile secret below is Cloudflare's always-passing test
 key; on localhost the form uses the matching test site key.
@@ -85,10 +116,10 @@ Other scripts:
 
 | Script | What it does |
 |---|---|
-| `bun run build` | Bundle `src/main.ts` and `src/admin.ts` and copy `public/` into `dist/` |
+| `bun run build` | Build `dist/`: bundle, copy `public/`, hash asset names (above) |
 | `bun run typecheck` | `tsc` for the front end and the worker (separate configs) |
 | `bun run lint` / `lint:fix` | Biome |
-| `bun run test` | `bun test`: time, filtering, URL-state, rendering (happy-dom) and worker tests |
+| `bun run test` | `bun test`: time, filtering, URL-state, rendering and controls (happy-dom), build and worker tests |
 | `bun run check` | typecheck + lint + test |
 | `bun run deploy` | Build, then `wrangler deploy` |
 
@@ -264,7 +295,7 @@ The review page gets a second, stricter policy (`/admin*`:
 `script-src 'self'; connect-src 'self'; frame-src 'none'`). Cloudflare joins
 the two rules' headers with a comma, which browsers enforce as two policies,
 so the page can run only its own bundle and talk only to this site.
-`admin.html` loads nothing but `/admin.js`, whose imports never reach
+`admin.html` loads no script but `/admin.js` (hashed at build), whose imports never reach
 `analytics.ts`; `src/csp.test.ts` checks both.
 
 ## Operations / hardening (dashboard)
