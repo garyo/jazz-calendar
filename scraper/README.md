@@ -23,22 +23,50 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
 - **Adapters** (`src/jazzcal/adapters/`) fetch through `http.Http` and return
   `ScrapedEvent`s. Parsing is a pure function tested against saved pages in
   `tests/fixtures/`.
-- **`http.Http`** is polite by construction:
+- **`http.Http`** is polite and careful by construction:
   - It sends an identifying User-Agent.
-  - It honors robots.txt (RFC 9309, wildcards included) and Crawl-delay.
+  - It honors robots.txt (RFC 9309, wildcards included) and Crawl-delay. A robots.txt that
+    answers with a server error blocks its host for the rest of the run, but isn't cached.
   - It waits at least 3 s between requests to a host.
+  - It retries a server error, timeout or failed connection twice, backing off (5 s, then
+    10 s) or waiting out a Retry-After of up to a minute. A longer Retry-After ends the try.
   - Pages fetched within `--max-age` (6 h) come from the cache in `var/cache/`; older ones are
-    revalidated with a conditional GET.
+    revalidated with a conditional GET. Event detail pages that adapters follow from a list
+    page are reused for 5 days (`DETAIL_MAX_AGE`); the list pages still refresh every run.
+  - It follows at most 5 redirects, and checks robots.txt for every host along the way.
+  - It fetches only http(s) URLs on public addresses, so a page can't redirect it into
+    the local network. The site's own host (`$JAZZCAL_SITE`) is exempt, for local testing.
+  - It stops reading a response at 10 MB.
 - **`store.Store`** (SQLite, `var/jazzcal.db`) keeps every source's listings.
   - A source that fails keeps its last good listings, and the failure shows in `status.json`.
     After 7 days of failures its events are dropped.
+  - A run that finds no events at all counts as a failure ("0 events (had N upcoming last
+    run)") when the last successful run found shows still to come. That's usually a broken
+    page rather than an empty calendar.
   - An event a source stops listing is dropped after two runs without it.
+  - After each scrape, the store forgets listings a source has dropped whose events ended over
+    30 days ago, and the cache deletes pages unused for 30 days (except on `--offline` runs).
 - **`pipeline.build`**:
   1. Resolves venues (by id, name, alias or street address).
   2. Classifies each event as jazz, adjacent or other (`classify.py`).
   3. Merges duplicates across sources (same venue and day, start within an hour, similar
      title).
   4. Drops past events.
+  5. Gives each event a stable id, which is also its calendar UID. A new event's id derives
+     from its leading listing (`sha1(source|uid)`). Each listing remembers the id it was
+     published under, and an event keeps the id of its longest-standing listing. So when a
+     higher-priority source starts or stops listing a show, calendar apps don't see it
+     deleted and added again.
+
+### When sources keep failing
+
+If an enabled source fails on 2 runs in a row, the run sends one [ntfy](https://ntfy.sh)
+notification listing every such source with its error. While they keep failing it repeats
+at most once a week, or sooner when another source starts failing. It uses the same settings
+as `deploy/run.sh`: `NTFY_USER` and `NTFY_PASS` (nothing is sent without them), `NTFY_URL`
+(default `https://ntfy.oberbrunner.com`) and `NTFY_TOPIC` (default `misc`). A failed
+notification never fails the run. `run.sh` posts separately, at high priority, when a whole
+run fails.
 
 ### Weekly regulars
 
@@ -133,3 +161,8 @@ sudo systemctl daemon-reload && sudo systemctl enable --now jazzcal.timer
 Run now with `sudo systemctl start jazzcal`; logs are in `journalctl -u jazzcal`.
 
 Either way, set `JAZZCAL_HEALTHCHECK_URL` to get an alert when daily runs stop.
+
+`jazzcal publish` uploads `calendar.ics`, then `events.json`, then `status.json`, so the
+status always describes a publish that went through. Each upload is retried up to 3 times on
+server errors and failed connections. The healthcheck ping comes last; if it fails, the run
+logs a warning but still succeeds.
