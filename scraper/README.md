@@ -162,7 +162,8 @@ Replace `USERNAME` in the plist with the account that runs it (`sed -i "" "s/USE
 Day to day:
 - Run now: `sudo launchctl kickstart system/com.bostonjazzcalendar.scraper`
 - Logs: `~/Library/Logs/jazzcal.log`
-- Update: `git pull && uv sync --frozen`. The job picks up the new code on its next run.
+- Update: push to main. Each run pulls first (fast-forward only), so it takes effect on the
+  next run; to deploy sooner, `git pull` on the machine and run it now.
 - Remove: `sudo launchctl bootout system/com.bostonjazzcalendar.scraper`
 
 ### Linux (systemd)
@@ -176,7 +177,8 @@ sudo cp deploy/jazzcal.service deploy/jazzcal.timer /etc/systemd/system/
 sudo systemctl daemon-reload && sudo systemctl enable --now jazzcal.timer
 ```
 
-Run now with `sudo systemctl start jazzcal`; logs are in `journalctl -u jazzcal`.
+Run now with `sudo systemctl start jazzcal`; logs are in `journalctl -u jazzcal`. Each run
+pulls main first, as on macOS.
 
 Either way, set `JAZZCAL_HEALTHCHECK_URL` to get an alert when daily runs stop.
 

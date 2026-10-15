@@ -1,13 +1,15 @@
 #!/bin/sh
-# Daily scrape-and-publish for launchd (macOS). Reads secrets from an env file kept outside
-# the repo, so the plist itself holds no secrets. If the run fails and NTFY_USER/NTFY_PASS
-# are set, posts the end of its output to the ntfy topic.
+# Daily scrape-and-publish for launchd (macOS). Pulls the latest main first (uv run then
+# syncs dependencies); if the pull fails, scrapes with the code already here. Reads secrets
+# from an env file kept outside the repo, so the plist itself holds no secrets. If the run
+# fails and NTFY_USER/NTFY_PASS are set, posts the end of its output to the ntfy topic.
 set -eu
 ENV_FILE="${JAZZCAL_ENV_FILE:-$HOME/.config/jazzcal/env}"
 set -a
 . "$ENV_FILE"
 set +a
 cd "$(dirname "$0")/.."
+git pull --ff-only --quiet || echo "git pull failed; running the code already checked out" >&2
 
 output=$(mktemp)
 trap 'rm -f "$output"' EXIT
