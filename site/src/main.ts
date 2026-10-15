@@ -1,5 +1,6 @@
 /** Front-end entry point: loads the feed, wires the controls, renders. */
 
+import { startAnalytics } from "./analytics";
 import { disclosure } from "./disclosure";
 import {
   filterEvents,
@@ -556,3 +557,4 @@ if (new URLSearchParams(location.search).has("theme")) {
 writeControls(state);
 updateSubscribe();
 load();
+void startAnalytics();
