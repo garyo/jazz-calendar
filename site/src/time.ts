@@ -38,6 +38,13 @@ const shortDateFormat = new Intl.DateTimeFormat("en-US", {
   day: "numeric",
 });
 
+const fullDateFormat = new Intl.DateTimeFormat("en-US", {
+  timeZone: "UTC",
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+
 type Parts = Partial<Record<Intl.DateTimeFormatPartTypes, string>>;
 
 function partsOf(format: Intl.DateTimeFormat, date: Date): Parts {
@@ -71,6 +78,13 @@ export function weekday(key: DayKey): number {
 /** "Thursday, Oct 15". */
 export function formatDayHeading(key: DayKey): string {
   return headingFormat.format(keyToDate(key));
+}
+
+/** "Oct 15, 2026", or null for anything but a "YYYY-MM-DD" date. */
+export function formatDate(key: string): string | null {
+  return /^\d{4}-\d{2}-\d{2}$/.test(key)
+    ? fullDateFormat.format(keyToDate(key))
+    : null;
 }
 
 /** "8 pm", "8:15 pm". */

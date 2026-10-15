@@ -11,9 +11,10 @@ import {
   type DayKey,
   eventEndLabel,
   eventTimeLabel,
+  formatDate,
   formatDayHeading,
 } from "./time";
-import type { CalendarEvent, Venue } from "./types";
+import type { CalendarEvent, Regular, Relevance, Venue } from "./types";
 
 type Child = Node | string | null | undefined | false;
 
@@ -45,8 +46,8 @@ function srOnly(text: string): HTMLSpanElement {
   return h("span", { class: "sr-only" }, text);
 }
 
-function renderVenue(event: CalendarEvent, venue: Venue | undefined): Node {
-  if (!venue) return h("p", { class: "event-venue" }, event.venue);
+function renderVenue(venueId: string, venue: Venue | undefined): Node {
+  if (!venue) return h("p", { class: "event-venue" }, venueId);
   const href = safeUrl(venue.url);
   return h(
     "p",
@@ -56,10 +57,16 @@ function renderVenue(event: CalendarEvent, venue: Venue | undefined): Node {
   );
 }
 
+function adjacentChip(relevance: Relevance): Child {
+  return (
+    relevance === "adjacent" &&
+    h("li", { class: "chip chip-adjacent" }, "jazz-adjacent")
+  );
+}
+
 function renderMeta(event: CalendarEvent): Node | null {
   const chips = [
-    event.relevance === "adjacent" &&
-      h("li", { class: "chip chip-adjacent" }, "jazz-adjacent"),
+    adjacentChip(event.relevance),
     ...(event.tags ?? []).map((tag) => h("li", { class: "chip" }, tag)),
   ].filter(Boolean);
   if (!event.price && chips.length === 0) return null;
@@ -128,7 +135,7 @@ function renderEvent(
         ),
         artists.length > 0 &&
           h("p", { class: "event-artists" }, `with ${artists.join(", ")}`),
-        renderVenue(event, venue),
+        renderVenue(event.venue, venue),
         renderMeta(event),
         renderLinks(event, venue?.name ?? event.venue),
       ),
@@ -173,6 +180,62 @@ export function renderDays(
     );
   }
   return fragment;
+}
+
+function renderRegular(
+  regular: Regular,
+  venue: Venue | undefined,
+  index: number,
+): HTMLLIElement {
+  const titleId = `regular-${index}`;
+  const venueName = venue?.name ?? regular.venue;
+  const schedule = safeUrl(regular.url);
+  const checked = formatDate(regular.checked);
+  const chip = adjacentChip(regular.relevance);
+  return h(
+    "li",
+    { class: `regular ${regular.relevance}` },
+    h(
+      "article",
+      { class: "event-body", "aria-labelledby": titleId },
+      h("h3", { class: "event-title", id: titleId }, regular.title),
+      h("p", { class: "regular-when" }, regular.when),
+      renderVenue(regular.venue, venue),
+      chip &&
+        h(
+          "div",
+          { class: "event-meta" },
+          h("ul", { class: "chips", "aria-label": "Tags" }, chip),
+        ),
+      h(
+        "p",
+        { class: "event-links" },
+        schedule &&
+          h(
+            "a",
+            { class: "button", href: schedule },
+            "Schedule",
+            srOnly(` for ${regular.title} at ${venueName}`),
+          ),
+        checked &&
+          h(
+            "span",
+            { class: "regular-checked" },
+            "as of ",
+            h("time", { datetime: regular.checked }, checked),
+          ),
+      ),
+    ),
+  );
+}
+
+export function renderRegulars(
+  regulars: readonly Regular[],
+  venues: ReadonlyMap<string, Venue>,
+): HTMLLIElement[] {
+  return regulars.map((regular, index) =>
+    renderRegular(regular, venues.get(regular.venue), index),
+  );
 }
 
 /** A centered notice for the loading, empty and error states. */

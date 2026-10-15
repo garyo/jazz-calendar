@@ -10,6 +10,8 @@ Monorepo: `scraper/` (Python, uv), `site/` (TypeScript, bun, Cloudflare Worker),
 - All scraper fetches go through `jazzcal.http.Http`: it handles robots.txt, delays and the
   cache. Never bypass robots.txt or bot protection. If a site blocks us, note it in
   `data/sources.yaml` and leave the source disabled.
+- Never turn a standing schedule into dated events. Weekly series a venue publishes go in
+  `data/regulars.yaml` and appear in their own section.
 - Publish facts and links only. Never store or publish venue descriptions or images;
   `ScrapedEvent.text` is used only for classification.
 - New adapters handle a platform, not a venue: a pure `parse` function tested against a

@@ -1,0 +1,34 @@
+# Weekly regulars: standing series a venue or the series' organizer publishes, with no dated
+# listings. The site shows them in their own section, never as calendar events, because a
+# standing schedule doesn't promise any particular night. Only add a series its venue or
+# organizer publishes, and recheck it now and then (update `checked`).
+#
+# when: the schedule as the venue states it
+
+- venue: wallys
+  title: Jam session
+  when: Tuesday–Saturday, 7–9 pm
+  relevance: jazz
+  url: https://www.wallyscafe.com/one-night/
+  checked: 2026-10-15
+
+- venue: bluebird-bar
+  title: Live jazz
+  when: Mondays, 7–9 pm
+  relevance: jazz
+  url: https://www.thebluebirdbar.com
+  checked: 2026-10-15
+
+- venue: phoenix-landing
+  title: JazzBoston jam session
+  when: 1st and 3rd Fridays, 5–7 pm
+  relevance: jazz
+  url: https://jazzboston.org/jazzjams/
+  checked: 2026-10-15
+
+- venue: wellington-belmont
+  title: "Saturday band sessions: Morningside Music ensembles"
+  when: Saturdays, 7:30–9:30 pm (mixed styles, often jazz and Brazilian)
+  relevance: adjacent
+  url: https://www.thewellingtonbelmont.com/live-music/
+  checked: 2026-10-15

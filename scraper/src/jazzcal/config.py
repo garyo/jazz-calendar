@@ -2,7 +2,7 @@
 
 import os
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import cached_property
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 import yaml
 from pydantic import Field, TypeAdapter
 
-from jazzcal.models import Source, Venue
+from jazzcal.models import Regular, Source, Venue
 
 TZ = ZoneInfo("America/New_York")
 
@@ -54,6 +54,7 @@ def address_key(address: str) -> str | None:
 class Registry:
     venues: dict[str, VenueConfig]
     sources: list[Source]
+    regulars: list[Regular] = field(default_factory=list)
 
     @classmethod
     def load(cls, data_dir: Path = DATA_DIR) -> "Registry":
@@ -61,10 +62,16 @@ class Registry:
             _load_yaml(data_dir / "venues.yaml")
         )
         sources = TypeAdapter(list[Source]).validate_python(_load_yaml(data_dir / "sources.yaml"))
+        regulars = TypeAdapter(list[Regular]).validate_python(
+            _load_yaml(data_dir / "regulars.yaml")
+        )
         for ids, kind in (([v.id for v in venues], "venue"), ([s.id for s in sources], "source")):
             if dupes := {i for i in ids if ids.count(i) > 1}:
                 raise ValueError(f"duplicate {kind} ids: {sorted(dupes)}")
-        registry = cls({v.id: v for v in venues}, sources)
+        registry = cls({v.id: v for v in venues}, sources, regulars)
+        for r in regulars:
+            if r.venue not in registry.venues:
+                raise ValueError(f"regular {r.title!r} refers to unknown venue {r.venue!r}")
         for s in sources:
             if s.venue and s.venue not in registry.venues:
                 raise ValueError(f"source {s.id!r} refers to unknown venue {s.venue!r}")

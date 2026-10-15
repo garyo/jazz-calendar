@@ -407,7 +407,8 @@ select:focus {
 
 /* Events */
 
-.event {
+.event,
+.regular {
   border-bottom: 1px solid var(--rule);
 }
 
@@ -544,8 +545,42 @@ select:focus {
   color: var(--cancelled);
 }
 
+/* Weekly regulars: standing series, kept apart from the dated listings. */
+
+.regulars {
+  margin-top: 2.5rem;
+}
+
+.regulars-intro {
+  margin: 0.6rem 0 0.25rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.regular .event-body {
+  padding-block: 1rem;
+}
+
+.regular-when {
+  margin-top: 0.15rem;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 500;
+  color: var(--brass);
+}
+
+.regular .event-links {
+  align-items: center;
+}
+
+.regular-checked {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
 /* Jazz-adjacent: a different voice, same volume. */
-.event.adjacent .event-time {
+.event.adjacent .event-time,
+.regular.adjacent .regular-when {
   color: var(--adjacent);
 }
 

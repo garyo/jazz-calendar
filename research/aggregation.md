@@ -17,9 +17,10 @@ landscape and a conservative posture.
 3. **Build per-platform adapters, not per-venue scrapers.** About 10 platform adapters (ICS, Tribe
    REST, JSON-LD, Squarespace HTML, Wix Events, Localist, Spektrix, Eventbrite, Ticketmaster,
    generic LLM) cover nearly every venue. Each venue becomes a config line.
-4. **Fill the long tail with people.** Use recurring-schedule entries for residencies like Wally's
-   and the hotel lounges. Add a submission form for musicians and venues. Add an inbox that receives
-   venue and musician newsletters (with permission), parsed by an LLM.
+4. **Fill the long tail with people.** List venue-published standing series like Wally's jam
+   separately as weekly regulars, never as dated events. For the rest, add a submission form
+   for musicians and venues, and an inbox that receives venue and musician newsletters (with
+   permission), parsed by an LLM.
 
 ## Secondary and aggregator sources
 

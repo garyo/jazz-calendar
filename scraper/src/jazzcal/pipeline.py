@@ -107,6 +107,7 @@ def build(
             generated_at=now,
             venues=[v.public() for v in registry.venues.values()],
             events=events,
+            regulars=registry.regulars,
         ),
         StatusFile(generated_at=now, sources=statuses),
     )

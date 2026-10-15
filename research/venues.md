@@ -10,7 +10,8 @@ calendar (1–3 requests per site). "Unverified" means we couldn't confirm it is
 - **JSON-LD** — schema.org `Event` markup embedded in the venue's pages
 - **HTML** — scrape the calendar page itself
 - **Ticketing** — via a ticketing vendor (Ticketmaster Discovery API, Eventbrite organizer, TicketWeb)
-- **Recurring** — no per-date listings exist; model as a recurring weekly entry and confirm by hand
+- **Regular** — no per-date listings exist. If the venue publishes the standing schedule, list it
+  under weekly regulars (never as dated events); otherwise ask the venue
 - **Manual** — annual festival or one-off; enter by hand
 - **Blocked** — Cloudflare bot wall or robots.txt forbids it; needs permission or another source
 

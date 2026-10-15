@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -7,7 +7,7 @@ from jazzcal import pipeline
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key
 from jazzcal.llm import Question, Verdict
-from jazzcal.models import ScrapedEvent, Source
+from jazzcal.models import Regular, ScrapedEvent, Source
 from jazzcal.store import Store
 
 NOW = datetime(2026, 10, 15, 12, tzinfo=TZ)
@@ -211,3 +211,18 @@ def test_classifier_leans_toward_keeping_listings(store: Store) -> None:
     ]
     pipeline.build(registry, store, NOW, classifier)
     assert len(classifier.asked) == 4
+
+
+def test_regulars_are_published_apart_from_events(store: Store) -> None:
+    regular = Regular(
+        venue="club",
+        title="Jam session",
+        when="Tuesdays, 7-9 pm",
+        relevance="jazz",
+        url="https://club.example/",
+        checked=date(2026, 10, 15),
+    )
+    registry = Registry({"club": venue("club", "dedicated")}, [], [regular])
+    feed, _ = pipeline.build(registry, store, NOW)
+    assert feed.events == []
+    assert feed.regulars == [regular]

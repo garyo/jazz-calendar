@@ -49,6 +49,23 @@ export interface CalendarEvent {
   sources: string[];
 }
 
+/**
+ * A standing weekly series with no dated listings. Shown apart from the
+ * calendar, since a standing schedule doesn't promise any particular night.
+ */
+export interface Regular {
+  /** Venue id; see EventsFile.venues. */
+  venue: string;
+  title: string;
+  /** The schedule as the venue states it, e.g. "Tuesday–Saturday, 7–9 pm". */
+  when: string;
+  relevance: Relevance;
+  /** Where the venue or organizer publishes the schedule. */
+  url: string;
+  /** "YYYY-MM-DD": when we last confirmed the schedule there. */
+  checked: string;
+}
+
 /** Served as /data/events.json. */
 export interface EventsFile {
   version?: number;
@@ -56,6 +73,8 @@ export interface EventsFile {
   venues: Venue[];
   /** Sorted by start. */
   events: CalendarEvent[];
+  /** Optional here so the site copes with an older feed. */
+  regulars?: Regular[];
 }
 
 /** Served as /data/status.json. */

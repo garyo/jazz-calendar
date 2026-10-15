@@ -5,6 +5,7 @@ import {
   eventEndLabel,
   eventTimeLabel,
   formatClock,
+  formatDate,
   formatDayHeading,
   formatUpdated,
   weekday,
@@ -114,4 +115,10 @@ test("formatUpdated", () => {
   expect(formatUpdated(at("2026-10-12T06:00:00-04:00"), now)).toBe(
     "Oct 12 at 6 am",
   );
+});
+
+test("formatDate", () => {
+  expect(formatDate("2026-10-15")).toBe("Oct 15, 2026");
+  expect(formatDate("2026-01-01")).toBe("Jan 1, 2026");
+  expect(formatDate("Oct 15")).toBeNull();
 });

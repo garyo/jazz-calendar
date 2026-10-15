@@ -4,6 +4,7 @@
 schema/events.schema.json. Change it compatibly, or bump `FEED_VERSION`.
 """
 
+from datetime import date
 from typing import Any, Literal
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
@@ -88,6 +89,18 @@ class Event(Model):
     sources: list[str] = Field(description="Ids of the sources that list this event")
 
 
+class Regular(Model):
+    """A standing weekly series with no dated listings: shown apart from the calendar, since a
+    standing schedule doesn't promise any particular night."""
+
+    venue: str = Field(description="Venue id")
+    title: str
+    when: str = Field(description="The schedule as the venue states it")
+    relevance: Listed
+    url: str = Field(description="Where the venue or organizer publishes the schedule")
+    checked: date = Field(description="When we last confirmed the schedule there")
+
+
 class EventsFile(Model):
     """The published feed, served as /data/events.json."""
 
@@ -95,6 +108,7 @@ class EventsFile(Model):
     generated_at: AwareDatetime
     venues: list[Venue]
     events: list[Event] = Field(description="Sorted by start")
+    regulars: list[Regular] = Field(default_factory=list)
 
 
 class SourceStatus(Model):

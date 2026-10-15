@@ -120,7 +120,7 @@
    ],
    "cancelled": false,
    "sources": [
-    "wallys-recurring"
+    "wallys"
    ]
   },
   {
@@ -223,7 +223,7 @@
    ],
    "cancelled": false,
    "sources": [
-    "wellington-recurring"
+    "wellington"
    ]
   },
   {
@@ -308,6 +308,24 @@
    "sources": [
     "lilypad"
    ]
+  }
+ ],
+ "regulars": [
+  {
+   "venue": "wallys",
+   "title": "Jam session",
+   "when": "Tuesday–Saturday, 7–9 pm",
+   "relevance": "jazz",
+   "url": "https://www.wallyscafe.com/one-night/",
+   "checked": "2026-10-15"
+  },
+  {
+   "venue": "wellington-belmont",
+   "title": "Saturday band sessions",
+   "when": "Saturdays, 7:30–9:30 pm (mixed styles)",
+   "relevance": "adjacent",
+   "url": "https://thewellingtonbelmont.com/live-music/",
+   "checked": "2026-10-15"
   }
  ]
 }

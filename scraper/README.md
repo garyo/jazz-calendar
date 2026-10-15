@@ -19,7 +19,7 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
 
 - **`../data/venues.yaml`** is the venue registry. **`../data/sources.yaml`** lists the
   sources, each handled by an *adapter* for its platform (`ics`, `tribe`, `jsonld`,
-  `recurring`, ...). Their order sets priority when two sources list the same event.
+  `squarespace`, ...). Their order sets priority when two sources list the same event.
 - **Adapters** (`src/jazzcal/adapters/`) fetch through `http.Http` and return
   `ScrapedEvent`s. Parsing is a pure function tested against saved pages in
   `tests/fixtures/`.
@@ -39,6 +39,13 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
   3. Merges duplicates across sources (same venue and day, start within an hour, similar
      title).
   4. Drops past events.
+
+### Weekly regulars
+
+`../data/regulars.yaml` lists standing series that venues publish with no dated listings, such
+as Wally's jam. The feed carries them in a separate `regulars` list, and the site shows them in
+their own section. They never become calendar events: a standing schedule doesn't promise any
+particular night. Only list what a venue or organizer publishes, and recheck it now and then.
 
 ### Classification
 

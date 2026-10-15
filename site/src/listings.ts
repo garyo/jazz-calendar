@@ -1,10 +1,10 @@
 /**
- * Pure listing logic: which events are upcoming, which match the filters,
- * and how they group into Boston-local days.
+ * Pure listing logic: which events are upcoming, which events and regulars
+ * match the filters, and how events group into Boston-local days.
  */
 
 import { addDays, type DayKey, dayKey, weekday } from "./time";
-import type { CalendarEvent, Venue } from "./types";
+import type { CalendarEvent, Regular, Relevance, Venue } from "./types";
 import type { DatePreset, Filters } from "./url-state";
 
 /** How long an event with no end time stays listed after it starts. */
@@ -77,16 +77,24 @@ export function normalize(text: string): string {
     .toLowerCase();
 }
 
-function matchesQuery(
-  event: CalendarEvent,
-  venue: Venue | undefined,
-  terms: string[],
-): boolean {
+function searchTerms(query: string): string[] {
+  return normalize(query).split(/\s+/).filter(Boolean);
+}
+
+function matchesTerms(texts: readonly string[], terms: string[]): boolean {
   if (terms.length === 0) return true;
-  const haystack = normalize(
-    [event.title, ...(event.artists ?? []), venue?.name ?? ""].join(" "),
-  );
+  const haystack = normalize(texts.join(" "));
   return terms.every((term) => haystack.includes(term));
+}
+
+/** The relevance and town filters, shared by events and regulars. */
+function matchesListing(
+  listing: { relevance: Relevance },
+  venue: Venue | undefined,
+  filters: Filters,
+): boolean {
+  if (!filters.adjacent && listing.relevance === "adjacent") return false;
+  return !filters.town || venue?.town === filters.town;
 }
 
 export function filterEvents(
@@ -97,17 +105,35 @@ export function filterEvents(
 ): CalendarEvent[] {
   const today = dayKey(now);
   const range = presetRange(filters.when, today);
-  const terms = normalize(filters.query).split(/\s+/).filter(Boolean);
+  const terms = searchTerms(filters.query);
   return events.filter((event) => {
     if (!isUpcoming(event, now)) return false;
-    if (!filters.adjacent && event.relevance === "adjacent") return false;
     const venue = venues.get(event.venue);
-    if (filters.town && venue?.town !== filters.town) return false;
+    if (!matchesListing(event, venue, filters)) return false;
     if (range) {
       const day = listingDay(event, today);
       if (day < range.from || day > range.to) return false;
     }
-    return matchesQuery(event, venue, terms);
+    return matchesTerms(
+      [event.title, ...(event.artists ?? []), venue?.name ?? ""],
+      terms,
+    );
+  });
+}
+
+/** Regulars matching the filters; date presets don't apply to them. */
+export function filterRegulars(
+  regulars: readonly Regular[],
+  venues: ReadonlyMap<string, Venue>,
+  filters: Filters,
+): Regular[] {
+  const terms = searchTerms(filters.query);
+  return regulars.filter((regular) => {
+    const venue = venues.get(regular.venue);
+    return (
+      matchesListing(regular, venue, filters) &&
+      matchesTerms([regular.title, venue?.name ?? ""], terms)
+    );
   });
 }
 
@@ -142,14 +168,14 @@ export function venueLocation(venue: Venue): string {
     : town;
 }
 
-/** Towns of venues that have at least one of the given events, sorted. */
-export function townsWithEvents(
-  events: readonly CalendarEvent[],
+/** Towns of venues that have at least one of the given listings, sorted. */
+export function townsWithListings(
+  listings: readonly { venue: string }[],
   venues: ReadonlyMap<string, Venue>,
 ): string[] {
   const towns = new Set<string>();
-  for (const event of events) {
-    const town = venues.get(event.venue)?.town;
+  for (const listing of listings) {
+    const town = venues.get(listing.venue)?.town;
     if (town) towns.add(town);
   }
   return [...towns].sort((a, b) => a.localeCompare(b));

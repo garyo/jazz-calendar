@@ -129,6 +129,55 @@
       "title": "Event",
       "type": "object"
     },
+    "Regular": {
+      "additionalProperties": false,
+      "description": "A standing weekly series with no dated listings: shown apart from the calendar, since a\nstanding schedule doesn't promise any particular night.",
+      "properties": {
+        "venue": {
+          "description": "Venue id",
+          "title": "Venue",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "when": {
+          "description": "The schedule as the venue states it",
+          "title": "When",
+          "type": "string"
+        },
+        "relevance": {
+          "enum": [
+            "jazz",
+            "adjacent"
+          ],
+          "title": "Relevance",
+          "type": "string"
+        },
+        "url": {
+          "description": "Where the venue or organizer publishes the schedule",
+          "title": "Url",
+          "type": "string"
+        },
+        "checked": {
+          "description": "When we last confirmed the schedule there",
+          "format": "date",
+          "title": "Checked",
+          "type": "string"
+        }
+      },
+      "required": [
+        "venue",
+        "title",
+        "when",
+        "relevance",
+        "url",
+        "checked"
+      ],
+      "title": "Regular",
+      "type": "object"
+    },
     "Venue": {
       "additionalProperties": false,
       "properties": {
@@ -260,13 +309,21 @@
       },
       "title": "Events",
       "type": "array"
+    },
+    "regulars": {
+      "items": {
+        "$ref": "#/$defs/Regular"
+      },
+      "title": "Regulars",
+      "type": "array"
     }
   },
   "required": [
     "version",
     "generated_at",
     "venues",
-    "events"
+    "events",
+    "regulars"
   ],
   "title": "EventsFile",
   "type": "object"

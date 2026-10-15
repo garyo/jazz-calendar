@@ -2,15 +2,16 @@ import { describe, expect, test } from "bun:test";
 import {
   extraArtists,
   filterEvents,
+  filterRegulars,
   groupByDay,
   isOnNow,
   isUpcoming,
   normalize,
   presetRange,
-  townsWithEvents,
+  townsWithListings,
   venueLocation,
 } from "./listings";
-import type { CalendarEvent, EventsFile } from "./types";
+import type { CalendarEvent, EventsFile, Regular } from "./types";
 import { DEFAULT_FILTERS, type Filters } from "./url-state";
 
 const sample: EventsFile = await Bun.file(
@@ -141,6 +142,57 @@ describe("filterEvents", () => {
   });
 });
 
+describe("filterRegulars", () => {
+  const regulars = sample.regulars ?? [];
+  const titles = (filters: Partial<Filters>) =>
+    filterRegulars(regulars, venues, { ...DEFAULT_FILTERS, ...filters }).map(
+      (r) => r.title,
+    );
+  const all = ["Jam session", "Saturday band sessions"];
+
+  test("the sample has a jazz and a jazz-adjacent regular", () => {
+    expect(titles({})).toEqual(all);
+  });
+
+  test("date presets don't apply", () => {
+    expect(titles({ when: "tonight" })).toEqual(all);
+    expect(titles({ when: "weekend" })).toEqual(all);
+  });
+
+  test("jazz-adjacent toggle", () => {
+    expect(titles({ adjacent: false })).toEqual(["Jam session"]);
+  });
+
+  test("town", () => {
+    expect(titles({ town: "Belmont" })).toEqual(["Saturday band sessions"]);
+    expect(titles({ town: "Cambridge" })).toEqual([]);
+  });
+
+  test("search matches title and venue, not the schedule", () => {
+    expect(titles({ query: "wallys jam" })).toEqual(["Jam session"]);
+    expect(titles({ query: "band sessions" })).toEqual([
+      "Saturday band sessions",
+    ]);
+    expect(titles({ query: "wellington" })).toEqual(["Saturday band sessions"]);
+    expect(titles({ query: "tuesday" })).toEqual([]);
+  });
+
+  test("a regular at an unknown venue is dropped only by the town filter", () => {
+    const orphan: Regular = {
+      venue: "nowhere",
+      title: "Mystery jam",
+      when: "Mondays",
+      relevance: "jazz",
+      url: "https://example.com/",
+      checked: "2026-10-15",
+    };
+    expect(filterRegulars([orphan], venues, DEFAULT_FILTERS)).toHaveLength(1);
+    expect(
+      filterRegulars([orphan], venues, { ...DEFAULT_FILTERS, town: "Boston" }),
+    ).toEqual([]);
+  });
+});
+
 describe("groupByDay", () => {
   test("groups sorted events by Boston-local day", () => {
     const groups = groupByDay(sample.events, "2026-10-15");
@@ -189,11 +241,15 @@ describe("display helpers", () => {
     expect(normalize("Wally’s Café")).toBe("wallys cafe");
   });
 
-  test("townsWithEvents", () => {
-    expect(townsWithEvents(sample.events, venues)).toEqual([
+  test("townsWithListings", () => {
+    expect(townsWithListings(sample.events, venues)).toEqual([
       "Belmont",
       "Boston",
       "Cambridge",
+    ]);
+    expect(townsWithListings(sample.regulars ?? [], venues)).toEqual([
+      "Belmont",
+      "Boston",
     ]);
   });
 });

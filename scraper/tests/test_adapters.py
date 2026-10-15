@@ -1,10 +1,9 @@
 import json
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 
-from jazzcal.adapters import clean, ics, jsonld, recurring, tribe
+from jazzcal.adapters import clean, ics, jsonld, tribe
 from jazzcal.config import TZ
-from jazzcal.models import Source
 
 FIXTURES = Path(__file__).parent / "fixtures"
 NOW = datetime(2026, 10, 15, 6, tzinfo=TZ)
@@ -59,21 +58,6 @@ def test_jsonld() -> None:
     assert trio.cancelled
     assert festival.all_day
     assert festival.start == datetime(2026, 10, 24, tzinfo=TZ)
-
-
-def test_recurring_nth_weekday_across_dst() -> None:
-    source = Source(
-        id="jam",
-        adapter="recurring",
-        url="https://example.org",
-        options={"title": "Jam", "days": ["fri"], "nth": [1, 3], "start": "17:00", "weeks": 6},
-    )
-    events = recurring.occurrences(source, date(2026, 10, 15))
-    dates = [e.start.date() for e in events]
-    assert dates == [date(2026, 10, 16), date(2026, 11, 6), date(2026, 11, 20)]
-    # 5pm local both before and after the November DST change.
-    assert {e.start.hour for e in events} == {17}
-    assert events[0].start.utcoffset() != events[1].start.utcoffset()
 
 
 def test_clean_repairs_cp1252() -> None:

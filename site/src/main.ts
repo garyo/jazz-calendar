@@ -1,9 +1,14 @@
 /** Front-end entry point: loads the feed, wires the filters, renders. */
 
-import { filterEvents, groupByDay, townsWithEvents } from "./listings";
-import { renderDays, renderNotice } from "./render";
+import {
+  filterEvents,
+  filterRegulars,
+  groupByDay,
+  townsWithListings,
+} from "./listings";
+import { renderDays, renderNotice, renderRegulars } from "./render";
 import { dayKey, formatUpdated } from "./time";
-import type { EventsFile, Venue } from "./types";
+import type { EventsFile, Regular, Venue } from "./types";
 import {
   DATE_PRESETS,
   type DatePreset,
@@ -29,9 +34,14 @@ const adjacentInput = byId<HTMLInputElement>("adjacent");
 const results = byId<HTMLElement>("results");
 const count = byId<HTMLElement>("count");
 const updated = byId<HTMLElement>("updated");
+const regularsSection = byId<HTMLElement>("regulars");
+const regularsList = byId<HTMLUListElement>("regulars-list");
 
-let feed: { events: EventsFile["events"]; venues: Map<string, Venue> } | null =
-  null;
+let feed: {
+  events: EventsFile["events"];
+  regulars: Regular[];
+  venues: Map<string, Venue>;
+} | null = null;
 let filters = parseFilters(location.search);
 
 function selectedPreset(): DatePreset {
@@ -103,6 +113,9 @@ function render(): void {
       ),
     );
   }
+  const regulars = filterRegulars(feed.regulars, feed.venues, filters);
+  regularsList.replaceChildren(...renderRegulars(regulars, feed.venues));
+  regularsSection.hidden = regulars.length === 0;
 }
 
 function applyFilters(next: Filters): void {
@@ -152,8 +165,9 @@ async function load(): Promise<void> {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const file: EventsFile = await response.json();
     const venues = new Map(file.venues.map((venue) => [venue.id, venue]));
-    feed = { events: file.events, venues };
-    populateTowns(townsWithEvents(file.events, venues));
+    const regulars = file.regulars ?? [];
+    feed = { events: file.events, regulars, venues };
+    populateTowns(townsWithListings([...file.events, ...regulars], venues));
     writeControls(filters);
     showUpdated(file.generated_at);
     render();
