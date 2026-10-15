@@ -8,6 +8,11 @@
   <string>com.bostonjazzcalendar.scraper</string>
   <key>UserName</key>
   <string>USERNAME</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>HOME</key>
+    <string>/Users/USERNAME</string>
+  </dict>
   <key>ProgramArguments</key>
   <array>
     <string>/Users/USERNAME/src/jazz-calendar/scraper/deploy/run.sh</string>
