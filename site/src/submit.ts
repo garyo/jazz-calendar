@@ -21,7 +21,7 @@ import type { Venue } from "./types";
  * hostnames must include every host the site is served from. Until it's
  * set, the deployed form says submissions aren't open yet.
  */
-const SITE_KEY: string | null = null;
+const SITE_KEY: string | null = "0x4AAAAAAFXrwlgP4FrzULhU";
 /** Cloudflare's always-passing test key, for wrangler dev. */
 const TEST_SITE_KEY = "1x00000000000000000000AA";
 const LOCAL_HOSTS = ["localhost", "127.0.0.1", "[::1]"];

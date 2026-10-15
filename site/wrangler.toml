@@ -29,7 +29,7 @@ bucket_name = "bostonjazzcalendar-data"
 [[d1_databases]]
 binding = "DB"
 database_name = "bostonjazzcalendar"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "1c1d7094-13dc-449d-b6fb-8bf3667a2206"
 
 [observability]
 enabled = true
