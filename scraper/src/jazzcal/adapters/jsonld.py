@@ -1,22 +1,10 @@
-"""schema.org Event JSON-LD embedded in pages.
-
-Options:
-  follow: CSS selector for links to event detail pages, for sites whose list page lacks
-          JSON-LD but whose detail pages have it. Detail pages are cached for 5 days.
-  max_follow: cap on detail pages fetched per run (default 60).
-
-Some sites' JSON-LD is incomplete; these fill the gaps from the page itself:
-  time_selector: CSS selector for an element giving the time ("7:00 PM until 11:00 PM"), used
-          when startDate is a bare date. The first time is the start, a second the end.
-  venue_selector: CSS selector for the venue, used when the location has no name. Reads a
-          meta tag's content, or else the element's text.
-  venue_pattern: regex applied to that, whose first group is the venue name.
-  no_price: true when the site's offers carry a placeholder price.
+"""schema.org Event JSON-LD embedded in pages, on the source's page or the event pages it
+links to. Some sites' JSON-LD is incomplete; options can fill the gaps from the page itself.
 """
 
 import logging
 import re
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import datetime, time
 from typing import Any
@@ -24,10 +12,13 @@ from urllib.parse import urljoin
 
 from dateutil.parser import ParserError, isoparse
 from dateutil.parser import parse as parse_date
+from pydantic import Field
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from jazzcal.adapters import (
     DETAIL_MAX_AGE,
+    Options,
+    Selector,
     adapter,
     clean,
     html_to_text,
@@ -56,17 +47,40 @@ EVENT_TYPES = {
 log = logging.getLogger(__name__)
 
 
-@adapter("jsonld")
-def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
+class JsonLdOptions(Options):
+    follow: Selector | None = Field(
+        None,
+        description="CSS selector for links to event pages, for sites whose list page lacks "
+        "JSON-LD but whose event pages have it. Event pages are cached for 5 days.",
+    )
+    max_follow: int = Field(60, description="Most event pages fetched per run")
+    time_selector: Selector | None = Field(
+        None,
+        description="CSS selector for an element giving the time ('7:00 PM until 11:00 PM'), "
+        "used when startDate is a bare date: the first time is the start, a second the end",
+    )
+    venue_selector: Selector | None = Field(
+        None,
+        description="CSS selector for the venue, used when the location has no name: a meta "
+        "tag's content, or else the element's text",
+    )
+    venue_pattern: re.Pattern[str] | None = Field(
+        None, description="A regex applied to that, whose first group is the venue name"
+    )
+    no_price: bool = Field(False, description="True when offers carry a placeholder price")
+
+
+@adapter("jsonld", options=JsonLdOptions)
+def scrape(source: Source, http: Http, options: JsonLdOptions) -> list[ScrapedEvent]:
     page = http.get(source.url).text
-    selector = source.options.get("follow")
-    if not selector:
-        return parse(page, base_url=source.url, options=source.options)
-    hrefs = [href for a in HTMLParser(page).css(selector) if (href := a.attributes.get("href"))]
+    if not options.follow:
+        return parse(page, base_url=source.url, options=options)
+    tree = HTMLParser(page)
+    hrefs = [href for a in tree.css(options.follow) if (href := a.attributes.get("href"))]
     events = []
-    for link in unique_urls(hrefs, base_url=source.url)[: source.options.get("max_follow", 60)]:
+    for link in unique_urls(hrefs, base_url=source.url)[: options.max_follow]:
         detail = http.get(link, max_age=DETAIL_MAX_AGE).text
-        events += parse(detail, base_url=link, options=source.options)
+        events += parse(detail, base_url=link, options=options)
     return events
 
 
@@ -79,11 +93,9 @@ class _PageHints:
     no_price: bool = False
 
 
-def parse(
-    page: str, *, base_url: str, options: Mapping[str, Any] | None = None
-) -> list[ScrapedEvent]:
+def parse(page: str, *, base_url: str, options: JsonLdOptions | None = None) -> list[ScrapedEvent]:
     tree = HTMLParser(page)
-    hints = _hints(tree, options or {})
+    hints = _hints(tree, options or JsonLdOptions())
     events = {}
     for data in json_ld(tree):
         for item in _event_items(data):
@@ -97,14 +109,14 @@ def parse(
     return list(events.values())
 
 
-def _hints(tree: HTMLParser, options: Mapping[str, Any]) -> _PageHints:
-    hints = _PageHints(no_price=bool(options.get("no_price")))
-    if (selector := options.get("time_selector")) and (node := tree.css_first(selector)):
+def _hints(tree: HTMLParser, options: JsonLdOptions) -> _PageHints:
+    hints = _PageHints(no_price=options.no_price)
+    if options.time_selector and (node := tree.css_first(options.time_selector)):
         hints.times = parse_times(node.text(), require_meridiem=True)
-    if (selector := options.get("venue_selector")) and (node := tree.css_first(selector)):
+    if options.venue_selector and (node := tree.css_first(options.venue_selector)):
         venue = node.attributes.get("content") or node.text()
-        if venue and (pattern := options.get("venue_pattern")):
-            match = re.search(pattern, venue)
+        if venue and options.venue_pattern:
+            match = options.venue_pattern.search(venue)
             venue = match.group(1) if match else None
         hints.venue = clean(venue)
     return hints

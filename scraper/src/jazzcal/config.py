@@ -9,7 +9,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import yaml
-from pydantic import Field, TypeAdapter
+from pydantic import Field, TypeAdapter, ValidationError
 
 from jazzcal.models import Regular, ScrapedEvent, Source, Venue
 
@@ -73,7 +73,7 @@ class Registry:
         venues = TypeAdapter(list[VenueConfig]).validate_python(
             _load_yaml(data_dir / "venues.yaml")
         )
-        sources = TypeAdapter(list[Source]).validate_python(_load_yaml(data_dir / "sources.yaml"))
+        sources = [_source(item) for item in _load_yaml(data_dir / "sources.yaml")]
         regulars = TypeAdapter(list[Regular]).validate_python(
             _load_yaml(data_dir / "regulars.yaml")
         )
@@ -131,3 +131,16 @@ class Registry:
 
 def _load_yaml(path: Path) -> list[object]:
     return yaml.safe_load(path.read_text()) or []
+
+
+def _source(item: object) -> Source:
+    """A source from sources.yaml, its settings and its adapter's options checked."""
+    from jazzcal.adapters import check_options  # adapters import this module
+
+    name = item.get("id") if isinstance(item, dict) else None
+    try:
+        source = Source.model_validate(item)
+    except ValidationError as e:
+        raise ValueError(f"source {name!r} in sources.yaml: {e}") from None
+    check_options(source)
+    return source

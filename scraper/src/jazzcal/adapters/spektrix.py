@@ -1,14 +1,14 @@
 """Spektrix ticketing (The Cabot, Beverly), via its public API v3.
 
 `url` is the client's API root, e.g. https://tickets.thecabot.org/thecabot/api/v3. The genre
-attributes become categories for the classifier. Options:
-  page_url: where to link events, since Spektrix events usually have no web page of their
-            own (default: the venue's site)
+attributes become categories for the classifier.
 """
 
 from datetime import datetime
 
-from jazzcal.adapters import adapter, clean, to_local
+from pydantic import Field
+
+from jazzcal.adapters import Options, adapter, clean, to_local
 from jazzcal.config import TZ
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
@@ -21,8 +21,16 @@ GENRE_ATTRIBUTES = (
 )
 
 
-@adapter("spektrix")
-def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
+class SpektrixOptions(Options):
+    page_url: str | None = Field(
+        None,
+        description="Where to link events, since Spektrix events usually have no web page of "
+        "their own (default: the venue's site)",
+    )
+
+
+@adapter("spektrix", options=SpektrixOptions)
+def scrape(source: Source, http: Http, options: SpektrixOptions) -> list[ScrapedEvent]:
     root = source.url.rstrip("/")
     today = datetime.now(TZ).date().isoformat()
     events = http.get(f"{root}/events?instanceStart_from={today}").json_list()
@@ -34,7 +42,7 @@ def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
     return parse(
         events,
         instances,
-        page_url=source.options.get("page_url"),
+        page_url=options.page_url,
         today=today,
     )
 

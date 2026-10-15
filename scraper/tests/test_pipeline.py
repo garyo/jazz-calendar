@@ -1,4 +1,5 @@
 import hashlib
+import re
 from collections.abc import Iterator
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -440,6 +441,25 @@ def test_enabled_sources_need_a_credit(tmp_path: Path) -> None:
     assert Registry.load(tmp_path).source("on").credit == Credit(name="B", url="https://b")
     write_registry(tmp_path, [{"id": "on", "adapter": "ics", "url": "https://b"}])
     with pytest.raises(ValueError, match="needs a credit"):
+        Registry.load(tmp_path)
+
+
+@pytest.mark.parametrize(
+    ("settings", "error"),
+    [
+        ({"adapter": "nope"}, "no adapter 'nope'; known: bentobox, "),
+        ({"adapter": "jsonld", "options": {"folow": "a"}}, "folow\n  Extra inputs"),
+        ({"adapter": "jsonld", "options": {"follow": "a[["}}, "bad CSS selector"),
+        ({"adapter": "jsonld", "options": {"max_follow": "many"}}, "max_follow\n"),
+        ({"adapter": "ticketmaster"}, "venue_id\n  Field required"),
+        ({"adapter": "ics", "options": {"include": "Jazz"}}, "include\n  Extra inputs"),
+        ({"adapter": "ics", "exclude": "(Jazz"}, "bad regular expression '(Jazz'"),
+        ({"adapter": "ics", "unknown": "maybe"}, "unknown\n"),
+    ],
+)
+def test_bad_sources_fail_to_load(tmp_path: Path, settings: dict, error: str) -> None:
+    write_registry(tmp_path, [{"id": "s", "url": "https://a", "enabled": False, **settings}])
+    with pytest.raises(ValueError, match=f"^source 's'(?s:.*){re.escape(error)}"):
         Registry.load(tmp_path)
 
 

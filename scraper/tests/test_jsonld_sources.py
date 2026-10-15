@@ -4,18 +4,21 @@ from datetime import datetime
 from pathlib import Path
 
 from jazzcal.adapters import jsonld
+from jazzcal.adapters.jsonld import JsonLdOptions
 from jazzcal.config import TZ, Registry, VenueConfig
 from jazzcal.models import Source
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
-HOBGOBLIN = {"time_selector": "article h1 + p"}
-GLOBAL_ARTS_LIVE = {
-    "time_selector": ".date-display-single",
-    "venue_selector": 'meta[property="og:title"]',
-    "venue_pattern": r"\bat ((?:(?! at ).)+)$",
-    "no_price": True,
-}
+HOBGOBLIN = JsonLdOptions(time_selector="article h1 + p")
+GLOBAL_ARTS_LIVE = JsonLdOptions.model_validate(
+    {
+        "time_selector": ".date-display-single",
+        "venue_selector": 'meta[property="og:title"]',
+        "venue_pattern": r"\bat ((?:(?! at ).)+)$",
+        "no_price": True,
+    }
+)
 
 
 def test_hobgoblin_time_from_page() -> None:

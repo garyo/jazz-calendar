@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from jazzcal.adapters import bentobox
+from jazzcal.adapters.bentobox import BentoBoxOptions
 from jazzcal.config import TZ
 
 BASE = "https://club.example/jazz-schedule/"
@@ -27,9 +28,7 @@ EVENT_PAGE = """<html><head>
 MIDNIGHT_PAGE = """<html><body><h1>10/16 The Midnight Hour</h1>
 <p>October 17, 2026 12:00 AM until October 17, 2026 01:00 AM</p></body></html>"""
 
-OPTIONS = {
-    "ticket_link": 'a[href*="exploretock.com"][href*="/experience/"]',
-}
+OPTIONS = BentoBoxOptions(ticket_link='a[href*="exploretock.com"][href*="/experience/"]')
 
 
 def test_event_urls_from_json_ld_and_links() -> None:
@@ -61,4 +60,7 @@ def test_midnight_set_keeps_its_own_date() -> None:
 
 def test_page_without_schedule_is_skipped() -> None:
     page = "<html><body><h1>Gift cards</h1><p>Give the gift of jazz</p></body></html>"
-    assert bentobox.parse_event_page(page, url="https://club.example/e", options={}) is None
+    assert (
+        bentobox.parse_event_page(page, url="https://club.example/e", options=BentoBoxOptions())
+        is None
+    )

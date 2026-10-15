@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import httpx
 
 from jazzcal import evaluate, export, pipeline
-from jazzcal.adapters import get_adapter
+from jazzcal.adapters import adapters, get_adapter
 from jazzcal.config import ROOT, TZ, VAR_DIR, Registry
 from jazzcal.http import Http
 from jazzcal.llm import Classifier, ClaudeClassifier
@@ -47,6 +47,7 @@ def main() -> None:
     show.add_argument("source")
     show.add_argument("--offline", action="store_true")
     commands.add_parser("schema", help="write schema/events.schema.json")
+    commands.add_parser("adapters", help="list the adapters and the options each takes")
 
     args = parser.parse_args()
     logging.basicConfig(
@@ -85,6 +86,8 @@ def main() -> None:
                 **EventsFile.model_json_schema(mode="serialization"),
             }
             (ROOT / "schema" / "events.schema.json").write_text(json.dumps(schema, indent=2) + "\n")
+        case "adapters":
+            print(_describe_adapters())
 
 
 def _http(offline: bool, max_age_hours: float) -> Http:
@@ -95,6 +98,18 @@ def _http(offline: bool, max_age_hours: float) -> Http:
         max_age=timedelta(hours=max_age_hours),
         trusted_hosts={httpx.URL(export.site_url()).host},
     )
+
+
+def _describe_adapters() -> str:
+    lines = []
+    for name, options in adapters().items():
+        lines.append(name if options.model_fields else f"{name}: no options")
+        for field, info in options.model_fields.items():
+            default = (
+                "" if info.is_required() else f" = {info.get_default(call_default_factory=True)!r}"
+            )
+            lines.append(f"  {field}{default}: {info.description}")
+    return "\n".join(lines)
 
 
 def _classifier(model: str | None) -> Classifier | None:

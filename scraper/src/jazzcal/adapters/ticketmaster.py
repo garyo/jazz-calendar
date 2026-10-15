@@ -1,8 +1,7 @@
 """Ticketmaster Discovery API, which also carries TicketWeb venues (Regattabar, Scullers).
 
 This is Ticketmaster's sanctioned route to its listings; TicketWeb's own pages forbid robots.
-Needs TICKETMASTER_API_KEY (a free developer key). Options:
-  venue_id: Discovery venue id (find with /discovery/v2/venues.json?keyword=...)
+Needs TICKETMASTER_API_KEY (a free developer key).
 
 API terms: no revenue from the API, cache only for reasonable periods, and remove content on
 request. The site links each show to its venue's page, with the ticket link as given, and
@@ -13,7 +12,9 @@ import os
 from datetime import datetime
 from urllib.parse import urlencode
 
-from jazzcal.adapters import HORIZON, adapter, clean, to_local, uncaps
+from pydantic import Field
+
+from jazzcal.adapters import HORIZON, Options, adapter, clean, to_local, uncaps
 from jazzcal.config import TZ
 from jazzcal.http import FetchError, Http
 from jazzcal.models import ScrapedEvent, Source
@@ -23,8 +24,14 @@ PAGE_SIZE = 100
 MAX_PAGES = 5
 
 
-@adapter("ticketmaster")
-def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
+class TicketmasterOptions(Options):
+    venue_id: str = Field(
+        description="Discovery venue id (find it with /discovery/v2/venues.json?keyword=...)"
+    )
+
+
+@adapter("ticketmaster", options=TicketmasterOptions)
+def scrape(source: Source, http: Http, options: TicketmasterOptions) -> list[ScrapedEvent]:
     key = os.environ.get("TICKETMASTER_API_KEY")
     if not key:
         raise FetchError("TICKETMASTER_API_KEY is not set")
@@ -32,7 +39,7 @@ def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
     events = []
     for page in range(MAX_PAGES):
         query = urlencode({
-            "venueId": source.options["venue_id"],
+            "venueId": options.venue_id,
             "size": PAGE_SIZE,
             "page": page,
             "sort": "date,asc",

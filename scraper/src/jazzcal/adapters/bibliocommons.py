@@ -1,8 +1,7 @@
 """BiblioCommons library event calendars (Boston Public Library), via their public RSS feeds.
 
 BiblioCommons' terms permit automated use only through its RSS/XML feeds, so this reads
-`url`, e.g. https://gateway.bibliocommons.com/v2/libraries/bpl/rss/events, with option
-  query: search terms (default "jazz")
+`url`, e.g. https://gateway.bibliocommons.com/v2/libraries/bpl/rss/events, with a search.
 
 Only concerts and performances not aimed solely at children or teens are kept. Branch names
 go in the title, since the registry holds the library as one venue.
@@ -12,7 +11,9 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from urllib.parse import urlencode
 
-from jazzcal.adapters import HORIZON, adapter, clean, html_to_text, to_local
+from pydantic import Field
+
+from jazzcal.adapters import HORIZON, Options, adapter, clean, html_to_text, to_local
 from jazzcal.config import TZ
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
@@ -23,9 +24,13 @@ AUDIENCES = ("Children", "Families", "Teens", "Adults", "Older Adults", "All Age
 YOUTH = ("Children", "Families", "Teens")
 
 
-@adapter("bibliocommons")
-def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
-    query = urlencode({"q": source.options.get("query", "jazz")})
+class BiblioCommonsOptions(Options):
+    query: str = Field("jazz", description="Search terms")
+
+
+@adapter("bibliocommons", options=BiblioCommonsOptions)
+def scrape(source: Source, http: Http, options: BiblioCommonsOptions) -> list[ScrapedEvent]:
+    query = urlencode({"q": options.query})
     return parse(http.get(f"{source.url}?{query}").text, now=datetime.now(TZ))
 
 

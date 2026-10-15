@@ -30,7 +30,7 @@ JazzLevel = Literal["dedicated", "regular", "occasional"]
 Listed = Literal["jazz", "adjacent"]
 """Jazz, or jazz-adjacent: soul, funk, latin, blues, swing..."""
 
-Relevance = Listed | Literal["other"]
+Relevance = Literal["jazz", "adjacent", "other"]
 
 Weekday = Literal["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
 
