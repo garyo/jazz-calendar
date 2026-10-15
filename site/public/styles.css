@@ -1177,6 +1177,32 @@ a.event-link:hover {
   font-variant-numeric: tabular-nums;
 }
 
+/* Tags are pills, so no separator dot before them. */
+.event-extra > .event-tag::before {
+  content: none;
+}
+
+.event-tag {
+  display: inline-block;
+  margin-left: 0.35em;
+  padding: 0 0.5em;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.event-extra > .event-tag:first-child {
+  margin-left: 0;
+}
+
+.event-tag.tag-adjacent {
+  border-color: var(--adjacent);
+  color: var(--adjacent);
+}
+
 .event-tickets {
   color: var(--ink);
   font-weight: 600;
@@ -1198,11 +1224,6 @@ a.event-link:hover {
 .mark-now::before {
   content: "●" / "";
   color: var(--accent);
-}
-
-.mark-adjacent::before {
-  content: "◇" / "";
-  color: var(--adjacent);
 }
 
 .mark + .mark {

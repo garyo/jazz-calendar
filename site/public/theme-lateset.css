@@ -355,7 +355,7 @@
     top: 100%;
   }
 
-  /* Markers: a dot and "ADJ"; a "LIVE" tag with the time in accent. */
+  /* "On now": a "LIVE" tag with the time in accent. */
 
   .event-marks {
     position: absolute;
@@ -374,16 +374,6 @@
 
   .mark::before {
     font-size: inherit;
-  }
-
-  .mark-adjacent::before {
-    content: "●" / "";
-    margin-right: 0.3em;
-  }
-
-  .mark-adjacent::after {
-    content: "ADJ" / "";
-    color: var(--muted);
   }
 
   .mark-now::before {

@@ -271,12 +271,6 @@
     align-self: center;
   }
 
-  .event.adjacent {
-    margin-left: calc(-0.5rem - 3px);
-    padding-left: 0.5rem;
-    border-left: 3px solid var(--adjacent);
-  }
-
   .event.is-now .event-time {
     align-self: stretch;
     margin-left: -0.35rem;
@@ -291,12 +285,6 @@
 
   .regular-row {
     row-gap: 0.1rem;
-  }
-
-  .regular.adjacent {
-    margin-left: calc(-0.5rem - 3px);
-    padding-left: 0.5rem;
-    border-left: 3px solid var(--adjacent);
   }
 
   .regular-row .event-marks {
@@ -367,8 +355,12 @@
       text-align: right;
     }
 
-    .event-extra > * {
+    .event-extra > :not(.event-tag) {
       display: block;
+    }
+
+    .event-extra > .event-tag {
+      margin: 0.15rem 0 0 0.25rem;
     }
 
     .event-extra > * + *::before {

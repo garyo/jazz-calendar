@@ -182,11 +182,6 @@
     line-height: 1.5;
   }
 
-  .mark-adjacent::before {
-    content: "jazz-adjacent" / "";
-    box-shadow: inset 0 0 0 1px var(--adjacent);
-  }
-
   .mark-now::before {
     content: "On now" / "";
     background: var(--accent);

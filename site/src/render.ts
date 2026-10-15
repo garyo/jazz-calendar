@@ -86,18 +86,25 @@ function clock(long: string, short: string): Node[] {
 }
 
 /**
- * Status markers ("on now", "jazz-adjacent"). Each theme draws its own glyph
- * or label; the text here is for screen readers.
+ * The "on now" marker. Each theme draws its own glyph or label; the text here
+ * is for screen readers.
  */
-function renderMarks(relevance: Relevance, onNow = false): Child {
-  if (!onNow && relevance !== "adjacent") return null;
+function renderMarks(onNow: boolean): Child {
+  if (!onNow) return null;
   return h(
     "p",
     { class: "event-marks" },
-    onNow && h("span", { class: "mark mark-now" }, srOnly("On now.")),
-    relevance === "adjacent" &&
-      h("span", { class: "mark mark-adjacent" }, srOnly("Jazz-adjacent.")),
+    h("span", { class: "mark mark-now" }, srOnly("On now.")),
   );
+}
+
+/** Tag pills, led by "jazz-adjacent" when it applies. */
+function renderTags(relevance: Relevance, tags: readonly string[]): Child[] {
+  return [
+    relevance === "adjacent" &&
+      h("span", { class: "event-tag tag-adjacent" }, "jazz-adjacent"),
+    ...tags.map((tag) => h("span", { class: "event-tag" }, tag)),
+  ];
 }
 
 /** The title, linked to the listing's own page when there is one. */
@@ -121,8 +128,12 @@ function renderTitle(
 /** Price, ticket link and tags: the small print of a listing. */
 function renderExtra(event: CalendarEvent, about: string): Child {
   const tickets = safeUrl(event.ticket_url);
-  const tags = event.tags ?? [];
-  if (!event.price && !tickets && tags.length === 0) return null;
+  // A "free" tag only repeats a price that already says so.
+  const tags = (event.tags ?? []).filter(
+    (tag) => !(tag === "free" && /^free/i.test(event.price ?? "")),
+  );
+  const adjacent = event.relevance === "adjacent";
+  if (!event.price && !tickets && tags.length === 0 && !adjacent) return null;
   return h(
     "p",
     { class: "event-extra" },
@@ -134,7 +145,7 @@ function renderExtra(event: CalendarEvent, about: string): Child {
         "Tickets",
         srOnly(about),
       ),
-    ...tags.map((tag) => h("span", { class: "event-tag" }, tag)),
+    ...renderTags(event.relevance, tags),
   );
 }
 
@@ -251,7 +262,7 @@ function renderEvent(
             ...clock(endLabel, `to ${formatShortClock(new Date(event.end))}`),
           ),
       ),
-      renderMarks(event.relevance, onNow),
+      renderMarks(onNow),
       renderTitle(
         titleId,
         event.title,
@@ -373,9 +384,10 @@ function renderRegular(
       "article",
       { class: "regular-row", "aria-labelledby": titleId },
       h("p", { class: "regular-when" }, regular.when),
-      renderMarks(regular.relevance),
       renderTitle(titleId, regular.title, regular.url),
       renderVenue(regular.venue, venue),
+      regular.relevance === "adjacent" &&
+        h("p", { class: "event-extra" }, ...renderTags(regular.relevance, [])),
       checked &&
         h(
           "p",
