@@ -12,7 +12,7 @@ const PRODUCTION_HOSTS = [
   "www.bostonjazzcalendar.com",
 ];
 /** featherstat's id for this site (Settings → Sites); null keeps analytics off. */
-const SITE_ID: number | null = null;
+const SITE_ID: number | null = 10;
 
 interface Tracker {
   init(config: {
