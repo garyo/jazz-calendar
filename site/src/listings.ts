@@ -36,13 +36,17 @@ function lastDay(event: CalendarEvent): DayKey {
   return dayKey(new Date(event.end ?? event.start));
 }
 
+/** When a timed show is over: its end, or a few hours after it starts. */
+function endTime(event: CalendarEvent): number {
+  return event.end
+    ? Date.parse(event.end)
+    : Date.parse(event.start) + ASSUMED_DURATION_MS;
+}
+
 /** Not yet over; a started show stays listed until its end (or for a few hours). */
 export function isUpcoming(event: CalendarEvent, now: Date): boolean {
   if (event.all_day) return lastDay(event) >= dayKey(now);
-  const end = event.end
-    ? Date.parse(event.end)
-    : Date.parse(event.start) + ASSUMED_DURATION_MS;
-  return end > now.getTime();
+  return endTime(event) > now.getTime();
 }
 
 export function isOnNow(event: CalendarEvent, now: Date): boolean {
@@ -51,6 +55,25 @@ export function isOnNow(event: CalendarEvent, now: Date): boolean {
     Date.parse(event.start) <= now.getTime() &&
     isUpcoming(event, now)
   );
+}
+
+/**
+ * The next instant after `now` when a timed show starts or ends, changing
+ * whether it's on now or listed at all; Infinity if none will. All-day
+ * listings change with the date (see nextTurnover).
+ */
+export function nextShowChange(
+  events: readonly CalendarEvent[],
+  now: Date,
+): number {
+  let next = Number.POSITIVE_INFINITY;
+  for (const event of events) {
+    if (event.all_day) continue;
+    for (const time of [Date.parse(event.start), endTime(event)]) {
+      if (time > now.getTime() && time < next) next = time;
+    }
+  }
+  return next;
 }
 
 /** The night an event is listed under: its own, or tonight if still running. */

@@ -8,12 +8,13 @@ import { wireCalendarMenus } from "./calendar-menu";
 import { checkedValue, filterControls } from "./controls";
 import { byId } from "./dom";
 import { type Feed, fetchFeed } from "./feed";
+import { nextShowChange } from "./listings";
 import { renderNotice, renderSourceList, renderUpdated } from "./render";
 import { trackStickyTop } from "./sticky";
 import { submitDialog } from "./submit";
 import { subscribePanel } from "./subscribe";
 import { themeSwitcher } from "./theme";
-import { monthOf } from "./time";
+import { monthOf, nextTurnover } from "./time";
 import {
   parseState,
   serializeState,
@@ -33,6 +34,9 @@ const compact = matchMedia("(max-width: 39.99rem)");
 
 let feed: Feed | null = null;
 let state = parseState(location.search);
+/** When the clock next changes what the page shows. */
+let changeAt = Number.POSITIVE_INFINITY;
+let changeTimer: ReturnType<typeof setTimeout> | undefined;
 
 const submit = submitDialog();
 const subscribe = subscribePanel();
@@ -51,9 +55,28 @@ function applyState(next: ViewState, push = false): void {
 
 function render(): void {
   if (!feed) return;
+  const now = new Date();
   controls.renderChips();
   subscribe.update(state, feed.venues);
-  view.render(state, feed);
+  view.render(state, feed, now);
+  changeAt = Math.min(
+    nextShowChange(feed.events, now),
+    nextTurnover(now).getTime(),
+  );
+  followClock();
+}
+
+/**
+ * Re-renders when a show starts or ends or a new day or night begins, and
+ * not otherwise: a re-render rebuilds the listings, which moves the page.
+ * A hidden tab waits until it's seen again.
+ */
+function followClock(): void {
+  clearTimeout(changeTimer);
+  if (document.hidden) return;
+  const wait = changeAt - Date.now();
+  if (wait <= 0) render();
+  else changeTimer = setTimeout(followClock, wait);
 }
 
 /** Follows a same-page link (data-nav) without reloading. */
@@ -119,10 +142,7 @@ window.addEventListener("popstate", () => {
   render();
 });
 
-// Re-render when a tab is revisited so finished shows drop off.
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") render();
-});
+document.addEventListener("visibilitychange", followClock);
 
 async function load(): Promise<void> {
   count.textContent = "";

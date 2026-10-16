@@ -16,6 +16,7 @@ import {
   formatWallClock,
   isLateSet,
   monthOf,
+  nextTurnover,
   nightOf,
   weekday,
 } from "./time";
@@ -82,6 +83,15 @@ describe("nights", () => {
     expect(eventNight(allDay)).toBe("2026-10-17");
     expect(isLateSet(allDay)).toBe(false);
   });
+});
+
+test("nextTurnover is the next midnight or night cutoff, Boston time", () => {
+  const next = (iso: string) => nextTurnover(at(iso)).toISOString();
+  expect(next("2026-10-15T17:30:00-04:00")).toBe("2026-10-16T04:00:00.000Z");
+  expect(next("2026-10-16T00:00:00-04:00")).toBe("2026-10-16T08:00:00.000Z");
+  expect(next("2026-10-16T02:15:00-04:00")).toBe("2026-10-16T08:00:00.000Z");
+  // The night DST ends: 4 am comes five hours after midnight.
+  expect(next("2026-11-01T00:30:00-04:00")).toBe("2026-11-01T09:00:00.000Z");
 });
 
 describe("day arithmetic", () => {

@@ -8,6 +8,7 @@ import {
   isOnNow,
   isUpcoming,
   matchingEvents,
+  nextShowChange,
   normalize,
   presetRange,
   regularsIntro,
@@ -61,6 +62,18 @@ describe("isUpcoming", () => {
   test("keeps all-day listings through their Boston-local day", () => {
     expect(isUpcoming(festival, at("2026-10-24T23:59:00-04:00"))).toBe(true);
     expect(isUpcoming(festival, at("2026-10-25T00:00:00-04:00"))).toBe(false);
+  });
+
+  test("nextShowChange is the next start or end of a timed show", () => {
+    const events = [jam, lateSet, festival];
+    const next = (iso: string) =>
+      new Date(nextShowChange(events, at(iso))).toISOString();
+    expect(next("2026-10-15T12:00:00-04:00")).toBe("2026-10-15T23:00:00.000Z");
+    expect(next("2026-10-15T19:00:00-04:00")).toBe("2026-10-16T01:00:00.000Z");
+    expect(next("2026-10-15T21:00:00-04:00")).toBe("2026-10-16T04:00:00.000Z");
+    expect(nextShowChange(events, at("2026-10-16T00:00:00-04:00"))).toBe(
+      Number.POSITIVE_INFINITY,
+    );
   });
 
   test("isOnNow", () => {

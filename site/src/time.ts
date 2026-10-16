@@ -109,6 +109,21 @@ export function nightOf(date: Date): DayKey {
   return Number(p.hour) < NIGHT_CUTOFF_HOUR ? addDays(day, -1) : day;
 }
 
+/**
+ * The next instant after `date` when the Boston-local date or the night
+ * (see nightOf) changes. Both change on the hour, and Boston's UTC offsets
+ * are whole hours, so it's the first such hour on the UTC clock.
+ */
+export function nextTurnover(date: Date): Date {
+  const next = new Date(date);
+  next.setUTCMinutes(60, 0, 0);
+  const turns = (hour: number) => hour === 0 || hour === NIGHT_CUTOFF_HOUR;
+  while (!turns(Number(partsOf(dateFormat, next).hour))) {
+    next.setUTCHours(next.getUTCHours() + 1);
+  }
+  return next;
+}
+
 /** The night a listing belongs to. All-day listings keep their date. */
 export function eventNight(event: CalendarEvent): DayKey {
   const start = new Date(event.start);
