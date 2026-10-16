@@ -9,7 +9,8 @@ import { isFiltered, type ListingsView, listingsView } from "./view";
 useDom();
 
 const feed = readFeed(sample);
-const now = new Date("2026-10-15T12:00:00-04:00");
+const at = (iso: string) => new Date(iso);
+const now = at("2026-10-15T12:00:00-04:00");
 const $ = (selector: string) => document.querySelector<HTMLElement>(selector);
 let view: ListingsView;
 let cleared = 0;
@@ -39,6 +40,36 @@ describe("the list view", () => {
     );
     $(".notice button")?.click();
     expect(cleared).toBe(1);
+  });
+
+  test("a re-render keeps the nights and shows that didn't change", () => {
+    const show = (id: string) =>
+      document.querySelector(`#results li[data-key="${id}"]`);
+    const night = (day: string) =>
+      document.querySelector(`#results .day[data-key="${day}"]`);
+    view.render(DEFAULT_STATE, feed, at("2026-10-15T20:00:00-04:00"));
+    const tonight = night("2026-10-15");
+    const later = [...document.querySelectorAll("#results li.event")].at(-1);
+    const lateSet = show("e1a4");
+    lateSet?.querySelector("details")?.setAttribute("open", "");
+
+    // The jam ends and the late set starts.
+    view.render(DEFAULT_STATE, feed, at("2026-10-15T21:00:00-04:00"));
+    expect(show("e1a2")).toBeNull();
+    expect(night("2026-10-15")).toBe(tonight);
+    expect([...document.querySelectorAll("#results li.event")].at(-1)).toBe(
+      later,
+    );
+    expect(show("e1a4")).not.toBe(lateSet);
+    expect(show("e1a4")?.classList.contains("is-now")).toBe(true);
+
+    // Nothing changes: every node stays, open menus included.
+    const before = [...document.querySelectorAll("#results *")];
+    show("e1a4")?.querySelector("details")?.setAttribute("open", "");
+    view.render(DEFAULT_STATE, feed, at("2026-10-15T21:15:00-04:00"));
+    const after = [...document.querySelectorAll("#results *")];
+    expect(after.length).toBe(before.length);
+    expect(after.every((node, i) => node === before[i])).toBe(true);
   });
 
   test("a chosen day gets a banner linking back to all dates", () => {

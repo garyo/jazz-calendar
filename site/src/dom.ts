@@ -23,6 +23,41 @@ export function byId<T extends HTMLElement>(id: string): T {
   return el as T;
 }
 
+/** Each reusable element's markup as built, before any later change to it. */
+const built = new WeakMap<Element, string>();
+
+/**
+ * `next`, or `current` in its place when `next` was built the same as
+ * `current` was. Compares markup as built, so state added since (an open
+ * menu and its items) doesn't count as a change.
+ */
+export function reuse<T extends Element>(
+  current: Element | undefined,
+  next: T,
+): T {
+  const html = next.outerHTML;
+  if (current && built.get(current) === html) return current as T;
+  built.set(next, html);
+  return next;
+}
+
+/**
+ * Makes `nodes` the children of `parent`, moving as few as it can: a child
+ * already in place stays put, keeping its layout and the browser's scroll
+ * anchoring.
+ */
+export function placeChildren(parent: Node, nodes: readonly Node[]): void {
+  const keep = new Set(nodes);
+  for (const child of [...parent.childNodes]) {
+    if (!keep.has(child)) child.remove();
+  }
+  let cursor = parent.firstChild;
+  for (const node of nodes) {
+    if (node === cursor) cursor = cursor.nextSibling;
+    else parent.insertBefore(node, cursor);
+  }
+}
+
 /** Text for screen readers only. */
 export function srOnly(text: string): HTMLSpanElement {
   return h("span", { class: "sr-only" }, text);

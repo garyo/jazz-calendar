@@ -67,9 +67,9 @@ function render(): void {
 }
 
 /**
- * Re-renders when a show starts or ends or a new day or night begins, and
- * not otherwise: a re-render rebuilds the listings, which moves the page.
- * A hidden tab waits until it's seen again.
+ * Re-renders when a show starts or ends or a new day or night begins, the
+ * only times the clock changes what's shown. A hidden tab waits until it's
+ * seen again.
  */
 function followClock(): void {
   clearTimeout(changeTimer);

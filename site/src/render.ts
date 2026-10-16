@@ -194,7 +194,7 @@ function renderEvent(
   const via = viaCredits(event, credits);
   return h(
     "li",
-    { class: classes.join(" ") },
+    { class: classes.join(" "), "data-key": event.id },
     h(
       "article",
       { class: "event-row", "aria-labelledby": titleId },
@@ -321,7 +321,7 @@ export function renderDays(
     const headingId = `day-${day}`;
     const section = h(
       "section",
-      { class: "day", "aria-labelledby": headingId },
+      { class: "day", "aria-labelledby": headingId, "data-key": day },
       renderDayHeading(headingId, day, today),
       h(
         "ol",

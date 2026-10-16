@@ -4,7 +4,7 @@
  * chosen day's shows under it.
  */
 
-import { byId, h } from "./dom";
+import { byId, h, placeChildren, reuse } from "./dom";
 import type { Feed } from "./feed";
 import {
   filterEvents,
@@ -31,6 +31,7 @@ import {
   monthOf,
   nightOf,
 } from "./time";
+import type { Regular } from "./types";
 import { serializeState, type ViewState } from "./url-state";
 
 /** A same-page link to a state; never "", which would mean "reload". */
@@ -41,6 +42,10 @@ export function stateHref(state: ViewState): string {
 /** Whether anything but the view and month differs from the defaults. */
 export function isFiltered(state: ViewState): boolean {
   return serializeState({ ...state, view: "list", month: "" }) !== "";
+}
+
+function byKey(elements: Iterable<Element>): Map<string | null, Element> {
+  return new Map([...elements].map((el) => [el.getAttribute("data-key"), el]));
 }
 
 export interface ListingsView {
@@ -59,6 +64,55 @@ export function listingsView(clear: () => void): ListingsView {
   const regularsIntroText = byId("regulars-intro");
   const regularsList = byId("regulars-list");
   const clearAction = { label: "Clear filters", onClick: clear };
+
+  /**
+   * The freshly rendered nights, with those already shown reused: a night
+   * keeps its element and its unchanged shows, and takes the rest in
+   * place. A re-render then moves only what changed; rebuilt nights would
+   * lose their laid-out size and the browser's scroll anchor, and jump.
+   */
+  function reuseNights(fresh: DocumentFragment): Element[] {
+    const shown = byKey(results.children);
+    return [...fresh.children].map((night) => {
+      const old = shown.get(night.getAttribute("data-key"));
+      const [heading, events] = night.children;
+      const [oldHeading, oldEvents] = old?.children ?? [];
+      const oldShows = byKey(oldEvents?.children ?? []);
+      const shows = [...events.children].map((show) =>
+        reuse(oldShows.get(show.getAttribute("data-key")), show),
+      );
+      const kept = old ?? night;
+      const list = oldEvents ?? events;
+      kept.setAttribute("style", night.getAttribute("style") ?? "");
+      placeChildren(kept, [reuse(oldHeading, heading), list]);
+      placeChildren(list, shows);
+      return kept;
+    });
+  }
+
+  /** Why nothing is listed: only regulars match, the filters, or no shows. */
+  function noShowsNotice(
+    state: ViewState,
+    regulars: readonly Regular[],
+    feed: Feed,
+    today: DayKey,
+  ): HTMLElement {
+    const onlyRegulars = regularsNotice(regulars, feed.venues, state, today);
+    if (onlyRegulars) {
+      return renderNotice(onlyRegulars.title, onlyRegulars.body, clearAction);
+    }
+    if (isFiltered(state)) {
+      return renderNotice(
+        "Nothing matches those filters.",
+        "Try a wider date range or a different search.",
+        clearAction,
+      );
+    }
+    return renderNotice(
+      "No upcoming shows listed.",
+      "Check back soon; listings refresh every day.",
+    );
+  }
 
   function renderList(
     state: ViewState,
@@ -87,26 +141,11 @@ export function listingsView(clear: () => void): ListingsView {
     dayStripList.replaceChildren(...renderDayStrip(strip, today));
     dayStrip.hidden = strip.length === 0;
     const regulars = filterRegulars(feed.regulars, feed.venues, state, today);
-    const onlyRegulars =
-      shown.length === 0 && regularsNotice(regulars, feed.venues, state, today);
-    let body: Node;
-    if (shown.length > 0) {
-      body = renderDays(groups, feed.venues, feed.credits, now, today);
-    } else if (onlyRegulars) {
-      body = renderNotice(onlyRegulars.title, onlyRegulars.body, clearAction);
-    } else if (isFiltered(state)) {
-      body = renderNotice(
-        "Nothing matches those filters.",
-        "Try a wider date range or a different search.",
-        clearAction,
-      );
-    } else {
-      body = renderNotice(
-        "No upcoming shows listed.",
-        "Check back soon; listings refresh every day.",
-      );
-    }
-    results.replaceChildren(...(banner ? [banner, body] : [body]));
+    const body =
+      shown.length > 0
+        ? reuseNights(renderDays(groups, feed.venues, feed.credits, now, today))
+        : [noShowsNotice(state, regulars, feed, today)];
+    placeChildren(results, banner ? [banner, ...body] : body);
     regularsIntroText.textContent = regularsIntro(state, today);
     regularsList.replaceChildren(...renderRegulars(regulars, feed.venues));
     regularsSection.hidden = regulars.length === 0;
