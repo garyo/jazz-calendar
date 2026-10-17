@@ -1673,6 +1673,10 @@ a.event-link:hover {
   color: var(--muted);
 }
 
+.colophon .fine-print + .fine-print {
+  margin-top: 0;
+}
+
 /* Review-period theme switcher; remove with the themes not chosen. */
 
 .theme-switcher {
