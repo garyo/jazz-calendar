@@ -6,8 +6,9 @@
  *   POST /api/admin/submissions/:id      {action: approve|reject|confirm, edits}
  *   GET  /api/submissions/approved       upcoming approved gigs for the
  *                                        scraper (PUBLISH_TOKEN)
- *   GET  /api/registry                   approved regulars and added venues,
- *                                        for the scraper (PUBLISH_TOKEN)
+ *   GET  /api/registry                   approved regulars, added venues and
+ *                                        the feed's revision, for the scraper
+ *                                        (PUBLISH_TOKEN)
  *
  * The admin venue routes are in worker-venues.ts. Submitters' names, emails
  * and notes leave D1 only through the admin API. A new submission pings the
@@ -36,12 +37,13 @@ import {
   unauthorized,
 } from "./worker-http";
 import { type NotifyEnv, notify } from "./worker-notify";
+import { bumpRevision, readRevision } from "./worker-revision";
 import {
   ADMIN_VENUES_PATH,
   adminVenues,
   insertVenue,
   listedVenues,
-  storedVenues,
+  selectVenues,
   type VenuesEnv,
 } from "./worker-venues";
 
@@ -232,7 +234,10 @@ function regularOf(s: Submission): Regular {
   };
 }
 
-/** The scraper's additions to data/: approved regulars and added venues. */
+/**
+ * The scraper's additions to data/: approved regulars and added venues,
+ * read in one batch with the revision they make up.
+ */
 async function registry(
   request: Request,
   env: SubmissionsEnv,
@@ -241,17 +246,19 @@ async function registry(
   if (!(await hasBearer(request, env.PUBLISH_TOKEN))) {
     return unauthorized("publish");
   }
-  const [venues, { results }] = await Promise.all([
-    storedVenues(env),
+  const [revision, venues, regulars] = await env.DB.batch<Row>([
+    readRevision(env.DB),
+    selectVenues(env),
     env.DB.prepare(
       `SELECT * FROM submissions
        WHERE status = 'approved' AND kind = 'regular'
        ORDER BY title`,
-    ).all<Row>(),
+    ),
   ]);
   return jsonResponse(200, {
-    venues,
-    regulars: results.map((row) => regularOf(fromRow(row))),
+    revision: revision.results[0].n,
+    venues: venues.results,
+    regulars: regulars.results.map((row) => regularOf(fromRow(row))),
   });
 }
 
@@ -286,9 +293,21 @@ function update(
   ).bind(...Object.values(row), id);
 }
 
-async function saved(statement: D1PreparedStatement): Promise<Response> {
-  const row = await statement.first<Row>();
-  return jsonResponse(200, { submission: row && fromRow(row) });
+/**
+ * Runs the statements in one batch, counting a change to the feed when
+ * `changesFeed`, and answers with the submission the last one returns.
+ */
+async function saved(
+  env: SubmissionsEnv,
+  statements: D1PreparedStatement[],
+  changesFeed: boolean,
+): Promise<Response> {
+  const batch = changesFeed
+    ? [...statements, bumpRevision(env.DB)]
+    : statements;
+  const results = await env.DB.batch<Row>(batch);
+  const row = results[statements.length - 1].results[0];
+  return jsonResponse(200, { submission: row ? fromRow(row) : null });
 }
 
 /** Approve (saving the reviewer's edits), reject, or confirm a regular. */
@@ -336,23 +355,18 @@ async function review(
       // Approving a regular confirms it's running.
       checked: gig.kind === "regular" ? today : null,
     });
-    if (!venue) return saved(approve);
-    const [, approved] = await env.DB.batch<Row>([
-      insertVenue(env, venue),
-      approve,
-    ]);
-    return jsonResponse(200, { submission: fromRow(approved.results[0]) });
+    const statements = venue ? [insertVenue(env, venue), approve] : [approve];
+    return saved(env, statements, true);
   }
   if (body.action === "reject") {
     const checked = validateRejection(body.edits);
     if (!checked.ok) return invalid(checked.errors);
-    return saved(
-      update(env, id, {
-        editor_note: checked.value,
-        status: "rejected",
-        reviewed_at,
-      }),
-    );
+    const reject = update(env, id, {
+      editor_note: checked.value,
+      status: "rejected",
+      reviewed_at,
+    });
+    return saved(env, [reject], current.status === "approved");
   }
   if (body.action === "confirm") {
     if (current.kind !== "regular" || current.status !== "approved") {
@@ -360,7 +374,7 @@ async function review(
         error: "Only listed regulars are confirmed.",
       });
     }
-    return saved(update(env, id, { checked: today }));
+    return saved(env, [update(env, id, { checked: today })], true);
   }
   return jsonResponse(400, {
     error: "action must be approve, reject or confirm",

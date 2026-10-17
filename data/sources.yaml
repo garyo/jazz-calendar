@@ -10,6 +10,10 @@
 #            or feed; via: true when the source is a third party to the venue (a ticket
 #            seller, an aggregator, submissions), so each listing says "via <name>"
 # relevance: jazz | adjacent, to skip classification
+# exact:     true when the source lists exactly what's current, like our own API: listing
+#            nothing is real, and a listing it drops is gone at once (otherwise an empty
+#            result after a full one keeps the last listings, and a listing goes after two
+#            runs without it)
 #
 # Classification and titles, for any adapter (regexes match ignoring case):
 # include:       a regex; only listings whose title or categories match are kept
@@ -291,6 +295,7 @@
   adapter: submissions
   url: https://bostonjazzcalendar.com/api/submissions/approved
   credit: {name: "gig submission", url: https://bostonjazzcalendar.com/#submit, via: true}
+  exact: true
   notes: >-
     Gigs sent in through the site's form and approved on /admin. The adapter reads them from
     $JAZZCAL_SITE (default bostonjazzcalendar.com) with JAZZCAL_PUBLISH_TOKEN; each carries

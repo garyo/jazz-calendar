@@ -98,6 +98,11 @@ class Source(Model):
     venue: str | None = Field(None, description="Venue id for single-venue sources")
     credit: Credit | None = Field(None, description="Required for enabled sources")
     enabled: bool = True
+    exact: bool = Field(
+        False,
+        description="Lists exactly what's current, like our own API: listing nothing is real "
+        "and a listing it drops is gone at once, with no allowance for a flaky page",
+    )
     relevance: Relevance | None = Field(
         None, description="Relevance of every event from this source; None means classify each"
     )

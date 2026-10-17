@@ -123,9 +123,9 @@ class Store:
                 [(when.isoformat(timespec="seconds"), source) for source in sources],
             )
 
-    def current(self, source: str) -> list[ScrapedEvent]:
-        """Events the source still lists."""
-        return self._listed(source, MAX_MISSES)
+    def current(self, source: str, max_misses: int = MAX_MISSES) -> list[ScrapedEvent]:
+        """Events the source still lists: missing from fewer than `max_misses` runs."""
+        return self._listed(source, max_misses)
 
     def last_found(self, source: str) -> list[ScrapedEvent]:
         """Events the source's last successful run found."""

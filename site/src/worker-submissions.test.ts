@@ -850,6 +850,7 @@ describe("GET /api/registry", () => {
     const text = await res.text();
     expect(text).not.toContain("pat@example.com");
     expect(JSON.parse(text)).toEqual({
+      revision: 2,
       venues: [
         {
           id: "example-room",
@@ -883,5 +884,56 @@ describe("GET /api/registry", () => {
       submissions: { id: string }[];
     };
     expect(submissions.map((s) => s.id)).toEqual([gigId]);
+  });
+});
+
+describe("the feed's revision", () => {
+  const revision = () =>
+    (db.query("SELECT n FROM revision").get() as { n: number }).n;
+  const venue = {
+    venue_id: "example-room",
+    venue_name: "The Example Room",
+    venue_town: "Somerville",
+    venue_address: "12 Example St",
+    venue_jazz_level: "occasional",
+  };
+
+  test("counts each change to what the feed shows, and only those", async () => {
+    const id = await submitted();
+    const pending = await submitted({ title: "Turned down" });
+    await post(
+      `/api/admin/submissions/${pending}`,
+      { action: "reject" },
+      ADMIN,
+    );
+    expect(revision()).toBe(0);
+
+    await approve(id);
+    expect(revision()).toBe(1);
+    await post(`/api/admin/submissions/${id}`, { action: "reject" }, ADMIN);
+    expect(revision()).toBe(2);
+
+    const regular = await submitted(thursdays);
+    await approve(regular);
+    await post(
+      `/api/admin/submissions/${regular}`,
+      { action: "confirm" },
+      ADMIN,
+    );
+    expect(revision()).toBe(4);
+
+    const path = "/api/admin/venues/example-room";
+    await post("/api/admin/venues", venue, ADMIN);
+    await post(path, { ...venue, action: "save" }, ADMIN);
+    await post(path, { action: "delete" }, ADMIN);
+    expect(revision()).toBe(7);
+  });
+
+  test("a change that fails counts nothing", async () => {
+    const id = await submitted(unlisted);
+    const taken = await approve(id, { ...newVenue, venue_id: "lilypad" });
+    expect(taken.status).toBe(400);
+    await post("/api/admin/venues", { ...venue, venue_id: "Bad Id" }, ADMIN);
+    expect(revision()).toBe(0);
   });
 });

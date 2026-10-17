@@ -98,6 +98,24 @@ last copy. `Registry.load` adds that copy's venues after `venues.yaml`, whose en
 shared id, and its regulars after `regulars.yaml`, skipping any at an unknown venue. Added venues
 resolve venue names like any other, so other sources' listings there are kept too.
 
+### Publishing approvals quickly
+
+`/api/registry` also reports the feed's *revision*, a count the site bumps with every change to
+what the feed shows (an approval, unpublishing, confirming a regular, a venue edit). A publish
+that included the approved submissions records the revision it read in `var/published-revision`:
+a full `jazzcal run --publish` (not one limited by `--source`), or `jazzcal refresh`.
+
+`jazzcal refresh` runs every 10 minutes. It reads the registry and stops there unless the
+revision has moved on. Otherwise it scrapes only the `submissions` source, rebuilds the feed with
+every other source as last scraped, and uploads `events.json`. It leaves the rest to the daily
+run: `status.json` (the site's stale-data alarm watches its age), the healthcheck ping, and the
+feed's `generated_at`, which stays the last full build's. Whichever of the two runs first, a
+refresh after it does nothing. Every command that changes `var/` holds a lock
+(`var/jazzcal.lock`, `runlock.py`), so the two never overlap; the second waits.
+
+The `submissions` source is `exact`: it lists exactly what's approved, so a gig it stops listing
+leaves the feed at once, rather than after the two missed runs other sources get.
+
 ### Submitted gigs
 
 Musicians and venues can submit gigs on the site; the owner approves them on its `/admin` page
@@ -168,12 +186,24 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.bostonjazzcalendar.sc
 
 Replace `USERNAME` in the plist with the account that runs it (`sed -i "" "s/USERNAME/$(whoami)/g" ...`).
 
+Then the 10-minute refresh (see "Publishing approvals quickly"):
+
+```sh
+sudo cp deploy/com.bostonjazzcalendar.refresh.plist /Library/LaunchDaemons/
+sudo sed -i "" "s/USERNAME/$(whoami)/g" /Library/LaunchDaemons/com.bostonjazzcalendar.refresh.plist
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.bostonjazzcalendar.refresh.plist
+```
+
+`deploy/run.sh` with no arguments pulls main and does the daily run; `deploy/run.sh refresh`
+runs `jazzcal refresh` on the code already checked out, so the refresh doesn't pull every 10
+minutes and picks up new code after the next daily run.
+
 Day to day:
 - Run now: `sudo launchctl kickstart system/com.bostonjazzcalendar.scraper`
-- Logs: `~/Library/Logs/jazzcal.log`
+- Logs: `~/Library/Logs/jazzcal.log`, and `~/Library/Logs/jazzcal-refresh.log` for the refresh
 - Update: push to main. Each run pulls first (fast-forward only), so it takes effect on the
   next run; to deploy sooner, `git pull` on the machine and run it now.
-- Remove: `sudo launchctl bootout system/com.bostonjazzcalendar.scraper`
+- Remove: `sudo launchctl bootout system/com.bostonjazzcalendar.scraper` (and `.refresh`)
 
 ### Linux (systemd)
 
@@ -182,8 +212,8 @@ sudo useradd --system --home /opt/jazz-calendar jazzcal
 sudo git clone <repo> /opt/jazz-calendar && sudo chown -R jazzcal /opt/jazz-calendar
 sudo -u jazzcal sh -c 'cd /opt/jazz-calendar/scraper && uv sync --frozen'
 sudo install -m 600 deploy/jazzcal.env.example /etc/jazzcal.env   # then edit it
-sudo cp deploy/jazzcal.service deploy/jazzcal.timer /etc/systemd/system/
-sudo systemctl daemon-reload && sudo systemctl enable --now jazzcal.timer
+sudo cp deploy/jazzcal*.service deploy/jazzcal*.timer /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now jazzcal.timer jazzcal-refresh.timer
 ```
 
 Run now with `sudo systemctl start jazzcal`; logs are in `journalctl -u jazzcal`. Each run

@@ -6,6 +6,7 @@ The site builds its /calendar.ics feeds from events.json.
 import logging
 import os
 import time
+from collections.abc import Iterable
 from pathlib import Path
 
 import httpx
@@ -36,14 +37,23 @@ def site_url() -> str:
     return os.environ.get("JAZZCAL_SITE", SITE).rstrip("/")
 
 
-def publish(out_dir: Path, transport: httpx.BaseTransport | None = None) -> None:
-    """Upload the written files through the site's publish API."""
+def publish(
+    out_dir: Path,
+    names: Iterable[str] = FILES,
+    *,
+    ping: bool = True,
+    transport: httpx.BaseTransport | None = None,
+) -> None:
+    """Upload the written files (`names`, in FILES order) through the site's publish API, then
+    ping the healthcheck when `ping`."""
     site = site_url()
     token = os.environ.get("JAZZCAL_PUBLISH_TOKEN")
     if not token:
         raise SystemExit("set JAZZCAL_PUBLISH_TOKEN to publish")
     with httpx.Client(timeout=60, transport=transport) as client:
         for name, content_type in FILES.items():
+            if name not in names:
+                continue
             _put(
                 client,
                 f"{site}/api/publish/{name}",
@@ -51,7 +61,7 @@ def publish(out_dir: Path, transport: httpx.BaseTransport | None = None) -> None
                 {"Authorization": f"Bearer {token}", "Content-Type": content_type},
             )
             log.info("published %s", name)
-        if healthcheck := os.environ.get("JAZZCAL_HEALTHCHECK_URL"):
+        if ping and (healthcheck := os.environ.get("JAZZCAL_HEALTHCHECK_URL")):
             # The publish went through; a monitoring hiccup mustn't fail the run.
             try:
                 client.get(healthcheck).raise_for_status()

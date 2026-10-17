@@ -309,6 +309,18 @@ def scrape(store: Store, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Ite
         yield scraper
 
 
+def test_an_exact_source_drops_listings_at_once(scrape: Scraper, store: Store) -> None:
+    scrape.registry.sources[0] = scrape.registry.sources[0].model_copy(update={"exact": True})
+    scrape(s=[event("1", "Gig"), event("2", "Other Gig")], t=[])
+    scrape(s=[event("2", "Other Gig")], t=[])
+    feed = pipeline.build(scrape.registry, store, NOW)[0]
+    assert [e.title for e in feed.events] == ["Other Gig"]
+    scrape(s=[], t=[])
+    feed, status = pipeline.build(scrape.registry, store, NOW)
+    assert feed.events == []
+    assert all(s.ok for s in status.sources)
+
+
 def test_empty_run_after_a_full_one_is_a_failure(scrape: Scraper, store: Store) -> None:
     scrape(s=[event("1", "Gig"), event("2", "Old Gig", hours=-30)], t=[])
     for _ in range(3):

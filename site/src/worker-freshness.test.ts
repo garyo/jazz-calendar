@@ -20,7 +20,7 @@ beforeEach(() => {
     DB: {} as D1Database,
     DATA: {
       head: async (key: string) => {
-        expect(key).toBe("events.json");
+        expect(key).toBe("status.json");
         heads++;
         return uploaded === null ? null : { uploaded: new Date(uploaded) };
       },
@@ -108,7 +108,7 @@ describe("the hourly freshness check", () => {
     expect(notices).toEqual([]);
   });
 
-  test("a missing events.json alerts once a day", async () => {
+  test("a missing status.json alerts once a day", async () => {
     uploaded = null;
     for (const time of hourlyTicks(UPLOADED, 48)) await tick(time);
     expect(notices).toHaveLength(2);

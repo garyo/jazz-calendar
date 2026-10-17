@@ -1,0 +1,9 @@
+[Unit]
+Description=Check the Boston Jazz Calendar site for approved changes every 10 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=10min
+
+[Install]
+WantedBy=timers.target

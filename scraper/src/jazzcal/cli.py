@@ -1,4 +1,5 @@
-"""Command line: `jazzcal run` does a full scrape, build and (with --publish) upload."""
+"""Command line: `jazzcal run` does a full scrape, build and (with --publish) upload;
+`jazzcal refresh` republishes approved submissions when the site has changes."""
 
 import argparse
 import json
@@ -7,18 +8,23 @@ import os
 from datetime import datetime, timedelta
 
 import httpx
+from pydantic import ValidationError
 
-from jazzcal import evaluate, export, pipeline, site_registry
+from jazzcal import evaluate, export, pipeline, runlock, site_registry
 from jazzcal.adapters import adapters
 from jazzcal.config import ROOT, TZ, VAR_DIR, Registry
 from jazzcal.http import Http
 from jazzcal.llm import Classifier, ClaudeClassifier
-from jazzcal.models import feed_schema
+from jazzcal.models import EventsFile, feed_schema
+from jazzcal.site_registry import SiteRegistry
 from jazzcal.store import Store
 
 OUT_DIR = VAR_DIR / "out"
 DB = VAR_DIR / "jazzcal.db"
 SITE_REGISTRY = VAR_DIR / "site-registry.json"
+PUBLISHED = VAR_DIR / "published-revision"
+"""The site's revision as of the last publish that included its approved submissions."""
+LOCK = VAR_DIR / "jazzcal.lock"
 MAX_AGE_HOURS = 6.0
 """Reuse pages fetched within this many hours."""
 
@@ -42,7 +48,10 @@ def main() -> None:
         )
     build = commands.add_parser("build", help="build the published files from the store")
     evaluation = commands.add_parser("eval", help="score classification against eval/labels.yaml")
-    for p in (run, build, evaluation):
+    republish = commands.add_parser(
+        "refresh", help="republish approved submissions if the site changed since the last publish"
+    )
+    for p in (run, build, evaluation, republish):
         p.add_argument(
             "--classifier",
             default=os.environ.get("JAZZCAL_CLASSIFIER"),
@@ -65,25 +74,20 @@ def main() -> None:
 
     match args.command:
         case "run" | "scrape":
-            store = Store(DB)
-            with _http(args.offline, args.max_age) as http:
-                if not args.offline:
-                    site_registry.sync(http, SITE_REGISTRY)
-                registry = _registry()
-                pipeline.scrape(registry, store, http, set(args.source or []) or None)
-            if not args.offline:
-                pipeline.alert_failing(registry, store, datetime.now(TZ))
-            if args.command == "run":
-                _build(registry, store, _classifier(args.classifier))
-                if args.publish:
-                    export.publish(OUT_DIR)
+            with runlock.held(LOCK):
+                _run(args)
+        case "refresh":
+            with runlock.held(LOCK), _http(offline=False, max_age_hours=MAX_AGE_HOURS) as http:
+                refresh(http, _classifier(args.classifier))
         case "build":
-            _build(_registry(), Store(DB), _classifier(args.classifier))
+            with runlock.held(LOCK):
+                _build(_registry(), Store(DB), _classifier(args.classifier))
         case "eval":
-            store = Store(DB)
-            print(evaluate.report(_registry(), store, _classifier(args.classifier)))
+            with runlock.held(LOCK):
+                print(evaluate.report(_registry(), Store(DB), _classifier(args.classifier)))
         case "publish":
-            export.publish(OUT_DIR)
+            with runlock.held(LOCK):
+                export.publish(OUT_DIR)
         case "show":
             source = _registry().source(args.source)
             with _http(args.offline, MAX_AGE_HOURS) as http:
@@ -94,6 +98,69 @@ def main() -> None:
             (ROOT / "schema" / "events.schema.json").write_text(schema + "\n")
         case "adapters":
             print(_describe_adapters())
+
+
+def _run(args: argparse.Namespace) -> None:
+    store = Store(DB)
+    with _http(args.offline, args.max_age) as http:
+        added = None if args.offline else site_registry.sync(http, SITE_REGISTRY)
+        registry = _registry()
+        pipeline.scrape(registry, store, http, set(args.source or []) or None)
+    if not args.offline:
+        pipeline.alert_failing(registry, store, datetime.now(TZ))
+    if args.command == "run":
+        _build(registry, store, _classifier(args.classifier))
+        if args.publish:
+            export.publish(OUT_DIR)
+            # Only a full run is sure to have read the approved submissions.
+            if not args.source:
+                _record_published(added)
+
+
+def refresh(http: Http, classifier: Classifier | None) -> None:
+    """Republish when the site's revision has moved on from the last publish: scrape only the
+    approved submissions, rebuild with everything else as last scraped, and upload events.json.
+
+    Leaves the rest to the daily run: status.json (the site's dead-man's switch watches it),
+    the healthcheck ping, and the feed's generated_at, which stays the last full build's, since
+    that's when the listings were last checked.
+    """
+    added = site_registry.sync(http, SITE_REGISTRY)
+    if added is None or added.revision is None:
+        return
+    if added.revision == _published_revision():
+        logging.info("nothing new on the site since the last publish")
+        return
+    registry = _registry()
+    submissions = {s.id for s in registry.sources if s.adapter == "submissions" and s.enabled}
+    if not submissions:
+        logging.warning("no enabled submissions source; nothing to refresh")
+        return
+    store = Store(DB)
+    pipeline.scrape(registry, store, http, submissions)
+    _build(registry, store, classifier, generated_at=_last_generated())
+    export.publish(OUT_DIR, ["events.json"], ping=False)
+    _record_published(added)
+
+
+def _published_revision() -> int | None:
+    try:
+        return int(PUBLISHED.read_text())
+    except (OSError, ValueError):
+        return None
+
+
+def _record_published(added: SiteRegistry | None) -> None:
+    if added and added.revision is not None:
+        PUBLISHED.write_text(f"{added.revision}\n")
+
+
+def _last_generated() -> datetime | None:
+    """When the built feed was generated, or None without one."""
+    try:
+        return EventsFile.model_validate_json((OUT_DIR / "events.json").read_text()).generated_at
+    except (OSError, ValidationError):
+        return None
 
 
 def _registry() -> Registry:
@@ -126,8 +193,16 @@ def _classifier(model: str | None) -> Classifier | None:
     return ClaudeClassifier(model) if model and model != "none" else None
 
 
-def _build(registry: Registry, store: Store, classifier: Classifier | None) -> None:
+def _build(
+    registry: Registry,
+    store: Store,
+    classifier: Classifier | None,
+    generated_at: datetime | None = None,
+) -> None:
+    """Build and write the feed; `generated_at` overrides the feed's time, which is now."""
     feed, status = pipeline.build(registry, store, datetime.now(TZ), classifier)
+    if generated_at:
+        feed = feed.model_copy(update={"generated_at": generated_at})
     export.write(OUT_DIR, feed, status)
     by_relevance = {r: sum(e.relevance == r for e in feed.events) for r in ("jazz", "adjacent")}
     logging.info("built %d events %s into %s", len(feed.events), by_relevance, OUT_DIR)

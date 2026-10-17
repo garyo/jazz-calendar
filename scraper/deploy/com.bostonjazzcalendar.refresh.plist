@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- launchd job: every 10 minutes, republish approved submissions if the site has changes
+     (`jazzcal refresh`; usually it finds none and exits). launchd never starts it while the
+     last one is still running, and the run lock makes it wait for a daily run in progress.
+     Install beside com.bostonjazzcalendar.scraper.plist; edit the user and paths to match. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.bostonjazzcalendar.refresh</string>
+  <key>UserName</key>
+  <string>USERNAME</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>HOME</key>
+    <string>/Users/USERNAME</string>
+  </dict>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/USERNAME/src/jazz-calendar/scraper/deploy/run.sh</string>
+    <string>refresh</string>
+  </array>
+  <key>StartInterval</key>
+  <integer>600</integer>
+  <key>StandardOutPath</key>
+  <string>/Users/USERNAME/Library/Logs/jazzcal-refresh.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/USERNAME/Library/Logs/jazzcal-refresh.log</string>
+  <key>Nice</key>
+  <integer>10</integer>
+</dict>
+</plist>

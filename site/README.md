@@ -34,7 +34,7 @@ src/types.ts     TS mirror of ../schema/events.schema.json
 src/worker.ts    the Worker: R2-backed data routes, the publish API
 src/worker-calendar.ts     the Worker's /calendar.ics feeds (cached, gzipped, ETags)
 src/worker-submissions.ts  the Worker's gig submission and review API (D1)
-src/worker-freshness.ts    the hourly cron: alerts when events.json goes stale
+src/worker-freshness.ts    the hourly cron: alerts when status.json goes stale
 src/worker-http.ts         response and bearer-token helpers for the Worker
 src/worker-notify.ts       ntfy notices to the owner (submissions, stale data)
 src/submission.ts  submission records, limits and validation (shared)
@@ -261,9 +261,12 @@ curl -X PUT \
 
 A Cron Trigger (`[triggers]` in `wrangler.toml`) runs the Worker's
 `scheduled` handler (`src/worker-freshness.ts`) at the top of every hour. It
-reads only the metadata of R2's `events.json` (one `head`, no body) and posts
+reads only the metadata of R2's `status.json` (one `head`, no body) and posts
 a high-priority ntfy notice, "Boston Jazz Calendar: no fresh data", when the
 upload is 30 or more hours old. That's one missed daily run plus a few hours.
+Only full scraper runs upload `status.json`; the quick republishes after an
+approval (`jazzcal refresh`) upload just `events.json`, so they can't hide a
+broken daily scrape.
 The notice gives the age and points at the scraper on the Mac and
 `~/Library/Logs/jazzcal.log`.
 
@@ -271,7 +274,7 @@ The check keeps no state. It alerts in the hour after the data turns 30 hours
 old, then in the same hour each day (54 h, 78 h, …) until an upload resets
 the clock. Cron ticks are scheduled exactly an hour apart, and the age is
 measured from the scheduled time, so exactly one tick falls in each of those
-hours. A missing `events.json` alerts daily at 13:00 UTC. Notices use the
+hours. A missing `status.json` alerts daily at 13:00 UTC. Notices use the
 same `NTFY_URL`, `NTFY_TOPIC` and `NTFY_TOKEN` as new submissions; without
 them the check does nothing.
 
@@ -317,16 +320,21 @@ scraper stays the only publisher of the feed:
    not one an approved listing uses). Approving a regular records it as
    confirmed today; once that's 90 days old the card asks for a recheck, and
    "Still running" confirms it again. Rejecting an approved listing
-   unpublishes it.
+   unpublishes it. Every change to what the feed shows (an approval,
+   unpublishing, confirming a regular, a venue added, edited or deleted)
+   bumps the feed's revision (`src/worker-revision.ts`) in the same batch.
 4. The scraper's `submissions` source reads
    `GET /api/submissions/approved` with its publish token: upcoming approved
    gigs with only the publishable fields (id, title, date, times, venue id,
    price, link, relevance). They join the next daily build, below the
    venues' own sources, so a venue's listing of the same show wins.
-5. Each scrape also reads `GET /api/registry` (same token): the added
-   venues, and the approved regulars as the feed lists them, with `when`
-   written from their days and times (`scheduleText`). The scraper lists
-   them after `../data/venues.yaml` and `../data/regulars.yaml`.
+5. Each scrape also reads `GET /api/registry` (same token): the revision,
+   the added venues, and the approved regulars as the feed lists them, with
+   `when` written from their days and times (`scheduleText`), all read in
+   one batch. The scraper lists them after `../data/venues.yaml` and
+   `../data/regulars.yaml`. Its 10-minute `jazzcal refresh` republishes
+   when the revision has moved on from its last publish, so approvals go
+   live within minutes (see the scraper README).
 
 Submitters' names, emails and notes never leave D1 except through the admin
 API. Admin and submission responses are `Cache-Control: no-store`.

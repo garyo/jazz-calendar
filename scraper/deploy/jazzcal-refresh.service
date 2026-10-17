@@ -1,0 +1,13 @@
+[Unit]
+Description=Republish Boston Jazz Calendar submissions if the site has changes
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=jazzcal
+WorkingDirectory=/opt/jazz-calendar/scraper
+EnvironmentFile=/etc/jazzcal.env
+ExecStart=/usr/local/bin/uv run --frozen jazzcal refresh
+Nice=10
+TimeoutStartSec=45min

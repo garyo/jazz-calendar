@@ -16,6 +16,7 @@ import {
   methodNotAllowed,
   readBody,
 } from "./worker-http";
+import { bumpRevision } from "./worker-revision";
 
 export interface VenuesEnv {
   DATA: R2Bucket;
@@ -26,12 +27,22 @@ export const ADMIN_VENUES_PATH = "/api/admin/venues";
 
 const COLUMNS = "id, name, address, town, neighborhood, url, jazz_level";
 
-/** The venues added here, by name. */
-export async function storedVenues(env: VenuesEnv): Promise<Venue[]> {
-  const { results } = await env.DB.prepare(
-    `SELECT ${COLUMNS} FROM venues ORDER BY name`,
-  ).all<Venue>();
+/** The statement that lists the venues added here, by name. */
+export function selectVenues(env: VenuesEnv): D1PreparedStatement {
+  return env.DB.prepare(`SELECT ${COLUMNS} FROM venues ORDER BY name`);
+}
+
+async function storedVenues(env: VenuesEnv): Promise<Venue[]> {
+  const { results } = await selectVenues(env).all<Venue>();
   return results;
+}
+
+/** Runs a change to the venues, counting it as a change to the feed. */
+async function changeFeed(
+  env: VenuesEnv,
+  statement: D1PreparedStatement,
+): Promise<void> {
+  await env.DB.batch([statement, bumpRevision(env.DB)]);
 }
 
 /** Every listed venue id: the published feed's and those added here. */
@@ -66,7 +77,7 @@ async function add(
 ): Promise<Response> {
   const checked = validateVenue(body, await listedVenues(env));
   if (!checked.ok) return invalid(checked.errors);
-  await insertVenue(env, checked.value).run();
+  await changeFeed(env, insertVenue(env, checked.value));
   return jsonResponse(201, { venue: checked.value });
 }
 
@@ -91,7 +102,10 @@ async function change(
         error: `“${using.title}” is listed there. Unpublish it or move it first.`,
       });
     }
-    await env.DB.prepare("DELETE FROM venues WHERE id = ?").bind(id).run();
+    await changeFeed(
+      env,
+      env.DB.prepare("DELETE FROM venues WHERE id = ?").bind(id),
+    );
     return jsonResponse(200, { deleted: id });
   }
   if (body.action === "save") {
@@ -101,11 +115,12 @@ async function change(
     const checked = validateVenue({ ...body, venue_id: id }, taken);
     if (!checked.ok) return invalid(checked.errors);
     const v = checked.value;
-    await env.DB.prepare(
-      `UPDATE venues SET name = ?, address = ?, town = ?, neighborhood = ?,
-       url = ?, jazz_level = ? WHERE id = ?`,
-    )
-      .bind(
+    await changeFeed(
+      env,
+      env.DB.prepare(
+        `UPDATE venues SET name = ?, address = ?, town = ?, neighborhood = ?,
+         url = ?, jazz_level = ? WHERE id = ?`,
+      ).bind(
         v.name,
         v.address ?? null,
         v.town,
@@ -113,8 +128,8 @@ async function change(
         v.url ?? null,
         v.jazz_level,
         id,
-      )
-      .run();
+      ),
+    );
     return jsonResponse(200, { venue: v });
   }
   return jsonResponse(400, { error: "action must be save or delete" });

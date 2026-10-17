@@ -19,7 +19,7 @@ from jazzcal.config import TZ, Registry, night_of
 from jazzcal.http import Http, redact
 from jazzcal.llm import Classifier, Question
 from jazzcal.models import Event, EventsFile, ScrapedEvent, Source, SourceCredit, StatusFile
-from jazzcal.store import Store
+from jazzcal.store import MAX_MISSES, Store
 
 log = logging.getLogger(__name__)
 
@@ -69,7 +69,11 @@ def scrape(
         log.info("source %s: %d events", source.id, len(events))
         # Nothing at all, where the last run found shows still to come, more likely means a
         # broken page than an empty calendar: keep the last good listings.
-        if not events and (had := sum(not _past(e, now) for e in store.last_found(source.id))):
+        if (
+            not events
+            and not source.exact
+            and (had := sum(not _past(e, now) for e in store.last_found(source.id)))
+        ):
             error = f"0 events (had {had} upcoming last run)"
             log.warning("source %s: %s; keeping its listings", source.id, error)
             store.record_failure(source.id, error)
@@ -151,7 +155,7 @@ def build(
             log.warning("source %s stale since %s; skipping it", source.id, status.last_success)
             continue
         published_ids = store.published_ids(source.id)
-        for scraped in store.current(source.id):
+        for scraped in store.current(source.id, 1 if source.exact else MAX_MISSES):
             if _past(scraped, now):
                 continue
             venue_id = registry.venue_for(source, scraped)
