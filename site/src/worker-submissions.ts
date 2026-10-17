@@ -1,41 +1,51 @@
 /**
- * Gig submissions, stored in D1 (schema in ../migrations):
+ * Submissions, gigs and regulars, stored in D1 (schema in ../migrations):
  *
  *   POST /api/submissions                the public form; Turnstile-checked
  *   GET  /api/admin/submissions?status=  the review queue (ADMIN_TOKEN)
- *   POST /api/admin/submissions/:id      {action: approve|reject, edits}
+ *   POST /api/admin/submissions/:id      {action: approve|reject|confirm, edits}
  *   GET  /api/submissions/approved       upcoming approved gigs for the
  *                                        scraper (PUBLISH_TOKEN)
+ *   GET  /api/registry                   approved regulars and added venues,
+ *                                        for the scraper (PUBLISH_TOKEN)
  *
- * Submitters' names, emails and notes leave D1 only through the admin API.
- * A new submission pings the owner's ntfy topic with just the gig's title,
- * time and venue.
+ * The admin venue routes are in worker-venues.ts. Submitters' names, emails
+ * and notes leave D1 only through the admin API. A new submission pings the
+ * owner's ntfy topic with just the listing's title, time and venue.
  */
 
 import {
   type ApprovedGig,
-  type FieldErrors,
+  type NewSubmission,
   STATUSES,
   type Submission,
+  scheduleText,
   TURNSTILE_ACTION,
   validateApproval,
   validateRejection,
   validateSubmission,
 } from "./submission";
 import { dayKey } from "./time";
-import type { EventsFile } from "./types";
+import type { Regular } from "./types";
 import {
   hasBearer,
+  invalid,
   jsonResponse,
   methodNotAllowed,
-  readCapped,
+  readBody,
   unauthorized,
 } from "./worker-http";
 import { type NotifyEnv, notify } from "./worker-notify";
+import {
+  ADMIN_VENUES_PATH,
+  adminVenues,
+  insertVenue,
+  listedVenues,
+  storedVenues,
+  type VenuesEnv,
+} from "./worker-venues";
 
-export interface SubmissionsEnv extends NotifyEnv {
-  DATA: R2Bucket;
-  DB: D1Database;
+export interface SubmissionsEnv extends NotifyEnv, VenuesEnv {
   /** The scraper's token; also reads the approved feed. */
   PUBLISH_TOKEN?: string;
   /** The owner's token for the review page. */
@@ -46,9 +56,9 @@ export interface SubmissionsEnv extends NotifyEnv {
 
 const SUBMIT_PATH = "/api/submissions";
 const APPROVED_PATH = "/api/submissions/approved";
+const REGISTRY_PATH = "/api/registry";
 const ADMIN_PATH = "/api/admin/submissions";
 const SITEVERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
-const MAX_BODY = 16 * 1024;
 /** Where the form is served; Turnstile reports the page's hostname. */
 const SITE_HOSTS = [
   "bostonjazzcalendar.com",
@@ -65,42 +75,23 @@ const ID = /^[0-9a-f-]{36}$/;
 const PUBLIC_COLUMNS =
   "id, title, date, start_time, end_time, venue, price, url, relevance";
 
-type Body = Record<string, unknown>;
+type Row = Record<string, unknown>;
 
-/** A JSON object body of at most MAX_BODY bytes, or the error response. */
-async function readBody(request: Request): Promise<Body | Response> {
-  const type = request.headers.get("content-type") ?? "";
-  if (!type.startsWith("application/json")) return badBody();
-  const text = await readCapped(request, MAX_BODY);
-  if (text === null) {
-    return jsonResponse(413, { error: "Keep the request under 16 KB." });
-  }
-  try {
-    const body: unknown = JSON.parse(text);
-    return typeof body === "object" && body !== null && !Array.isArray(body)
-      ? (body as Body)
-      : badBody();
-  } catch {
-    return badBody();
-  }
+/** Column values, with lists stored as JSON text. */
+function columns(values: object): Row {
+  return Object.fromEntries(
+    Object.entries(values).map(([name, value]) => [
+      name,
+      Array.isArray(value) ? JSON.stringify(value) : value,
+    ]),
+  );
 }
 
-function badBody(): Response {
-  return jsonResponse(400, { error: "Expected a JSON object under 16 KB." });
-}
-
-function invalid(errors: FieldErrors): Response {
-  return jsonResponse(400, {
-    error: "Some fields need attention.",
-    fields: errors,
-  });
-}
-
-/** The venue ids listed in the published feed. */
-async function listedVenues(env: SubmissionsEnv): Promise<Set<string>> {
-  const object = await env.DATA.get("events.json");
-  const feed = object ? await object.json<Partial<EventsFile>>() : {};
-  return new Set((feed.venues ?? []).map((venue) => venue.id));
+/** A stored submission, its lists parsed. */
+function fromRow(row: Row): Submission {
+  const list = (value: unknown) =>
+    typeof value === "string" ? JSON.parse(value) : null;
+  return { ...row, days: list(row.days), nth: list(row.nth) } as Submission;
 }
 
 interface Siteverify {
@@ -151,7 +142,7 @@ async function submit(
   }
   const body = await readBody(request);
   if (body instanceof Response) return body;
-  // Cheapest first: the fields, then Turnstile, and only then the R2 read
+  // Cheapest first: the fields, then Turnstile, and only then the reads
   // for the venue list, so junk never costs a read.
   const today = dayKey(new Date());
   const fields = validateSubmission(body, { today });
@@ -171,47 +162,40 @@ async function submit(
     venues: await listedVenues(env),
   });
   if (!checked.ok) return invalid(checked.errors);
-  const row = {
+  const row = columns({
     id: crypto.randomUUID(),
     created_at: new Date().toISOString(),
     ...checked.value,
-  };
-  const columns = Object.keys(row);
+  });
+  const names = Object.keys(row);
   await env.DB.prepare(
-    `INSERT INTO submissions (${columns.join(", ")})
-     VALUES (${columns.map(() => "?").join(", ")})`,
+    `INSERT INTO submissions (${names.join(", ")})
+     VALUES (${names.map(() => "?").join(", ")})`,
   )
     .bind(...Object.values(row))
     .run();
-  notifyNewSubmission(env, ctx, row, new URL("/admin", request.url).href);
+  notifyNewSubmission(env, ctx, checked.value, new URL("/admin", request.url));
   return jsonResponse(201, { id: row.id, status: "pending" });
 }
 
-interface NoticeGig {
-  title: string;
-  date: string;
-  start_time?: string | null;
-  venue?: string | null;
-  venue_name?: string | null;
-}
-
-/** Tells the owner a gig is waiting for review; never delays or fails the response. */
+/** Tells the owner a listing is waiting for review; never delays or fails the response. */
 function notifyNewSubmission(
   env: SubmissionsEnv,
   ctx: ExecutionContext,
-  gig: NoticeGig,
-  adminUrl: string,
+  gig: NewSubmission,
+  adminUrl: URL,
 ): void {
-  const when = gig.start_time
-    ? `${gig.date} ${gig.start_time}`
-    : `${gig.date}, time TBA`;
+  const when =
+    gig.kind === "regular"
+      ? scheduleText(gig)
+      : `${gig.date}${gig.start_time ? ` ${gig.start_time}` : ", time TBA"}`;
   const where = gig.venue ?? `${gig.venue_name ?? "?"} (not listed)`;
   ctx.waitUntil(
     notify(env, {
-      title: "Boston Jazz Calendar: new gig to review",
+      title: `Boston Jazz Calendar: new ${gig.kind} to review`,
       message: `${gig.title}\n${when} · ${where}`,
       tags: ["musical_note"],
-      click: adminUrl,
+      click: adminUrl.href,
     }),
   );
 }
@@ -226,7 +210,7 @@ async function approvedFeed(
   }
   const { results } = await env.DB.prepare(
     `SELECT ${PUBLIC_COLUMNS} FROM submissions
-     WHERE status = 'approved' AND date >= ?
+     WHERE status = 'approved' AND kind = 'gig' AND date >= ?
      ORDER BY date, start_time`,
   )
     .bind(dayKey(new Date()))
@@ -234,38 +218,80 @@ async function approvedFeed(
   return jsonResponse(200, { submissions: results });
 }
 
+/** An approved regular as the feed lists it. */
+function regularOf(s: Submission): Regular {
+  return {
+    venue: s.venue ?? "",
+    title: s.title,
+    when: scheduleText(s),
+    days: s.days ?? [],
+    nth: s.nth ?? [],
+    relevance: s.relevance ?? "jazz",
+    url: s.url,
+    checked: s.checked ?? (s.reviewed_at ?? s.created_at).slice(0, 10),
+  };
+}
+
+/** The scraper's additions to data/: approved regulars and added venues. */
+async function registry(
+  request: Request,
+  env: SubmissionsEnv,
+): Promise<Response> {
+  if (request.method !== "GET") return methodNotAllowed("GET");
+  if (!(await hasBearer(request, env.PUBLISH_TOKEN))) {
+    return unauthorized("publish");
+  }
+  const [venues, { results }] = await Promise.all([
+    storedVenues(env),
+    env.DB.prepare(
+      `SELECT * FROM submissions
+       WHERE status = 'approved' AND kind = 'regular'
+       ORDER BY title`,
+    ).all<Row>(),
+  ]);
+  return jsonResponse(200, {
+    venues,
+    regulars: results.map((row) => regularOf(fromRow(row))),
+  });
+}
+
 async function list(url: URL, env: SubmissionsEnv): Promise<Response> {
   const status = url.searchParams.get("status") ?? "pending";
   if (!STATUSES.some((known) => known === status)) {
     return jsonResponse(400, { error: `status must be ${STATUSES.join("|")}` });
   }
-  // The queue in date order; reviewed ones most recent first.
+  // The queue in date order, regulars first; reviewed ones most recent first.
   const order =
     status === "pending" ? "date, start_time" : "reviewed_at DESC, date";
   const { results } = await env.DB.prepare(
     `SELECT * FROM submissions WHERE status = ? ORDER BY ${order} LIMIT ?`,
   )
     .bind(status, LIST_LIMIT)
-    .all<Submission>();
-  return jsonResponse(200, { submissions: results });
+    .all<Row>();
+  return jsonResponse(200, { submissions: results.map(fromRow) });
 }
 
-/** Sets columns on one submission and returns it as stored. */
+/** The statement that sets columns on one submission and returns it. */
 function update(
   env: SubmissionsEnv,
   id: string,
   values: Partial<Submission>,
-): Promise<Submission | null> {
-  const columns = Object.keys(values);
+): D1PreparedStatement {
+  const row = columns(values);
   return env.DB.prepare(
-    `UPDATE submissions SET ${columns.map((c) => `${c} = ?`).join(", ")}
+    `UPDATE submissions SET ${Object.keys(row)
+      .map((c) => `${c} = ?`)
+      .join(", ")}
      WHERE id = ? RETURNING *`,
-  )
-    .bind(...Object.values(values), id)
-    .first<Submission>();
+  ).bind(...Object.values(row), id);
 }
 
-/** Approve (saving the reviewer's edits) or reject one submission. */
+async function saved(statement: D1PreparedStatement): Promise<Response> {
+  const row = await statement.first<Row>();
+  return jsonResponse(200, { submission: row && fromRow(row) });
+}
+
+/** Approve (saving the reviewer's edits), reject, or confirm a regular. */
 async function review(
   request: Request,
   env: SubmissionsEnv,
@@ -274,25 +300,30 @@ async function review(
   if (request.method !== "POST") return methodNotAllowed("POST");
   const body = await readBody(request);
   if (body instanceof Response) return body;
-  const current = ID.test(id)
+  const row = ID.test(id)
     ? await env.DB.prepare("SELECT * FROM submissions WHERE id = ?")
         .bind(id)
-        .first<Submission>()
+        .first<Row>()
     : null;
-  if (!current) return jsonResponse(404, { error: "No such submission." });
+  if (!row) return jsonResponse(404, { error: "No such submission." });
+  const current = fromRow(row);
+  const today = dayKey(new Date());
   const reviewed_at = new Date().toISOString();
 
   if (body.action === "approve") {
     const checked = validateApproval(current, body.edits, {
-      today: dayKey(new Date()),
+      today,
       venues: await listedVenues(env),
     });
     if (!checked.ok) return invalid(checked.errors);
-    const { gig, relevance, editor_note } = checked.value;
-    // venue_name and venue_town stay as submitted.
-    const submission = await update(env, id, {
+    const { gig, relevance, editor_note, venue } = checked.value;
+    // The unlisted venue's details stay as submitted.
+    const approve = update(env, id, {
+      kind: gig.kind,
       title: gig.title,
       date: gig.date,
+      days: gig.days,
+      nth: gig.nth,
       start_time: gig.start_time,
       end_time: gig.end_time,
       venue: gig.venue,
@@ -302,20 +333,38 @@ async function review(
       editor_note,
       status: "approved",
       reviewed_at,
+      // Approving a regular confirms it's running.
+      checked: gig.kind === "regular" ? today : null,
     });
-    return jsonResponse(200, { submission });
+    if (!venue) return saved(approve);
+    const [, approved] = await env.DB.batch<Row>([
+      insertVenue(env, venue),
+      approve,
+    ]);
+    return jsonResponse(200, { submission: fromRow(approved.results[0]) });
   }
   if (body.action === "reject") {
     const checked = validateRejection(body.edits);
     if (!checked.ok) return invalid(checked.errors);
-    const submission = await update(env, id, {
-      editor_note: checked.value,
-      status: "rejected",
-      reviewed_at,
-    });
-    return jsonResponse(200, { submission });
+    return saved(
+      update(env, id, {
+        editor_note: checked.value,
+        status: "rejected",
+        reviewed_at,
+      }),
+    );
   }
-  return jsonResponse(400, { error: "action must be approve or reject" });
+  if (body.action === "confirm") {
+    if (current.kind !== "regular" || current.status !== "approved") {
+      return jsonResponse(400, {
+        error: "Only listed regulars are confirmed.",
+      });
+    }
+    return saved(update(env, id, { checked: today }));
+  }
+  return jsonResponse(400, {
+    error: "action must be approve, reject or confirm",
+  });
 }
 
 async function admin(
@@ -325,11 +374,19 @@ async function admin(
 ): Promise<Response> {
   if (!(await hasBearer(request, env.ADMIN_TOKEN)))
     return unauthorized("admin");
-  const rest = url.pathname.slice(ADMIN_PATH.length);
+  const { pathname } = url;
+  if (pathname.startsWith(ADMIN_VENUES_PATH)) {
+    return adminVenues(request, env, pathname.slice(ADMIN_VENUES_PATH.length));
+  }
+  const rest = pathname.slice(ADMIN_PATH.length);
   if (rest === "" || rest === "/") {
     return request.method === "GET" ? list(url, env) : methodNotAllowed("GET");
   }
   return review(request, env, rest.slice(1));
+}
+
+function under(pathname: string, prefix: string): boolean {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
 }
 
 /** The response for a submissions route, or null for any other path. */
@@ -342,7 +399,8 @@ export function routeSubmissions(
   const { pathname } = url;
   if (pathname === SUBMIT_PATH) return submit(request, env, ctx);
   if (pathname === APPROVED_PATH) return approvedFeed(request, env);
-  if (pathname === ADMIN_PATH || pathname.startsWith(`${ADMIN_PATH}/`)) {
+  if (pathname === REGISTRY_PATH) return registry(request, env);
+  if (under(pathname, ADMIN_PATH) || under(pathname, ADMIN_VENUES_PATH)) {
     return admin(request, env, url);
   }
   return null;

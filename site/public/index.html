@@ -228,16 +228,46 @@
       </div>
       <form id="submit-form" class="submit-form" novalidate>
         <p class="submit-intro">
-          For gigs in Greater Boston that aren’t listed yet. We check each one
-          against the link you give before it appears, usually within a few
-          days.
+          For gigs and standing series in Greater Boston that aren’t listed
+          yet. We check each one against the link you give before it appears,
+          usually within a few days.
         </p>
         <div class="form-field">
           <label class="form-label" for="submit-title">Act or event</label>
           <input id="submit-title" name="title" type="text" required autocomplete="off" placeholder="e.g. Pat Doe Quartet" />
         </div>
+        <fieldset class="form-field form-repeats">
+          <legend class="form-label">How often</legend>
+          <div class="segmented">
+            <label><input name="repeats" type="radio" value="once" checked /><span>One night</span></label>
+            <label><input name="repeats" type="radio" value="weekly" /><span>Every week</span></label>
+            <label><input name="repeats" type="radio" value="monthly" /><span>Some weeks of the month</span></label>
+          </div>
+        </fieldset>
+        <fieldset id="submit-days" class="form-field form-choices" hidden>
+          <legend class="form-label">Days</legend>
+          <div class="form-checks">
+              <label class="form-check"><input name="days" type="checkbox" value="mon" /><span>Mon</span></label>
+              <label class="form-check"><input name="days" type="checkbox" value="tue" /><span>Tue</span></label>
+              <label class="form-check"><input name="days" type="checkbox" value="wed" /><span>Wed</span></label>
+              <label class="form-check"><input name="days" type="checkbox" value="thu" /><span>Thu</span></label>
+              <label class="form-check"><input name="days" type="checkbox" value="fri" /><span>Fri</span></label>
+              <label class="form-check"><input name="days" type="checkbox" value="sat" /><span>Sat</span></label>
+              <label class="form-check"><input name="days" type="checkbox" value="sun" /><span>Sun</span></label>
+          </div>
+        </fieldset>
+        <fieldset id="submit-weeks" class="form-field form-choices" hidden>
+          <legend class="form-label">Which weeks</legend>
+          <div class="form-checks">
+              <label class="form-check"><input name="nth" type="checkbox" value="1" /><span>1st</span></label>
+              <label class="form-check"><input name="nth" type="checkbox" value="2" /><span>2nd</span></label>
+              <label class="form-check"><input name="nth" type="checkbox" value="3" /><span>3rd</span></label>
+              <label class="form-check"><input name="nth" type="checkbox" value="4" /><span>4th</span></label>
+              <label class="form-check"><input name="nth" type="checkbox" value="-1" /><span>Last</span></label>
+          </div>
+        </fieldset>
         <div class="form-row">
-          <div class="form-field form-field-date">
+          <div id="submit-date-field" class="form-field form-field-date">
             <label class="form-label" for="submit-date">Date</label>
             <input id="submit-date" name="date" type="date" required />
           </div>
@@ -261,24 +291,34 @@
             <option id="submit-venue-other" value="other">Somewhere else (not listed)</option>
           </select>
         </div>
-        <div id="submit-other-venue" class="form-row" hidden>
-          <div class="form-field form-field-wide">
-            <label class="form-label" for="submit-venue-name">Venue name</label>
-            <input id="submit-venue-name" name="venue_name" type="text" autocomplete="off" />
+        <div id="submit-other-venue" class="form-group" hidden>
+          <div class="form-row">
+            <div class="form-field form-field-wide">
+              <label class="form-label" for="submit-venue-name">Venue name</label>
+              <input id="submit-venue-name" name="venue_name" type="text" required autocomplete="off" />
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="submit-venue-town">Town</label>
+              <input id="submit-venue-town" name="venue_town" type="text" required autocomplete="off" placeholder="e.g. Somerville" />
+            </div>
           </div>
           <div class="form-field">
-            <label class="form-label" for="submit-venue-town">Town</label>
-            <input id="submit-venue-town" name="venue_town" type="text" autocomplete="off" placeholder="e.g. Somerville" />
+            <label class="form-label" for="submit-venue-address">Street address</label>
+            <input id="submit-venue-address" name="venue_address" type="text" required autocomplete="off" placeholder="e.g. 12 Example St" />
+          </div>
+          <div class="form-field">
+            <label class="form-label" for="submit-venue-url">Venue website <span class="form-optional">optional</span></label>
+            <input id="submit-venue-url" name="venue_url" type="url" inputmode="url" autocomplete="off" placeholder="https://" />
           </div>
         </div>
-        <div class="form-field">
+        <div id="submit-price-field" class="form-field">
           <label class="form-label" for="submit-price">Price <span class="form-optional">optional</span></label>
           <input id="submit-price" name="price" type="text" autocomplete="off" placeholder="e.g. $20, Free, $15–25" />
         </div>
         <div class="form-field">
-          <label class="form-label" for="submit-url">Link that confirms the gig</label>
+          <label class="form-label" for="submit-url">Link that confirms it</label>
           <input id="submit-url" name="url" type="url" required inputmode="url" placeholder="https://" aria-describedby="submit-url-hint" />
-          <p id="submit-url-hint" class="form-hint">The venue’s calendar, your own site, or the ticket page. The listing links to it.</p>
+          <p id="submit-url-hint" class="form-hint">The venue’s calendar, your own site, or the ticket page. For a series, the venue’s home page will do. The listing links to it.</p>
         </div>
         <fieldset class="form-private" aria-describedby="submit-private-hint">
           <legend class="form-label">About you</legend>
@@ -309,7 +349,7 @@
         </p>
       </form>
       <div id="submit-done" class="submit-done" hidden>
-        <p id="submit-done-title" class="submit-done-title" tabindex="-1">Thanks! Your gig is in the queue.</p>
+        <p id="submit-done-title" class="submit-done-title" tabindex="-1">Thanks! It’s in the queue.</p>
         <p>
           We’ll check it against your link, and it will appear with the next
           daily update once approved. If we have a question, we’ll email you.

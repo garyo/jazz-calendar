@@ -7,9 +7,14 @@ import worker, { type Env } from "./worker";
 const sample = await Bun.file(
   new URL("../../schema/sample-events.json", import.meta.url),
 ).text();
-const schema = await Bun.file(
-  new URL("../migrations/0001_submissions.sql", import.meta.url),
-).text();
+const migrations = new URL("../migrations/", import.meta.url).pathname;
+const schema = (
+  await Promise.all(
+    [...new Bun.Glob("*.sql").scanSync(migrations)]
+      .sort()
+      .map((name) => Bun.file(migrations + name).text()),
+  )
+).join("\n");
 
 const ADMIN = "admin-token";
 const PUBLISH = "publish-token";
@@ -28,7 +33,22 @@ function fakeD1(db: Database): D1Database {
     first: async () => db.query(sql).get(...args) ?? null,
     all: async () => ({ success: true, results: db.query(sql).all(...args) }),
   });
-  return { prepare: (sql: string) => statement(sql) } as unknown as D1Database;
+  type Statement = ReturnType<typeof statement>;
+  return {
+    prepare: (sql: string) => statement(sql),
+    batch: async (statements: Statement[]) => {
+      const results = [];
+      db.run("BEGIN");
+      try {
+        for (const s of statements) results.push(await s.all());
+        db.run("COMMIT");
+      } catch (error) {
+        db.run("ROLLBACK");
+        throw error;
+      }
+      return results;
+    },
+  } as unknown as D1Database;
 }
 
 function fakeBucket(feed: string | null): R2Bucket {
@@ -204,6 +224,8 @@ describe("POST /api/submissions", () => {
       venue: "other",
       venue_name: "  The   Example Room ",
       venue_town: "Somerville",
+      venue_address: "12 Example St",
+      venue_url: "https://example.com/room",
     });
     expect(row(id)).toMatchObject({
       start_time: null,
@@ -211,6 +233,8 @@ describe("POST /api/submissions", () => {
       venue: null,
       venue_name: "The Example Room",
       venue_town: "Somerville",
+      venue_address: "12 Example St",
+      venue_url: "https://example.com/room",
     });
   });
 
@@ -225,7 +249,17 @@ describe("POST /api/submissions", () => {
       [{ start_time: "" }, ["start_time"]],
       [{ start_time: "8pm", end_time: "25:00" }, ["end_time", "start_time"]],
       [{ venue: "" }, ["venue"]],
-      [{ venue: "other" }, ["venue_name", "venue_town"]],
+      [{ venue: "other" }, ["venue_address", "venue_name", "venue_town"]],
+      [
+        {
+          venue: "other",
+          venue_name: "The Example Room",
+          venue_town: "Somerville",
+          venue_address: "12 Example St",
+          venue_url: "example.com",
+        },
+        ["venue_url"],
+      ],
       [{ url: "javascript:alert(1)" }, ["url"]],
       [{ url: "ftp://example.com/x" }, ["url"]],
       [{ url: "https://user:pw@example.com/" }, ["url"]],
@@ -402,15 +436,20 @@ describe("admin API", () => {
     expect(bad.status).toBe(400);
   });
 
-  test("approve needs a listed venue and a relevance", async () => {
+  test("approve needs a venue and a relevance", async () => {
     const id = await submitted({
       venue: "other",
       venue_name: "The Example Room",
       venue_town: "Somerville",
+      venue_address: "12 Example St",
     });
     const path = `/api/admin/submissions/${id}`;
     const res = await post(path, { action: "approve" }, ADMIN);
-    expect(await errors(res)).toEqual(["relevance", "venue"]);
+    expect(await errors(res)).toEqual([
+      "relevance",
+      "venue_id",
+      "venue_jazz_level",
+    ]);
     const bogus = await post(
       path,
       { action: "approve", edits: { venue: "nowhere", relevance: "jazz" } },
@@ -425,6 +464,7 @@ describe("admin API", () => {
       venue: "other",
       venue_name: "The Example Room",
       venue_town: "Somerville",
+      venue_address: "12 Example St",
     });
     const path = `/api/admin/submissions/${id}`;
     const edits = {
@@ -559,5 +599,289 @@ describe("GET /api/submissions/approved", () => {
         },
       ],
     });
+  });
+});
+
+const ADMIN_HEADERS = { authorization: `Bearer ${ADMIN}` };
+
+async function approve(id: string, edits: object = {}): Promise<Response> {
+  return post(
+    `/api/admin/submissions/${id}`,
+    { action: "approve", edits: { relevance: "jazz", ...edits } },
+    ADMIN,
+  );
+}
+
+const unlisted = {
+  venue: "other",
+  venue_name: "The Example Room",
+  venue_town: "Somerville",
+  venue_address: "12 Example St",
+  venue_url: "https://example.com/room",
+};
+
+/** What approving a gig at an unlisted venue adds, besides the submitted details. */
+const newVenue = {
+  venue_id: "example-room",
+  venue_neighborhood: "Union Square",
+  venue_jazz_level: "regular",
+};
+
+const thursdays = {
+  repeats: "weekly",
+  days: ["thu"],
+  start_time: "18:00",
+  end_time: "21:00",
+  url: "https://example.com/schedule",
+};
+
+describe("regulars", () => {
+  test("stores the weekdays and weeks, and no date or price", async () => {
+    const weekly = await submitted({ ...thursdays, days: ["thu", "mon"] });
+    expect(row(weekly)).toMatchObject({
+      kind: "regular",
+      date: null,
+      days: '["mon","thu"]',
+      nth: "[]",
+      price: null,
+    });
+    const monthly = await submitted({
+      ...thursdays,
+      repeats: "monthly",
+      nth: [-1, 1],
+    });
+    expect(row(monthly)).toMatchObject({ days: '["thu"]', nth: "[1,-1]" });
+  });
+
+  test("needs days, and weeks when monthly", async () => {
+    const cases: [object, string[]][] = [
+      [{ days: [] }, ["days"]],
+      [{ days: ["thursday"] }, ["days"]],
+      [{ days: "thu" }, ["days"]],
+      [{ repeats: "monthly" }, ["nth"]],
+      [{ repeats: "monthly", nth: [6] }, ["nth"]],
+      [{ repeats: "daily" }, ["repeats"]],
+    ];
+    for (const [fields, expected] of cases) {
+      const res = await post("/api/submissions", {
+        ...gig,
+        ...thursdays,
+        ...fields,
+      });
+      expect(await errors(res)).toEqual(expected);
+    }
+  });
+
+  test("approving confirms it; confirm keeps it current", async () => {
+    const id = await submitted(thursdays);
+    db.query("UPDATE submissions SET checked = '2026-01-01' WHERE id = ?").run(
+      id,
+    );
+    expect((await approve(id)).status).toBe(200);
+    expect(row(id)).toMatchObject({ status: "approved", checked: today });
+
+    db.query("UPDATE submissions SET checked = '2026-01-01' WHERE id = ?").run(
+      id,
+    );
+    const path = `/api/admin/submissions/${id}`;
+    const res = await post(path, { action: "confirm" }, ADMIN);
+    expect(res.status).toBe(200);
+    expect(row(id).checked).toBe(today);
+
+    const one = await submitted();
+    await approve(one);
+    const notRegular = await post(
+      `/api/admin/submissions/${one}`,
+      { action: "confirm" },
+      ADMIN,
+    );
+    expect(notRegular.status).toBe(400);
+  });
+
+  test("approving can turn a regular into a gig", async () => {
+    const id = await submitted(thursdays);
+    const res = await approve(id, {
+      repeats: "once",
+      date: addDays(today, 4),
+      price: "$10",
+    });
+    expect(res.status).toBe(200);
+    expect(row(id)).toMatchObject({
+      kind: "gig",
+      date: addDays(today, 4),
+      days: null,
+      nth: null,
+      price: "$10",
+      checked: null,
+    });
+  });
+});
+
+describe("new venues", () => {
+  test("approving at an unlisted venue adds it", async () => {
+    const id = await submitted(unlisted);
+    const res = await approve(id, newVenue);
+    expect(res.status).toBe(200);
+    const { submission } = (await res.json()) as { submission: Submission };
+    expect(submission).toMatchObject({
+      status: "approved",
+      venue: "example-room",
+      venue_name: "The Example Room",
+    });
+    expect(db.query("SELECT * FROM venues").all()).toEqual([
+      expect.objectContaining({
+        id: "example-room",
+        name: "The Example Room",
+        address: "12 Example St",
+        town: "Somerville",
+        neighborhood: "Union Square",
+        url: "https://example.com/room",
+        jazz_level: "regular",
+      }),
+    ]);
+
+    // Listed from now on, before the feed has it.
+    await submitted({ venue: "example-room" });
+  });
+
+  test("a new venue needs a fresh, well-formed id", async () => {
+    const id = await submitted(unlisted);
+    for (const venue_id of ["lilypad", "Example Room", "-room"]) {
+      const res = await approve(id, { ...newVenue, venue_id });
+      expect(await errors(res)).toEqual(["venue_id"]);
+    }
+    expect(row(id).status).toBe("pending");
+    expect(db.query("SELECT COUNT(*) AS n FROM venues").get()).toEqual({
+      n: 0,
+    });
+  });
+
+  test("the reviewer may choose a listed venue instead", async () => {
+    const id = await submitted(unlisted);
+    expect((await approve(id, { venue: "lilypad" })).status).toBe(200);
+    expect(row(id).venue).toBe("lilypad");
+    expect(db.query("SELECT COUNT(*) AS n FROM venues").get()).toEqual({
+      n: 0,
+    });
+  });
+});
+
+describe("admin venues API", () => {
+  const venue = {
+    venue_id: "example-room",
+    venue_name: "The Example Room",
+    venue_town: "Somerville",
+    venue_address: "12 Example St",
+    venue_jazz_level: "occasional",
+  };
+
+  test("needs the admin token", async () => {
+    expect((await call("/api/admin/venues")).status).toBe(401);
+    expect((await post("/api/admin/venues", venue, PUBLISH)).status).toBe(401);
+  });
+
+  test("adds, lists, saves and deletes a venue", async () => {
+    expect((await post("/api/admin/venues", venue, ADMIN)).status).toBe(201);
+    const again = await post("/api/admin/venues", venue, ADMIN);
+    expect(await errors(again)).toEqual(["venue_id"]);
+
+    const path = "/api/admin/venues/example-room";
+    const saved = await post(
+      path,
+      { ...venue, action: "save", venue_id: "renamed", venue_town: "Medford" },
+      ADMIN,
+    );
+    expect(saved.status).toBe(200);
+    const res = await call("/api/admin/venues", { headers: ADMIN_HEADERS });
+    expect(await res.json()).toEqual({
+      venues: [
+        {
+          id: "example-room",
+          name: "The Example Room",
+          address: "12 Example St",
+          town: "Medford",
+          neighborhood: null,
+          url: null,
+          jazz_level: "occasional",
+        },
+      ],
+    });
+
+    const deleted = await post(path, { action: "delete" }, ADMIN);
+    expect(deleted.status).toBe(200);
+    expect(db.query("SELECT COUNT(*) AS n FROM venues").get()).toEqual({
+      n: 0,
+    });
+    expect((await post(path, { action: "delete" }, ADMIN)).status).toBe(404);
+  });
+
+  test("won't delete a venue an approved listing uses", async () => {
+    await post("/api/admin/venues", venue, ADMIN);
+    const id = await submitted({ venue: "example-room" });
+    await approve(id);
+    const path = "/api/admin/venues/example-room";
+    expect((await post(path, { action: "delete" }, ADMIN)).status).toBe(409);
+    await post(`/api/admin/submissions/${id}`, { action: "reject" }, ADMIN);
+    expect((await post(path, { action: "delete" }, ADMIN)).status).toBe(200);
+  });
+});
+
+describe("GET /api/registry", () => {
+  test("needs the publish token", async () => {
+    for (const token of [undefined, ADMIN]) {
+      const headers: Record<string, string> = token
+        ? { authorization: `Bearer ${token}` }
+        : {};
+      expect((await call("/api/registry", { headers })).status).toBe(401);
+    }
+  });
+
+  test("lists approved regulars and added venues", async () => {
+    const id = await submitted({ ...thursdays, ...unlisted });
+    await approve(id, newVenue);
+    await submitted({ ...thursdays, title: "Still pending" });
+    const gigId = await submitted();
+    await approve(gigId);
+
+    const res = await call("/api/registry", {
+      headers: { authorization: `Bearer ${PUBLISH}` },
+    });
+    expect(res.status).toBe(200);
+    const text = await res.text();
+    expect(text).not.toContain("pat@example.com");
+    expect(JSON.parse(text)).toEqual({
+      venues: [
+        {
+          id: "example-room",
+          name: "The Example Room",
+          address: "12 Example St",
+          town: "Somerville",
+          neighborhood: "Union Square",
+          url: "https://example.com/room",
+          jazz_level: "regular",
+        },
+      ],
+      regulars: [
+        {
+          venue: "example-room",
+          title: "The Fictional Quartet",
+          when: "Thursdays, 6–9 pm",
+          days: ["thu"],
+          nth: [],
+          relevance: "jazz",
+          url: "https://example.com/schedule",
+          checked: today,
+        },
+      ],
+    });
+
+    // Regulars stay out of the dated gigs.
+    const gigs = await call("/api/submissions/approved", {
+      headers: { authorization: `Bearer ${PUBLISH}` },
+    });
+    const { submissions } = (await gigs.json()) as {
+      submissions: { id: string }[];
+    };
+    expect(submissions.map((s) => s.id)).toEqual([gigId]);
   });
 });

@@ -1,5 +1,6 @@
 """Paths and the venue/source registries in data/."""
 
+import logging
 import os
 import re
 from dataclasses import dataclass, field
@@ -12,6 +13,9 @@ import yaml
 from pydantic import Field, TypeAdapter, ValidationError
 
 from jazzcal.models import Regular, ScrapedEvent, Source, Venue
+from jazzcal.site_registry import SiteRegistry
+
+log = logging.getLogger(__name__)
 
 TZ = ZoneInfo("America/New_York")
 
@@ -69,7 +73,8 @@ class Registry:
     regulars: list[Regular] = field(default_factory=list)
 
     @classmethod
-    def load(cls, data_dir: Path = DATA_DIR) -> "Registry":
+    def load(cls, data_dir: Path = DATA_DIR, added: SiteRegistry | None = None) -> "Registry":
+        """The registries in `data_dir`, plus the venues and regulars `added` on the site."""
         venues = TypeAdapter(list[VenueConfig]).validate_python(
             _load_yaml(data_dir / "venues.yaml")
         )
@@ -84,12 +89,26 @@ class Registry:
         for r in regulars:
             if r.venue not in registry.venues:
                 raise ValueError(f"regular {r.title!r} refers to unknown venue {r.venue!r}")
+        if added:
+            registry._add(added)
         for s in sources:
             if s.enabled and not s.credit:
                 raise ValueError(f"source {s.id!r} needs a credit: a name and an https url")
             if s.venue and s.venue not in registry.venues:
                 raise ValueError(f"source {s.id!r} refers to unknown venue {s.venue!r}")
         return registry
+
+    def _add(self, added: SiteRegistry) -> None:
+        for v in added.venues:
+            if v.id in self.venues:
+                log.warning("venue %s is in venues.yaml and on the site; using venues.yaml", v.id)
+            else:
+                self.venues[v.id] = VenueConfig.model_validate(v.model_dump())
+        for r in added.regulars:
+            if r.venue in self.venues:
+                self.regulars.append(r)
+            else:
+                log.warning("skipping regular %r: unknown venue %r", r.title, r.venue)
 
     @cached_property
     def _by_name(self) -> dict[str, str]:

@@ -21,7 +21,7 @@
     <header class="masthead">
       <div class="wrap masthead-bar">
         <div class="masthead-text">
-          <h1 class="wordmark">Gig submissions</h1>
+          <h1 class="wordmark">Submissions</h1>
         </div>
         <p class="updated"><a href="/">Back to the calendar</a></p>
       </div>
@@ -47,14 +47,16 @@
             <label><input type="radio" name="status" value="pending" checked /><span>Pending</span></label>
             <label><input type="radio" name="status" value="approved" /><span>Approved</span></label>
             <label><input type="radio" name="status" value="rejected" /><span>Rejected</span></label>
+            <label><input type="radio" name="status" value="venues" /><span>Venues</span></label>
           </fieldset>
           <button id="refresh" type="button" class="button button-small">Refresh</button>
           <button id="signout" type="button" class="link-button">Sign out</button>
         </div>
         <p class="form-hint admin-help">
-          Approved gigs reach the site with the scraper’s next run. A gig needs
-          a listed venue: add new rooms to <code>data/venues.yaml</code>,
-          publish, then choose them here.
+          Approved listings and added venues reach the site with the
+          scraper’s next run. For a listing at an unlisted venue, fill in the
+          new venue’s details on its card; Venues lists the ones added here.
+          Venues in <code>data/venues.yaml</code> are edited there.
         </p>
         <p id="review-status" class="count" role="status" aria-live="polite"></p>
         <ol id="review-list" class="review-list"></ol>

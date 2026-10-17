@@ -9,7 +9,7 @@ through the publish API below. The worker stores it in R2.
 public/          static files copied into dist/ (index.html, styles.css, _headers, …)
 public/admin.html  the submissions review page (unlinked, noindex), with admin.css
 scripts/build.ts the build: bundles, copies public/, hashes asset names (below)
-migrations/      D1 schema for gig submissions
+migrations/      D1 schema for submissions and added venues
 src/main.ts      front-end entry: keeps the view state in step with the URL,
                  loads the feed, re-renders on every change
 src/feed.ts      fetches /data/events.json and indexes it for the page
@@ -278,11 +278,11 @@ them the check does nothing.
 To try it locally: `bun run build && bunx wrangler dev --test-scheduled`,
 then `curl 'http://localhost:8787/__scheduled?cron=0+*+*+*+*'`.
 
-## Gig submissions
+## Submissions
 
-Musicians and venues can send in gigs that no source lists. Nothing appears
-until the owner approves it, and the scraper stays the only publisher of the
-feed:
+Musicians and venues can send in gigs, and standing series ("regulars"),
+that no source lists. Nothing appears until the owner approves it, and the
+scraper stays the only publisher of the feed:
 
 1. "Submit a gig" (any link to `#submit`) opens a dialog. The form checks
    its fields with `src/submission.ts`, gets a Cloudflare Turnstile token
@@ -290,14 +290,16 @@ feed:
    JSON to `POST /api/submissions`.
 2. The Worker reads at most 16 KB of body, counting the bytes that arrive
    rather than trusting `Content-Length`. It validates the same way as the
-   form (lengths; a date from today to a year out; a start time unless "Time
-   TBA"; a venue id, or "other" with a name and town; an http(s)
-   confirmation link; a name, and an email with none of `?&%,;<>` or
+   form (lengths; for a gig, a date from today to a year out; for a
+   regular, its weekdays, and for a monthly one which weeks; a start time
+   unless "Time TBA"; a venue id, or "other" with a name, street address and
+   town; an http(s) confirmation link; a name, and an email with none of `?&%,;<>` or
    whitespace, so it can't add recipients or headers to a `mailto:` link).
    Then it verifies the token with Turnstile's siteverify, which must report
    success, the widget's action (`submit-gig`) and one of the site's
-   hostnames (`SITE_HOSTS`). Only then does it read `events.json` to check
-   the venue id, so junk posts cost no R2 reads, and it stores a `pending`
+   hostnames (`SITE_HOSTS`). Only then does it read `events.json` and the
+   added venues to check the venue id, so junk posts cost no reads, and it
+   stores a `pending`
    row in D1. It answers `201 {"id", "status": "pending"}`, `400` with
    `fields` for bad input, `403` when Turnstile says no, `413` for a body
    over 16 KB, and `503` until `TURNSTILE_SECRET` is set. With one of
@@ -306,16 +308,25 @@ feed:
    counts.
 3. The owner reviews at `/admin` (`public/admin.html`, not linked and
    `noindex`), which shows every field, the submitter's name and email, and
-   the confirmation link. Approving saves any edits (title, date, times,
-   venue, price), and needs a listed venue and a relevance (jazz or
-   jazz-adjacent). A gig at a room we don't list waits until the venue is
-   added to `../data/venues.yaml` and published. Rejecting an approved gig
+   the confirmation link. Approving saves any edits (title, how often, date
+   or days, times, venue, price) and needs a relevance (jazz or
+   jazz-adjacent) and a venue: a listed one, or for a room we don't list, a
+   new one from the details on the card (an id, and how much jazz it
+   books). The venue and the approval are written in one D1 batch. The
+   Venues tab edits or deletes venues added this way (`src/worker-venues.ts`;
+   not one an approved listing uses). Approving a regular records it as
+   confirmed today; once that's 90 days old the card asks for a recheck, and
+   "Still running" confirms it again. Rejecting an approved listing
    unpublishes it.
 4. The scraper's `submissions` source reads
    `GET /api/submissions/approved` with its publish token: upcoming approved
    gigs with only the publishable fields (id, title, date, times, venue id,
    price, link, relevance). They join the next daily build, below the
    venues' own sources, so a venue's listing of the same show wins.
+5. Each scrape also reads `GET /api/registry` (same token): the added
+   venues, and the approved regulars as the feed lists them, with `when`
+   written from their days and times (`scheduleText`). The scraper lists
+   them after `../data/venues.yaml` and `../data/regulars.yaml`.
 
 Submitters' names, emails and notes never leave D1 except through the admin
 API. Admin and submission responses are `Cache-Control: no-store`.

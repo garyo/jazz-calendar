@@ -83,6 +83,17 @@
   background: var(--bg);
 }
 
+.review-new-venue {
+  margin: 0;
+  padding: 0.6rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.review-new-venue legend {
+  padding-inline: 0.3rem;
+}
+
 .review-notes {
   margin: 0;
   padding: 0.4rem 0.6rem;

@@ -89,3 +89,37 @@ export function unauthorized(realm: string): Response {
     "www-authenticate": `Bearer realm="${realm}"`,
   });
 }
+
+const MAX_BODY = 16 * 1024;
+
+function badBody(): Response {
+  return jsonResponse(400, { error: "Expected a JSON object under 16 KB." });
+}
+
+/** A JSON object body of at most 16 KB, or the error response. */
+export async function readBody(
+  request: Request,
+): Promise<Record<string, unknown> | Response> {
+  const type = request.headers.get("content-type") ?? "";
+  if (!type.startsWith("application/json")) return badBody();
+  const text = await readCapped(request, MAX_BODY);
+  if (text === null) {
+    return jsonResponse(413, { error: "Keep the request under 16 KB." });
+  }
+  try {
+    const body: unknown = JSON.parse(text);
+    return typeof body === "object" && body !== null && !Array.isArray(body)
+      ? (body as Record<string, unknown>)
+      : badBody();
+  } catch {
+    return badBody();
+  }
+}
+
+/** A 400 naming each field that needs attention. */
+export function invalid(errors: Record<string, string>): Response {
+  return jsonResponse(400, {
+    error: "Some fields need attention.",
+    fields: errors,
+  });
+}

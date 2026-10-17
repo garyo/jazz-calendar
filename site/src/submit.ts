@@ -95,6 +95,14 @@ export function showFieldErrors(
   return first;
 }
 
+/** Shows or hides a group of fields; hidden ones are disabled, so they aren't sent. */
+export function showGroup(group: HTMLElement, shown: boolean): void {
+  group.hidden = !shown;
+  for (const field of group.querySelectorAll("input, select, textarea")) {
+    (field as HTMLInputElement).disabled = !shown;
+  }
+}
+
 export interface SubmitDialog {
   setVenues(venues: Venue[]): void;
 }
@@ -105,6 +113,10 @@ export function submitDialog(): SubmitDialog {
   const title = byId<HTMLInputElement>("submit-title");
   const venue = byId<HTMLSelectElement>("submit-venue");
   const otherVenue = byId<HTMLElement>("submit-other-venue");
+  const dateField = byId<HTMLElement>("submit-date-field");
+  const daysField = byId<HTMLElement>("submit-days");
+  const weeksField = byId<HTMLElement>("submit-weeks");
+  const priceField = byId<HTMLElement>("submit-price-field");
   const tba = byId<HTMLInputElement>("submit-tba");
   const date = byId<HTMLInputElement>("submit-date");
   const times = [
@@ -134,11 +146,13 @@ export function submitDialog(): SubmitDialog {
   }
 
   function syncFields(): void {
-    const isOther = venue.value === OTHER_VENUE;
-    otherVenue.hidden = !isOther;
-    for (const input of otherVenue.querySelectorAll("input")) {
-      input.required = isOther;
-    }
+    const repeats = form.elements.namedItem("repeats") as RadioNodeList;
+    const regular = repeats.value !== "once";
+    showGroup(dateField, !regular);
+    showGroup(priceField, !regular);
+    showGroup(daysField, regular);
+    showGroup(weeksField, repeats.value === "monthly");
+    showGroup(otherVenue, venue.value === OTHER_VENUE);
     for (const input of times) input.disabled = tba.checked;
     times[0].required = !tba.checked;
   }
@@ -203,6 +217,8 @@ export function submitDialog(): SubmitDialog {
     for (const [name, value] of data) {
       if (typeof value === "string") result[name] = value;
     }
+    result.days = data.getAll("days");
+    result.nth = data.getAll("nth").map(Number);
     result.time_tba = tba.checked;
     delete result["cf-turnstile-response"];
     return result;

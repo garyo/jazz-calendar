@@ -85,9 +85,18 @@ run fails.
 `../data/regulars.yaml` lists standing series that venues publish with no dated listings, such
 as Wally's jam. The feed carries them in a separate `regulars` list, and the site shows them in
 their own section. They never become calendar events: a standing schedule doesn't promise any
-particular night. Only list what a venue or organizer publishes, and recheck it now and then.
-`when` is the schedule in the venue's words; `days` (plus `nth`, for e.g. 1st and 3rd Fridays)
-lets the site show a series in views of the days it usually runs.
+particular night. Only list what a venue or organizer stands behind, and recheck it now and
+then. `when` is the schedule in the venue's words; `days` (plus `nth`, for e.g. 1st and 3rd
+Fridays) lets the site show a series in views of the days it usually runs.
+
+### Venues and regulars added on the site
+
+The owner can add venues and approve regulars on the site's `/admin` page, which keeps them in
+D1. Each scrape (not `--offline`) saves `$JAZZCAL_SITE/api/registry` to `var/site-registry.json`
+with `JAZZCAL_PUBLISH_TOKEN` (`site_registry.py`); when the site can't be reached it keeps the
+last copy. `Registry.load` adds that copy's venues after `venues.yaml`, whose entries win on a
+shared id, and its regulars after `regulars.yaml`, skipping any at an unknown venue. Added venues
+resolve venue names like any other, so other sources' listings there are kept too.
 
 ### Submitted gigs
 

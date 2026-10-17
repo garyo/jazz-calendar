@@ -13,9 +13,11 @@ import {
   formatDayHeading,
   monthOf,
   nightOf,
+  WEEKDAY_NAMES,
+  WEEKDAYS,
   weekday,
 } from "./time";
-import type { CalendarEvent, Regular, Venue, Weekday } from "./types";
+import type { CalendarEvent, Regular, Venue } from "./types";
 import type { DatePreset, ViewState } from "./url-state";
 
 /** How long an event with no end time is assumed to last. */
@@ -169,17 +171,6 @@ export function filterEvents(
   return matchingEvents(upcoming, venues, state);
 }
 
-/** Index 0 is Sunday, as in `weekday`. */
-const WEEKDAYS: readonly Weekday[] = [
-  "sun",
-  "mon",
-  "tue",
-  "wed",
-  "thu",
-  "fri",
-  "sat",
-];
-
 /**
  * Whether a regular usually runs on a day: one of its weekdays and, when it
  * says which of them in a month ("1st and 3rd Fridays"), one of those.
@@ -228,15 +219,6 @@ export function filterRegulars(
   });
 }
 
-const PLURAL_WEEKDAYS = [
-  "Sundays",
-  "Mondays",
-  "Tuesdays",
-  "Wednesdays",
-  "Thursdays",
-  "Fridays",
-  "Saturdays",
-];
 const orList = new Intl.ListFormat("en", { type: "disjunction" });
 const andList = new Intl.ListFormat("en", { type: "conjunction" });
 
@@ -269,7 +251,7 @@ function regularsWhen(state: ViewState, today: DayKey): string | null {
   if (!range) return null;
   const days = daysOf(range);
   if (days.length >= 7) return datePhrase(state, today);
-  return `on ${orList.format(days.map((day) => PLURAL_WEEKDAYS[weekday(day)]))}`;
+  return `on ${orList.format(days.map((day) => `${WEEKDAY_NAMES[weekday(day)]}s`))}`;
 }
 
 /** The weekly regulars' introduction, for the view's days. */

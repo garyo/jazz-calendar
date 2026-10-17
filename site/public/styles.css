@@ -768,6 +768,27 @@ input::placeholder {
   flex: 1 1 7rem;
 }
 
+.form-group {
+  display: grid;
+  gap: 0.9rem;
+}
+
+:is(.form-repeats, .form-choices) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.form-repeats .segmented {
+  gap: 0.4rem;
+}
+
+.form-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+}
+
 .form-row > .form-field-date,
 .form-row > .form-field-wide {
   flex: 2 1 11rem;

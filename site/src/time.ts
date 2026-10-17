@@ -3,7 +3,7 @@
  * America/New_York regardless of the viewer's own time zone.
  */
 
-import type { CalendarEvent } from "./types";
+import type { CalendarEvent, Weekday } from "./types";
 
 export const TIME_ZONE = "America/New_York";
 
@@ -157,6 +157,27 @@ export function weekday(key: DayKey): number {
   return keyToDate(key).getUTCDay();
 }
 
+/** Index 0 is Sunday, as in `weekday`. */
+export const WEEKDAYS: readonly Weekday[] = [
+  "sun",
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+];
+
+export const WEEKDAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
 /** "Thursday, Oct 15". */
 export function formatDayHeading(key: DayKey): string {
   return headingFormat.format(keyToDate(key));
@@ -217,6 +238,14 @@ export function formatWallClock(hhmm: string): string {
   const date = new Date(Date.UTC(2000, 0, 1, hour, minute));
   const { time, period } = clockParts(partsOf(wallClockFormat, date));
   return `${time} ${period}`;
+}
+
+/** "6–9 pm", "11 am–2 pm" from 24-hour wall-clock times. */
+export function formatWallClockRange(start: string, end: string): string {
+  const from = formatWallClock(start);
+  const to = formatWallClock(end);
+  const [time, period] = from.split(" ");
+  return to.endsWith(` ${period}`) ? `${time}–${to}` : `${from}–${to}`;
 }
 
 /**

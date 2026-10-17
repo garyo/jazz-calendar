@@ -1,7 +1,10 @@
 # Weekly regulars: standing series a venue or the series' organizer publishes, with no dated
 # listings. The site shows them in their own section, never as calendar events, because a
 # standing schedule doesn't promise any particular night. Only add a series its venue or
-# organizer publishes, and recheck it now and then (update `checked`).
+# organizer stands behind, and recheck it now and then (update `checked`).
+#
+# Series sent in through the site's form, once approved on /admin, live in the site's database
+# instead; the scraper lists them after these.
 #
 # when: the schedule as the venue states it, shown to people
 # days: the weekdays it runs (mon, tue, wed, thu, fri, sat, sun), so the site can show it on

@@ -1,5 +1,6 @@
 /**
- * The owner's review page for gig submissions (public/admin.html). The admin
+ * The owner's review page for submissions and the venues added with them
+ * (public/admin.html). The admin
  * token is kept in sessionStorage when allowed, so it lasts until the tab
  * closes; every API call sends it.
  */
@@ -7,16 +8,67 @@
 import { byId, h, safeUrl } from "./dom";
 import {
   type FieldErrors,
+  OTHER_VENUE,
+  repeatsOf,
   STATUSES,
   type Status,
   type Submission,
+  scheduleText,
+  venueSlug,
 } from "./submission";
-import { showFieldErrors, venueOptions } from "./submit";
-import { formatDate, formatWallClock, TIME_ZONE } from "./time";
+import { showFieldErrors, showGroup, venueOptions } from "./submit";
+import {
+  addDays,
+  dayKey,
+  formatDate,
+  formatWallClock,
+  TIME_ZONE,
+} from "./time";
 import type { EventsFile, Venue } from "./types";
 
 const TOKEN_KEY = "admin-token";
 const API = "/api/admin/submissions";
+const VENUES_API = "/api/admin/venues";
+/** A regular not confirmed for this many days is due a check. */
+const RECHECK_DAYS = 90;
+
+const REPEATS: [string, string][] = [
+  ["once", "One night"],
+  ["weekly", "Every week"],
+  ["monthly", "Some weeks of the month"],
+];
+const DAYS: [string, string][] = [
+  ["mon", "Mon"],
+  ["tue", "Tue"],
+  ["wed", "Wed"],
+  ["thu", "Thu"],
+  ["fri", "Fri"],
+  ["sat", "Sat"],
+  ["sun", "Sun"],
+];
+const WEEKS: [string, string][] = [
+  ["1", "1st"],
+  ["2", "2nd"],
+  ["3", "3rd"],
+  ["4", "4th"],
+  ["5", "5th"],
+  ["-1", "Last"],
+];
+const JAZZ_LEVELS: [string, string][] = [
+  ["", "Choose…"],
+  ["dedicated", "Dedicated: a jazz room"],
+  ["regular", "Regular: books jazz often"],
+  ["occasional", "Occasional"],
+];
+const VENUE_FIELDS = [
+  "venue_id",
+  "venue_name",
+  "venue_address",
+  "venue_town",
+  "venue_neighborhood",
+  "venue_url",
+  "venue_jazz_level",
+];
 
 const signin = byId<HTMLFormElement>("signin");
 const tokenInput = byId<HTMLInputElement>("admin-token");
@@ -26,8 +78,11 @@ const list = byId<HTMLOListElement>("review-list");
 const reviewStatus = byId<HTMLElement>("review-status");
 
 let token = readToken();
+/** Every listed venue: the feed's and those added here. */
 let venues = new Map<string, Venue>();
-let status: Status = "pending";
+/** The venues added here, which this page can change. */
+let added: Venue[] = [];
+let tab: Status | "venues" = "pending";
 
 function readToken(): string {
   try {
@@ -64,6 +119,7 @@ interface ApiResult {
     fields?: FieldErrors;
     submissions?: Submission[];
     submission?: Submission;
+    venues?: Venue[];
   };
 }
 
@@ -93,7 +149,8 @@ function stamp(iso: string): string {
 }
 
 function when(s: Submission): string {
-  const day = formatDate(s.date) ?? s.date;
+  if (s.kind === "regular") return scheduleText(s);
+  const day = formatDate(s.date ?? "") ?? s.date;
   if (!s.start_time) return `${day}, time TBA`;
   const end = s.end_time ? `–${formatWallClock(s.end_time)}` : "";
   return `${day}, ${formatWallClock(s.start_time)}${end}`;
@@ -105,15 +162,36 @@ function where(s: Submission): string {
   return s.venue ?? `${s.venue_name}, ${s.venue_town} (not listed)`;
 }
 
+function link(href: string, text: string): Node {
+  const safe = safeUrl(href);
+  return safe
+    ? h("a", { href: safe, target: "_blank", rel: "noopener noreferrer" }, text)
+    : document.createTextNode(text);
+}
+
 function input(
   name: string,
-  value: string | null,
+  value: string | null | undefined,
   type = "text",
 ): HTMLInputElement {
   return h("input", { name, type, value: value ?? "", autocomplete: "off" });
 }
 
-function field(label: string, control: HTMLElement, wide = false): Node {
+function select(
+  name: string,
+  options: [string, string][],
+  value: string,
+): HTMLSelectElement {
+  const el = h(
+    "select",
+    { name },
+    ...options.map(([v, label]) => h("option", { value: v }, label)),
+  );
+  el.value = value;
+  return el;
+}
+
+function field(label: string, control: HTMLElement, wide = false): HTMLElement {
   return h(
     "label",
     { class: wide ? "form-field form-field-wide" : "form-field" },
@@ -122,18 +200,60 @@ function field(label: string, control: HTMLElement, wide = false): Node {
   );
 }
 
+/** A row of checkboxes, as a field. */
+function checkboxes(
+  name: string,
+  legend: string,
+  options: [string, string][],
+  chosen: readonly (string | number)[],
+): HTMLElement {
+  const picked = new Set(chosen.map(String));
+  return h(
+    "fieldset",
+    { class: "form-field form-field-wide form-choices" },
+    h("legend", { class: "form-label" }, legend),
+    h(
+      "div",
+      { class: "form-checks" },
+      ...options.map(([value, label]) => {
+        const box = h("input", { type: "checkbox", name, value });
+        box.checked = picked.has(value);
+        return h("label", { class: "form-check" }, box, label);
+      }),
+    ),
+  );
+}
+
 function venueSelect(s: Submission): HTMLSelectElement {
-  const select = h(
+  const el = h(
     "select",
     { name: "venue" },
     h("option", { value: "" }, "Choose a listed venue…"),
     ...venueOptions(venues.values()),
   );
   if (s.venue && !venues.has(s.venue)) {
-    select.append(h("option", { value: s.venue }, s.venue));
+    el.append(h("option", { value: s.venue }, s.venue));
   }
-  select.value = s.venue ?? "";
-  return select;
+  if (!s.venue) {
+    el.append(h("option", { value: OTHER_VENUE }, "Add it as a new venue…"));
+  }
+  el.value = s.venue ?? OTHER_VENUE;
+  return el;
+}
+
+/** A venue's fields, named as the API takes them. */
+function venueFields(v: Partial<Venue>, newId: boolean): HTMLElement[] {
+  const id = input("venue_id", v.id);
+  id.readOnly = !newId;
+  return [
+    field("Name", input("venue_name", v.name), true),
+    field("Id", id),
+    field("Jazz", select("venue_jazz_level", JAZZ_LEVELS, v.jazz_level ?? "")),
+    field("Street address", input("venue_address", v.address), true),
+    field("Town", input("venue_town", v.town)),
+    field("Neighborhood", input("venue_neighborhood", v.neighborhood)),
+    field("Website", input("venue_url", v.url, "url"), true),
+  ];
 }
 
 function relevanceChoice(s: Submission): Node {
@@ -151,13 +271,27 @@ function relevanceChoice(s: Submission): Node {
   );
 }
 
+/** When an approved regular was last confirmed, flagged once it's due a check. */
+function confirmation(s: Submission): Node | null {
+  if (s.kind !== "regular" || s.status !== "approved" || !s.checked) {
+    return null;
+  }
+  const due = s.checked <= addDays(dayKey(new Date()), -RECHECK_DAYS);
+  const text = `Last confirmed running ${formatDate(s.checked) ?? s.checked}.`;
+  return due
+    ? h("p", { class: "review-flag" }, `${text} Check it still runs.`)
+    : h("p", { class: "form-hint" }, text);
+}
+
+function button(label: string, value: string, primary = false): Node {
+  const kind = primary ? "button button-primary" : "button";
+  return h("button", { type: "submit", class: kind, value }, label);
+}
+
 function renderCard(s: Submission): HTMLLIElement {
   const tba = h("input", { type: "checkbox", name: "time_tba" });
   tba.checked = s.start_time === null;
-  const href = safeUrl(s.url);
-  const confirmation = href
-    ? h("a", { href, target: "_blank", rel: "noopener noreferrer" }, s.url)
-    : s.url;
+  const unlisted = s.venue === null;
   const meta = h(
     "header",
     { class: "review-meta" },
@@ -177,28 +311,44 @@ function renderCard(s: Submission): HTMLLIElement {
         `<${s.submitter_email}>`,
       ),
     ),
-    h("p", {}, "Confirms it: ", confirmation),
-    s.venue_name &&
-      h(
-        "p",
-        { class: "review-flag" },
-        `Venue as submitted: ${s.venue_name}, ${s.venue_town}. If it isn't listed, add it to data/venues.yaml and publish, then choose it below.`,
-      ),
+    h("p", {}, "Confirms it: ", link(s.url, s.url)),
     s.notes && h("blockquote", { class: "review-notes" }, s.notes),
     s.reviewed_at &&
       h("p", { class: "form-hint" }, `Reviewed ${stamp(s.reviewed_at)}`),
+    confirmation(s),
   );
+  const repeats = select("repeats", REPEATS, repeatsOf(s));
+  const date = field("Date", input("date", s.date, "date"));
+  const days = checkboxes("days", "Days", DAYS, s.days ?? []);
+  const weeks = checkboxes("nth", "Which weeks", WEEKS, s.nth ?? []);
+  const price = field("Price", input("price", s.price));
+  const venue = venueSelect(s);
+  const newVenue =
+    unlisted &&
+    h(
+      "fieldset",
+      { class: "review-fields review-new-venue form-field-wide" },
+      h("legend", { class: "form-label" }, "New venue"),
+      ...venueFields(
+        {
+          id: venueSlug(s.venue_name ?? ""),
+          name: s.venue_name ?? "",
+          address: s.venue_address,
+          town: s.venue_town ?? "",
+          url: s.venue_url,
+        },
+        true,
+      ),
+    );
+  const sync = () => {
+    showGroup(date, repeats.value === "once");
+    showGroup(price, repeats.value === "once");
+    showGroup(days, repeats.value !== "once");
+    showGroup(weeks, repeats.value === "monthly");
+    if (newVenue) showGroup(newVenue, venue.value === OTHER_VENUE);
+  };
+  const approved = s.status === "approved";
   const outcome = h("p", { class: "submit-status", role: "status" });
-  const approve = h(
-    "button",
-    { type: "submit", class: "button button-primary", value: "approve" },
-    s.status === "approved" ? "Save changes" : "Approve",
-  );
-  const reject = h(
-    "button",
-    { type: "submit", class: "button", value: "reject" },
-    s.status === "approved" ? "Unpublish" : "Reject",
-  );
   const form = h(
     "form",
     { id: `review-${s.id}`, novalidate: "" },
@@ -207,12 +357,16 @@ function renderCard(s: Submission): HTMLLIElement {
       "div",
       { class: "review-fields" },
       field("Title", input("title", s.title), true),
-      field("Date", input("date", s.date, "date")),
+      field("How often", repeats),
+      date,
+      days,
+      weeks,
       field("Starts", input("start_time", s.start_time, "time")),
       field("Ends", input("end_time", s.end_time, "time")),
       h("label", { class: "form-check" }, tba, "Time TBA"),
-      field("Venue", venueSelect(s), true),
-      field("Price", input("price", s.price)),
+      field("Venue", venue, true),
+      newVenue,
+      price,
       relevanceChoice(s),
       field(
         "Editor note (private)",
@@ -223,55 +377,73 @@ function renderCard(s: Submission): HTMLLIElement {
     h(
       "div",
       { class: "review-actions" },
-      ...(s.status === "rejected" ? [approve] : [approve, reject]),
+      button(approved ? "Save changes" : "Approve", "approve", true),
+      approved && s.kind === "regular" && button("Still running", "confirm"),
+      s.status !== "rejected" &&
+        button(approved ? "Unpublish" : "Reject", "reject"),
       outcome,
     ),
   );
+  sync();
+  form.addEventListener("change", sync);
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const action = (event.submitter as HTMLButtonElement | null)?.value;
-    if (action === "approve" || action === "reject") {
+    if (action === "approve" || action === "reject" || action === "confirm") {
       void act(form, s, action, outcome);
     }
   });
   return h("li", { class: "review-card" }, form);
 }
 
+/** The form's text fields by name; fields hidden (so disabled) are left out. */
+function texts(data: FormData, names: string[]): Record<string, string> {
+  return Object.fromEntries(
+    names
+      .filter((name) => data.has(name))
+      .map((name) => [name, data.get(name)?.toString() ?? ""]),
+  );
+}
+
 function edits(form: HTMLFormElement): Record<string, unknown> {
   const data = new FormData(form);
-  const value = (name: string) => data.get(name)?.toString() ?? "";
   return {
-    title: value("title"),
-    date: value("date"),
-    start_time: value("start_time"),
-    end_time: value("end_time"),
+    ...texts(data, [
+      "title",
+      "repeats",
+      "date",
+      "start_time",
+      "end_time",
+      "venue",
+      "price",
+      "editor_note",
+      ...VENUE_FIELDS,
+    ]),
+    days: data.getAll("days"),
+    nth: data.getAll("nth").map(Number),
     time_tba: data.has("time_tba"),
-    venue: value("venue"),
-    price: value("price"),
     relevance: data.get("relevance"),
-    editor_note: value("editor_note"),
   };
 }
 
-async function act(
+/**
+ * Sends one card's change. On success reloads the tab, saying what was done;
+ * otherwise shows what went wrong on the card.
+ */
+async function send(
   form: HTMLFormElement,
-  s: Submission,
-  action: "approve" | "reject",
   outcome: HTMLElement,
+  path: string,
+  body: unknown,
+  done: (result: ApiResult) => string,
 ): Promise<void> {
-  const changes = edits(form);
-  const body =
-    action === "approve"
-      ? { action, edits: changes }
-      : { action, edits: { editor_note: changes.editor_note } };
   outcome.textContent = "Saving…";
   outcome.dataset.kind = "info";
   try {
-    const result = await api(`${API}/${s.id}`, body);
+    const result = await api(path, body);
     showFieldErrors(form, result.body.fields ?? {});
-    if (result.status === 200) {
-      const done = action === "approve" ? "Approved" : "Rejected";
-      await load(`${done} “${result.body.submission?.title ?? s.title}”.`);
+    if (result.status === 200 || result.status === 201) {
+      await load(done(result));
       return;
     }
     outcome.textContent = result.body.error ?? `Error ${result.status}`;
@@ -283,13 +455,102 @@ async function act(
   }
 }
 
+const DONE = {
+  approve: "Approved",
+  reject: "Rejected",
+  confirm: "Confirmed",
+} as const;
+
+function act(
+  form: HTMLFormElement,
+  s: Submission,
+  action: keyof typeof DONE,
+  outcome: HTMLElement,
+): Promise<void> {
+  const changes = edits(form);
+  const body =
+    action === "approve"
+      ? { action, edits: changes }
+      : action === "reject"
+        ? { action, edits: { editor_note: changes.editor_note } }
+        : { action };
+  return send(form, outcome, `${API}/${s.id}`, body, (result) => {
+    return `${DONE[action]} “${result.body.submission?.title ?? s.title}”.`;
+  });
+}
+
+/** A card for a venue added here, or for adding one when `v` is null. */
+function renderVenue(v: Venue | null): HTMLLIElement {
+  const outcome = h("p", { class: "submit-status", role: "status" });
+  const form = h(
+    "form",
+    { novalidate: "" },
+    v
+      ? h(
+          "p",
+          { class: "review-when" },
+          h("strong", {}, v.name),
+          ` · ${v.town}`,
+        )
+      : h("p", { class: "review-when" }, h("strong", {}, "Add a venue")),
+    h("div", { class: "review-fields" }, ...venueFields(v ?? {}, v === null)),
+    h(
+      "div",
+      { class: "review-actions" },
+      ...(v
+        ? [button("Save", "save", true), button("Delete", "delete")]
+        : [button("Add", "add", true)]),
+      outcome,
+    ),
+  );
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const action = (event.submitter as HTMLButtonElement | null)?.value;
+    const fields = texts(new FormData(form), VENUE_FIELDS);
+    const name = fields.venue_name || v?.name;
+    if (!v) {
+      void send(form, outcome, VENUES_API, fields, () => `Added ${name}.`);
+    } else if (action === "save" || action === "delete") {
+      const path = `${VENUES_API}/${encodeURIComponent(v.id)}`;
+      const done = action === "save" ? "Saved" : "Deleted";
+      void send(form, outcome, path, { action, ...fields }, () => {
+        return `${done} ${name}.`;
+      });
+    }
+  });
+  return h("li", { class: "review-card" }, form);
+}
+
+/** The feed's venues and those added here. */
+async function loadVenues(): Promise<void> {
+  const [feed, mine] = await Promise.all([
+    fetch("/data/events.json").then(
+      (response) => response.json() as Promise<EventsFile>,
+      () => null,
+    ),
+    api(VENUES_API),
+  ]);
+  added = mine.body.venues ?? [];
+  venues = new Map(
+    [...(feed?.venues ?? []), ...added].map((venue) => [venue.id, venue]),
+  );
+  if (!feed) reviewStatus.textContent = "Couldn’t load the venue list.";
+}
+
 async function load(message = ""): Promise<void> {
   reviewStatus.textContent = "Loading…";
   try {
-    const result = await api(`${API}?status=${status}`);
+    await loadVenues();
+    if (tab === "venues") {
+      list.replaceChildren(renderVenue(null), ...added.map(renderVenue));
+      const count = `${added.length} added here`;
+      reviewStatus.textContent = message ? `${message} ${count}.` : `${count}.`;
+      return;
+    }
+    const result = await api(`${API}?status=${tab}`);
     const submissions = result.body.submissions ?? [];
     list.replaceChildren(...submissions.map(renderCard));
-    const count = `${submissions.length} ${status}`;
+    const count = `${submissions.length} ${tab}`;
     reviewStatus.textContent = message ? `${message} ${count}.` : `${count}.`;
   } catch (error) {
     if (error instanceof Unauthorized) {
@@ -299,21 +560,10 @@ async function load(message = ""): Promise<void> {
   }
 }
 
-async function loadVenues(): Promise<void> {
-  try {
-    const response = await fetch("/data/events.json");
-    const feed: EventsFile = await response.json();
-    venues = new Map(feed.venues.map((venue) => [venue.id, venue]));
-  } catch {
-    reviewStatus.textContent = "Couldn’t load the venue list.";
-  }
-}
-
-async function start(): Promise<void> {
+function start(): Promise<void> {
   signin.hidden = true;
   review.hidden = false;
-  await loadVenues();
-  await load();
+  return load();
 }
 
 signin.addEventListener("submit", (event) => {
@@ -327,7 +577,10 @@ signin.addEventListener("submit", (event) => {
 
 byId("status-tabs").addEventListener("change", (event) => {
   const value = (event.target as HTMLInputElement).value;
-  status = STATUSES.find((known) => known === value) ?? "pending";
+  tab =
+    value === "venues"
+      ? value
+      : (STATUSES.find((known) => known === value) ?? "pending");
   void load();
 });
 byId("refresh").addEventListener("click", () => void load());

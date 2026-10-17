@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 import httpx
 
-from jazzcal import evaluate, export, pipeline
+from jazzcal import evaluate, export, pipeline, site_registry
 from jazzcal.adapters import adapters
 from jazzcal.config import ROOT, TZ, VAR_DIR, Registry
 from jazzcal.http import Http
@@ -18,6 +18,7 @@ from jazzcal.store import Store
 
 OUT_DIR = VAR_DIR / "out"
 DB = VAR_DIR / "jazzcal.db"
+SITE_REGISTRY = VAR_DIR / "site-registry.json"
 MAX_AGE_HOURS = 6.0
 """Reuse pages fetched within this many hours."""
 
@@ -64,9 +65,11 @@ def main() -> None:
 
     match args.command:
         case "run" | "scrape":
-            registry = Registry.load()
             store = Store(DB)
             with _http(args.offline, args.max_age) as http:
+                if not args.offline:
+                    site_registry.sync(http, SITE_REGISTRY)
+                registry = _registry()
                 pipeline.scrape(registry, store, http, set(args.source or []) or None)
             if not args.offline:
                 pipeline.alert_failing(registry, store, datetime.now(TZ))
@@ -75,14 +78,14 @@ def main() -> None:
                 if args.publish:
                     export.publish(OUT_DIR)
         case "build":
-            _build(Registry.load(), Store(DB), _classifier(args.classifier))
+            _build(_registry(), Store(DB), _classifier(args.classifier))
         case "eval":
             store = Store(DB)
-            print(evaluate.report(Registry.load(), store, _classifier(args.classifier)))
+            print(evaluate.report(_registry(), store, _classifier(args.classifier)))
         case "publish":
             export.publish(OUT_DIR)
         case "show":
-            source = Registry.load().source(args.source)
+            source = _registry().source(args.source)
             with _http(args.offline, MAX_AGE_HOURS) as http:
                 for e in pipeline.scrape_source(source, http):
                     print(e.model_dump_json(exclude={"text"}, exclude_none=True))
@@ -91,6 +94,10 @@ def main() -> None:
             (ROOT / "schema" / "events.schema.json").write_text(schema + "\n")
         case "adapters":
             print(_describe_adapters())
+
+
+def _registry() -> Registry:
+    return Registry.load(added=site_registry.load(SITE_REGISTRY))
 
 
 def _http(offline: bool, max_age_hours: float) -> Http:
