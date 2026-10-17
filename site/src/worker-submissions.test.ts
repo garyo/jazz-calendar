@@ -874,6 +874,7 @@ describe("GET /api/registry", () => {
           checked: today,
         },
       ],
+      hidden: [],
     });
 
     // Regulars stay out of the dated gigs.
@@ -935,5 +936,66 @@ describe("the feed's revision", () => {
     expect(taken.status).toBe(400);
     await post("/api/admin/venues", { ...venue, venue_id: "Bad Id" }, ADMIN);
     expect(revision()).toBe(0);
+  });
+});
+
+describe("hidden listings", () => {
+  const revision = () =>
+    (db.query("SELECT n FROM revision").get() as { n: number }).n;
+
+  test("hides by title, or venue and night; the note stays private", async () => {
+    const add = (body: object) => post("/api/admin/hidden", body, ADMIN);
+    const performer = await add({
+      title: "Pat Example",
+      note: "Asked by email, Oct 17.",
+    });
+    expect(performer.status).toBe(201);
+    const night = await add({ venue: "lilypad", night: "2026-11-07" });
+    expect(night.status).toBe(201);
+    expect(revision()).toBe(2);
+
+    for (const [body, expected] of [
+      [{ venue: "lilypad" }, ["title"]],
+      [{ night: "2026-11-07" }, ["title"]],
+      [{ title: "x", venue: "nowhere" }, ["venue"]],
+      [{ title: "x", night: "Nov 7" }, ["night"]],
+    ] as const) {
+      expect(await errors(await add(body))).toEqual([...expected]);
+    }
+    expect(revision()).toBe(2);
+
+    const listed = await call("/api/admin/hidden", { headers: ADMIN_HEADERS });
+    const { hidden } = (await listed.json()) as { hidden: { id: number }[] };
+    expect(hidden).toEqual([
+      expect.objectContaining({ venue: "lilypad", night: "2026-11-07" }),
+      expect.objectContaining({
+        title: "Pat Example",
+        note: "Asked by email, Oct 17.",
+        requested: today,
+      }),
+    ]);
+
+    const res = await call("/api/registry", {
+      headers: { authorization: `Bearer ${PUBLISH}` },
+    });
+    const text = await res.text();
+    expect(text).not.toContain("Asked by email");
+    expect(JSON.parse(text).hidden).toEqual([
+      { title: "Pat Example", venue: null, night: null, requested: today },
+      { title: null, venue: "lilypad", night: "2026-11-07", requested: today },
+    ]);
+
+    const path = `/api/admin/hidden/${hidden[1].id}`;
+    expect((await post(path, { action: "delete" }, ADMIN)).status).toBe(200);
+    expect(revision()).toBe(3);
+    expect((await post(path, { action: "delete" }, ADMIN)).status).toBe(404);
+    expect((await post("/api/admin/hidden/x", {}, ADMIN)).status).toBe(404);
+    expect(revision()).toBe(3);
+  });
+
+  test("needs the admin token", async () => {
+    expect((await call("/api/admin/hidden")).status).toBe(401);
+    const res = await post("/api/admin/hidden", { title: "x" }, PUBLISH);
+    expect(res.status).toBe(401);
   });
 });

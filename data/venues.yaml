@@ -3,6 +3,10 @@
 # id:         stable slug used by sources.yaml and the published feed
 # jazz_level: dedicated (everything there is jazz) | regular | occasional
 # aliases:    other names sources use; street addresses are matched automatically
+# opted_out:  YYYY-MM-DD the venue asked not to be listed. Keep the entry: its names and address
+#             still match its listings, which are then dropped from every source, and the venue
+#             leaves the feed. Set `enabled: false` on its own sources too. See "Removing
+#             listings on request" in scraper/README.md.
 
 # --- Boston ---------------------------------------------------------------
 

@@ -59,6 +59,8 @@ def scrape(
     for source in registry.sources:
         if not source.enabled or (only and source.id not in only):
             continue
+        if source.venue and registry.venues[source.venue].opted_out:
+            continue
         try:
             events = scrape_source(source, http)
         except Exception as e:
@@ -144,6 +146,7 @@ def build(
 ) -> tuple[EventsFile, StatusFile]:
     candidates = []
     unresolved: Counter[str] = Counter()
+    withheld = 0
     statuses = []
     for priority, source in enumerate(registry.sources):
         status = store.status(source.id)
@@ -162,6 +165,9 @@ def build(
             if not venue_id:
                 unresolved[f"{source.id}: {scraped.venue_name or scraped.venue}"] += 1
                 continue
+            if registry.withheld(venue_id, scraped.title, night_of(scraped)):
+                withheld += 1
+                continue
             ruling = classify(scraped, source, registry.venues[venue_id])
             if ruling.certain and ruling.relevance == "other":
                 continue
@@ -171,6 +177,8 @@ def build(
             )
     for name, count in unresolved.most_common():
         log.info("unknown venue (%d events) %s", count, name)
+    if withheld:
+        log.info("left out %d listings on request", withheld)
     if classifier:
         overrule(classifier, store, registry, [c for c in candidates if not c.ruling.certain])
 
@@ -190,9 +198,11 @@ def build(
     return (
         EventsFile(
             generated_at=now,
-            venues=[v.public() for v in registry.venues.values()],
+            venues=[v.public() for v in registry.venues.values() if not v.opted_out],
             events=events,
-            regulars=registry.regulars,
+            regulars=[
+                r for r in registry.regulars if not registry.withheld(r.venue, r.title, None)
+            ],
             sources=[
                 SourceCredit(id=s.id, **s.credit.model_dump())
                 for s in registry.sources

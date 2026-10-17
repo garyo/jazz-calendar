@@ -13,7 +13,7 @@ import yaml
 from pydantic import Field, TypeAdapter, ValidationError
 
 from jazzcal.models import Regular, ScrapedEvent, Source, Venue
-from jazzcal.site_registry import SiteRegistry
+from jazzcal.site_registry import Hidden, SiteRegistry
 
 log = logging.getLogger(__name__)
 
@@ -39,9 +39,14 @@ class VenueConfig(Venue):
     aliases: list[str] = Field(
         default_factory=list, description="Other names sources use for this venue"
     )
+    opted_out: date | None = Field(
+        None,
+        description="When the venue asked not to be listed. Its listings are dropped from every "
+        "source and it leaves the feed, but it stays here so they're still recognized",
+    )
 
     def public(self) -> Venue:
-        return Venue.model_validate(self.model_dump(exclude={"aliases"}))
+        return Venue.model_validate(self.model_dump(exclude={"aliases", "opted_out"}))
 
 
 def normalize_name(name: str) -> str:
@@ -71,6 +76,7 @@ class Registry:
     venues: dict[str, VenueConfig]
     sources: list[Source]
     regulars: list[Regular] = field(default_factory=list)
+    hidden: list[Hidden] = field(default_factory=list)
 
     @classmethod
     def load(cls, data_dir: Path = DATA_DIR, added: SiteRegistry | None = None) -> "Registry":
@@ -99,9 +105,13 @@ class Registry:
         return registry
 
     def _add(self, added: SiteRegistry) -> None:
+        opted_out = self._opted_out_keys()
         for v in added.venues:
             if v.id in self.venues:
                 log.warning("venue %s is in venues.yaml and on the site; using venues.yaml", v.id)
+            elif opted_out & _venue_keys(v):
+                # Added again under another id: its listings go unresolved, so they're dropped.
+                log.warning("skipping site venue %s: it matches a venue that opted out", v.id)
             else:
                 self.venues[v.id] = VenueConfig.model_validate(v.model_dump())
         for r in added.regulars:
@@ -109,6 +119,17 @@ class Registry:
                 self.regulars.append(r)
             else:
                 log.warning("skipping regular %r: unknown venue %r", r.title, r.venue)
+        self.hidden.extend(added.hidden)
+
+    def _opted_out_keys(self) -> set[str]:
+        return {key for v in self.venues.values() if v.opted_out for key in _venue_keys(v)}
+
+    def withheld(self, venue: str, title: str, night: date | None) -> bool:
+        """Whether a listing is left out on request: its venue opted out, or it's hidden on the
+        site's review page. A weekly regular has no `night`."""
+        return bool(self.venues[venue].opted_out) or any(
+            h.matches(venue, title, night) for h in self.hidden
+        )
 
     @cached_property
     def _by_name(self) -> dict[str, str]:
@@ -152,6 +173,15 @@ class Registry:
             if s.id == source_id:
                 return s
         raise KeyError(f"no source {source_id!r}")
+
+
+def _venue_keys(venue: VenueConfig | Venue) -> set[str]:
+    """What identifies a venue: its normalized names and street address."""
+    names = [venue.name, *getattr(venue, "aliases", [])]
+    keys = {normalize_name(name) for name in names}
+    if venue.address and (key := address_key(f"{venue.address}, {venue.town}")):
+        keys.add(key)
+    return keys
 
 
 def _load_yaml(path: Path) -> list[object]:

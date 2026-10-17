@@ -60,6 +60,7 @@ export const MAX_LENGTH = {
   submitter_email: 200,
   notes: 1000,
   editor_note: 1000,
+  note: 1000,
 } as const;
 
 type TextField = keyof typeof MAX_LENGTH;
@@ -233,12 +234,21 @@ class Reader {
     return false;
   }
 
-  date(name: string, today: DayKey): DayKey | null {
+  /** A calendar date, past or future; absent is null. */
+  day(name: string): DayKey | null {
     const value = this.raw(name);
-    if (!value) return this.fail(name, "Required.");
+    if (!value) return null;
     if (!DATE.test(value) || !isCalendarDate(value)) {
       return this.fail(name, "Use a date like 2026-11-07.");
     }
+    return value;
+  }
+
+  /** A gig's date: from today to a year out. */
+  date(name: string, today: DayKey): DayKey | null {
+    if (!this.raw(name)) return this.fail(name, "Required.");
+    const value = this.day(name);
+    if (!value) return null;
     if (value < today) return this.fail(name, "That date has passed.");
     if (value > addDays(today, MAX_DAYS_AHEAD)) {
       return this.fail(name, "Must be within the next year.");
@@ -507,4 +517,42 @@ export function scheduleText(
     ? formatWallClockRange(gig.start_time, gig.end_time)
     : formatWallClock(gig.start_time);
   return `${days}, ${time}`;
+}
+
+/**
+ * A listing left out on request (worker-hidden.ts). Every field given must
+ * match: words in the title, the venue, the night.
+ */
+export interface Hidden {
+  id: number;
+  title: string | null;
+  venue: string | null;
+  night: DayKey | null;
+  /** "YYYY-MM-DD": when it was asked for. */
+  requested: DayKey;
+  /** Private: who asked and how. */
+  note: string | null;
+}
+
+/** Validates a listing to hide, from the review page. */
+export function validateHidden(
+  input: unknown,
+  venues: ReadonlySet<string>,
+): Validated<Pick<Hidden, "title" | "venue" | "night" | "note">> {
+  if (!isRecord(input)) return { ok: false, errors: { form: "Bad request." } };
+  const fields = new Reader(input);
+  const venue = fields.raw("venue");
+  if (venue && !venues.has(venue)) {
+    fields.fail("venue", "Choose a venue from the list.");
+  }
+  const hidden = {
+    title: fields.text("title"),
+    venue,
+    night: fields.day("night"),
+    note: fields.text("note", false, true),
+  };
+  if (!hidden.title && !(hidden.venue && hidden.night)) {
+    fields.fail("title", "Give words from the title, or a venue and a night.");
+  }
+  return result(fields, hidden);
 }

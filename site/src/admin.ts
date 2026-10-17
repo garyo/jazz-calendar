@@ -8,6 +8,7 @@
 import { byId, h, safeUrl } from "./dom";
 import {
   type FieldErrors,
+  type Hidden,
   OTHER_VENUE,
   repeatsOf,
   STATUSES,
@@ -29,6 +30,7 @@ import type { EventsFile, Venue } from "./types";
 const TOKEN_KEY = "admin-token";
 const API = "/api/admin/submissions";
 const VENUES_API = "/api/admin/venues";
+const HIDDEN_API = "/api/admin/hidden";
 /** A regular not confirmed for this many days is due a check. */
 const RECHECK_DAYS = 90;
 
@@ -82,7 +84,7 @@ let token = readToken();
 let venues = new Map<string, Venue>();
 /** The venues added here, which this page can change. */
 let added: Venue[] = [];
-let tab: Status | "venues" = "pending";
+let tab: Status | "venues" | "hidden" = "pending";
 
 function readToken(): string {
   try {
@@ -120,6 +122,7 @@ interface ApiResult {
     submissions?: Submission[];
     submission?: Submission;
     venues?: Venue[];
+    hidden?: Hidden[];
   };
 }
 
@@ -521,6 +524,98 @@ function renderVenue(v: Venue | null): HTMLLIElement {
   return h("li", { class: "review-card" }, form);
 }
 
+/** A card for a hidden listing, or for hiding one when `entry` is null. */
+function renderHidden(entry: Hidden | null): HTMLLIElement {
+  const outcome = h("p", { class: "submit-status", role: "status" });
+  if (entry) {
+    const venue = entry.venue
+      ? (venues.get(entry.venue)?.name ?? entry.venue)
+      : "any venue";
+    const night = entry.night
+      ? (formatDate(entry.night) ?? entry.night)
+      : "any night";
+    const form = h(
+      "form",
+      { novalidate: "" },
+      h(
+        "p",
+        { class: "review-when" },
+        h("strong", {}, entry.title ? `“${entry.title}”` : "Every listing"),
+        ` · ${venue} · ${night}`,
+      ),
+      h(
+        "p",
+        { class: "form-hint" },
+        `Hidden since ${formatDate(entry.requested) ?? entry.requested}.`,
+      ),
+      entry.note && h("blockquote", { class: "review-notes" }, entry.note),
+      h(
+        "div",
+        { class: "review-actions" },
+        button("Show again", "delete"),
+        outcome,
+      ),
+    );
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const path = `${HIDDEN_API}/${entry.id}`;
+      void send(
+        form,
+        outcome,
+        path,
+        { action: "delete" },
+        () => "Shown again.",
+      );
+    });
+    return h("li", { class: "review-card" }, form);
+  }
+  const venue = h(
+    "select",
+    { name: "venue" },
+    h("option", { value: "" }, "Any venue"),
+    ...venueOptions(venues.values()),
+  );
+  const form = h(
+    "form",
+    { novalidate: "" },
+    h("p", { class: "review-when" }, h("strong", {}, "Hide listings")),
+    h(
+      "p",
+      { class: "form-hint" },
+      "Every field given must match. Title words match whole words, ignoring case: “Pat Example” alone hides every listing with that name, at any venue, and their weekly series. Hidden listings leave the site within about 10 minutes.",
+    ),
+    h(
+      "div",
+      { class: "review-fields" },
+      field("Words in the title", input("title", null), true),
+      field("Venue", venue),
+      field("Night", input("night", null, "date")),
+      field(
+        "Private note: who asked, and how",
+        h("textarea", { name: "note", rows: "2" }),
+        true,
+      ),
+    ),
+    h(
+      "div",
+      { class: "review-actions" },
+      button("Hide", "hide", true),
+      outcome,
+    ),
+  );
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const fields = texts(new FormData(form), [
+      "title",
+      "venue",
+      "night",
+      "note",
+    ]);
+    void send(form, outcome, HIDDEN_API, fields, () => "Hidden.");
+  });
+  return h("li", { class: "review-card" }, form);
+}
+
 /** The feed's venues and those added here. */
 async function loadVenues(): Promise<void> {
   const [feed, mine] = await Promise.all([
@@ -537,20 +632,30 @@ async function loadVenues(): Promise<void> {
   if (!feed) reviewStatus.textContent = "Couldn’t load the venue list.";
 }
 
+/** The current tab's cards, and how many things it lists. */
+async function tabCards(): Promise<[HTMLLIElement[], string]> {
+  if (tab === "venues") {
+    const cards = [renderVenue(null), ...added.map(renderVenue)];
+    return [cards, `${added.length} added here`];
+  }
+  if (tab === "hidden") {
+    const hidden = (await api(HIDDEN_API)).body.hidden ?? [];
+    return [
+      [renderHidden(null), ...hidden.map(renderHidden)],
+      `${hidden.length} hidden`,
+    ];
+  }
+  const submissions =
+    (await api(`${API}?status=${tab}`)).body.submissions ?? [];
+  return [submissions.map(renderCard), `${submissions.length} ${tab}`];
+}
+
 async function load(message = ""): Promise<void> {
   reviewStatus.textContent = "Loading…";
   try {
     await loadVenues();
-    if (tab === "venues") {
-      list.replaceChildren(renderVenue(null), ...added.map(renderVenue));
-      const count = `${added.length} added here`;
-      reviewStatus.textContent = message ? `${message} ${count}.` : `${count}.`;
-      return;
-    }
-    const result = await api(`${API}?status=${tab}`);
-    const submissions = result.body.submissions ?? [];
-    list.replaceChildren(...submissions.map(renderCard));
-    const count = `${submissions.length} ${tab}`;
+    const [cards, count] = await tabCards();
+    list.replaceChildren(...cards);
     reviewStatus.textContent = message ? `${message} ${count}.` : `${count}.`;
   } catch (error) {
     if (error instanceof Unauthorized) {
@@ -578,7 +683,7 @@ signin.addEventListener("submit", (event) => {
 byId("status-tabs").addEventListener("change", (event) => {
   const value = (event.target as HTMLInputElement).value;
   tab =
-    value === "venues"
+    value === "venues" || value === "hidden"
       ? value
       : (STATUSES.find((known) => known === value) ?? "pending");
   void load();

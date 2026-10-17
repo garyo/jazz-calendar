@@ -101,6 +101,33 @@ last copy. `Registry.load` adds that copy's venues after `venues.yaml`, whose en
 shared id, and its regulars after `regulars.yaml`, skipping any at an unknown venue. Added venues
 resolve venue names like any other, so other sources' listings there are kept too.
 
+### Removing listings on request
+
+We remove any venue's or performer's listings when asked. The repo is public, so nothing in it
+records who asked: listings are hidden on the site's `/admin` page (its Hidden tab, kept in D1
+with a private note), and only a venue's opt-out goes in `venues.yaml`.
+
+| Asked to remove | Do this |
+|---|---|
+| One listing | Hidden tab: words from its title, plus its venue and night. |
+| A performer, everywhere | Hidden tab: their name alone. That covers their weekly series too. |
+| A submitted gig or series | "Unpublish" it on `/admin` (or hide it as above). |
+| A venue added on `/admin` | Unpublish its listings, then delete it on the Venues tab. If it may be added again, also add it to `venues.yaml` with `opted_out`. |
+| A venue in `venues.yaml` | Set `opted_out: <date>` on it, and `enabled: false` on its own sources. |
+| A series in `regulars.yaml` | Delete the entry, or hide it by title. |
+
+Changes on `/admin` go live within about 10 minutes (see below). A hidden listing's fields must
+all match; title words match as whole words, ignoring case. The scraper reads hidden listings
+with the site's venues and regulars (`site_registry.py`, without the note) and drops every
+source's copy of a match before merging; one without a night also hides matching regulars.
+
+An opted-out venue stays in `venues.yaml` so its name, aliases and address still recognize its
+listings from every source, aggregators included; they're dropped, its own sources aren't
+fetched, and it leaves the feed. A venue added on the site that matches it by name or address is
+skipped, so it can't come back under another id. A `venues.yaml` change goes live with the next
+daily run once pushed; to act at once, `git pull` in the Mac's checkout and `sudo launchctl
+kickstart system/com.bostonjazzcalendar.scraper`.
+
 ### Publishing approvals quickly
 
 `/api/registry` also reports the feed's *revision*, a count the site bumps with every change to

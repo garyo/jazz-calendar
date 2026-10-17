@@ -12,6 +12,8 @@ Monorepo: `scraper/` (Python, uv), `site/` (TypeScript, bun, Cloudflare Worker),
   `data/sources.yaml` and leave the source disabled.
 - Never turn a standing schedule into dated events. Weekly series go in `data/regulars.yaml`
   (or come from the site's database, approved on /admin) and appear in their own section.
+- Removal requests (a venue, a gig, a performer): follow "Removing listings on request" in
+  `scraper/README.md`.
 - Publish facts and links only. Never store or publish venue descriptions or images;
   `ScrapedEvent.text` is used only for classification.
 - New adapters handle a platform, not a venue: a pure `parse` function tested against a

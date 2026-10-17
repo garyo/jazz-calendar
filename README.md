@@ -19,7 +19,8 @@ Data flow: venue sites → `scraper` (daily) → `PUT /api/publish/*` → R2 →
 - Publish facts and links only: no copied descriptions or images.
 - Honor robots.txt; never get around a bot wall.
 - Identify the scraper; fetch each source at most a few times a day.
-- Remove a venue's listings promptly if it asks.
+- Remove a venue's listings promptly if it asks, and any listing whose artist asks (see
+  "Removing listings on request" in [`scraper/README.md`](scraper/README.md)).
 
 ## License
 

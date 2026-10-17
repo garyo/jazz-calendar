@@ -6,11 +6,13 @@
  *   POST /api/admin/submissions/:id      {action: approve|reject|confirm, edits}
  *   GET  /api/submissions/approved       upcoming approved gigs for the
  *                                        scraper (PUBLISH_TOKEN)
- *   GET  /api/registry                   approved regulars, added venues and
- *                                        the feed's revision, for the scraper
+ *   GET  /api/registry                   approved regulars, added venues,
+ *                                        hidden listings and the feed's
+ *                                        revision, for the scraper
  *                                        (PUBLISH_TOKEN)
  *
- * The admin venue routes are in worker-venues.ts. Submitters' names, emails
+ * The admin venue routes are in worker-venues.ts, the hidden listings' in
+ * worker-hidden.ts. Submitters' names, emails
  * and notes leave D1 only through the admin API. A new submission pings the
  * owner's ntfy topic with just the listing's title, time and venue.
  */
@@ -28,6 +30,7 @@ import {
 } from "./submission";
 import { dayKey } from "./time";
 import type { Regular } from "./types";
+import { ADMIN_HIDDEN_PATH, adminHidden, selectHidden } from "./worker-hidden";
 import {
   hasBearer,
   invalid,
@@ -235,8 +238,8 @@ function regularOf(s: Submission): Regular {
 }
 
 /**
- * The scraper's additions to data/: approved regulars and added venues,
- * read in one batch with the revision they make up.
+ * The scraper's additions to data/: approved regulars, added venues and
+ * hidden listings, read in one batch with the revision they make up.
  */
 async function registry(
   request: Request,
@@ -246,7 +249,7 @@ async function registry(
   if (!(await hasBearer(request, env.PUBLISH_TOKEN))) {
     return unauthorized("publish");
   }
-  const [revision, venues, regulars] = await env.DB.batch<Row>([
+  const [revision, venues, regulars, hidden] = await env.DB.batch<Row>([
     readRevision(env.DB),
     selectVenues(env),
     env.DB.prepare(
@@ -254,11 +257,13 @@ async function registry(
        WHERE status = 'approved' AND kind = 'regular'
        ORDER BY title`,
     ),
+    selectHidden(env.DB),
   ]);
   return jsonResponse(200, {
     revision: revision.results[0].n,
     venues: venues.results,
     regulars: regulars.results.map((row) => regularOf(fromRow(row))),
+    hidden: hidden.results,
   });
 }
 
@@ -389,6 +394,9 @@ async function admin(
   if (!(await hasBearer(request, env.ADMIN_TOKEN)))
     return unauthorized("admin");
   const { pathname } = url;
+  if (under(pathname, ADMIN_HIDDEN_PATH)) {
+    return adminHidden(request, env, pathname.slice(ADMIN_HIDDEN_PATH.length));
+  }
   if (pathname.startsWith(ADMIN_VENUES_PATH)) {
     return adminVenues(request, env, pathname.slice(ADMIN_VENUES_PATH.length));
   }
@@ -414,7 +422,11 @@ export function routeSubmissions(
   if (pathname === SUBMIT_PATH) return submit(request, env, ctx);
   if (pathname === APPROVED_PATH) return approvedFeed(request, env);
   if (pathname === REGISTRY_PATH) return registry(request, env);
-  if (under(pathname, ADMIN_PATH) || under(pathname, ADMIN_VENUES_PATH)) {
+  if (
+    [ADMIN_PATH, ADMIN_VENUES_PATH, ADMIN_HIDDEN_PATH].some((p) =>
+      under(pathname, p),
+    )
+  ) {
     return admin(request, env, url);
   }
   return null;

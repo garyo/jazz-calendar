@@ -320,16 +320,21 @@ scraper stays the only publisher of the feed:
    not one an approved listing uses). Approving a regular records it as
    confirmed today; once that's 90 days old the card asks for a recheck, and
    "Still running" confirms it again. Rejecting an approved listing
-   unpublishes it. Every change to what the feed shows (an approval,
-   unpublishing, confirming a regular, a venue added, edited or deleted)
-   bumps the feed's revision (`src/worker-revision.ts`) in the same batch.
+   unpublishes it. The Hidden tab hides listings on request: words from a
+   title, a venue, a night, or a combination, with a private note
+   (`src/worker-hidden.ts`; kept here so the public repo never records who
+   asked). Every change to what the feed shows (an approval, unpublishing,
+   confirming a regular, a venue added, edited or deleted, a listing hidden
+   or shown again) bumps the feed's revision (`src/worker-revision.ts`) in
+   the same batch.
 4. The scraper's `submissions` source reads
    `GET /api/submissions/approved` with its publish token: upcoming approved
    gigs with only the publishable fields (id, title, date, times, venue id,
    price, link, relevance). They join the next daily build, below the
    venues' own sources, so a venue's listing of the same show wins.
 5. Each scrape also reads `GET /api/registry` (same token): the revision,
-   the added venues, and the approved regulars as the feed lists them, with
+   the added venues, the hidden listings (without their notes), and the
+   approved regulars as the feed lists them, with
    `when` written from their days and times (`scheduleText`), all read in
    one batch. The scraper lists them after `../data/venues.yaml` and
    `../data/regulars.yaml`. Its 10-minute `jazzcal refresh` republishes

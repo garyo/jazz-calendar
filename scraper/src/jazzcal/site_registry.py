@@ -1,7 +1,8 @@
-"""Venues and regulars added on the site's review page.
+"""Venues, regulars and hidden listings managed on the site's review page.
 
-The site serves them at /api/registry, behind the token the scraper publishes with
-(JAZZCAL_PUBLISH_TOKEN), with the feed's revision: a count of the changes to what the feed
+Hidden listings live there, not in data/, so the public repo never records who asked to be
+left out. The site serves all three at /api/registry, behind the token the scraper publishes
+with (JAZZCAL_PUBLISH_TOKEN), with the feed's revision: a count of the changes to what the feed
 shows, so a run can tell whether anything changed since the last publish. Each scrape saves a
 copy (`sync`), so builds and offline runs use the last one, and a run that can't reach the site
 keeps it. `Registry.load` lists them after data/venues.yaml and data/regulars.yaml, whose
@@ -10,10 +11,12 @@ entries win on a shared venue id.
 
 import logging
 import os
-from datetime import timedelta
+import re
+from datetime import date, timedelta
+from functools import cache
 from pathlib import Path
 
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError, model_validator
 
 from jazzcal.export import site_url
 from jazzcal.http import FetchError, Http
@@ -24,12 +27,46 @@ log = logging.getLogger(__name__)
 PATH = "/api/registry"
 
 
+class Hidden(BaseModel):
+    """A listing left out on request: `Hidden` in site/src/submission.ts. Every field given
+    must match."""
+
+    title: str | None = Field(None, description="Words in the title: whole words, any case")
+    venue: str | None = Field(None, description="Venue id")
+    night: date | None = Field(
+        None, description="The night it's listed under (a set after midnight is the night before)"
+    )
+    requested: date
+
+    @model_validator(mode="after")
+    def _specific(self) -> "Hidden":
+        if not (self.title or (self.venue and self.night)):
+            raise ValueError("a hidden listing needs a title, or a venue and a night")
+        return self
+
+    def matches(self, venue: str, title: str, night: date | None) -> bool:
+        """Whether this hides a listing; a weekly regular has no `night`."""
+        return (
+            (self.venue is None or self.venue == venue)
+            and (self.night is None or self.night == night)
+            and (self.title is None or _words(self.title).search(title) is not None)
+        )
+
+
+@cache
+def _words(text: str) -> re.Pattern[str]:
+    """Matches the words as whole words, ignoring case and spacing."""
+    words = r"\s+".join(re.escape(word) for word in text.split())
+    return re.compile(rf"(?<!\w){words}(?!\w)", re.IGNORECASE)
+
+
 class SiteRegistry(BaseModel):
     """What /api/registry serves: in site/src/worker-submissions.ts."""
 
     revision: int | None = None
     venues: list[Venue] = Field(default_factory=list)
     regulars: list[Regular] = Field(default_factory=list)
+    hidden: list[Hidden] = Field(default_factory=list)
 
 
 def load(path: Path) -> SiteRegistry:
