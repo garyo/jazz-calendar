@@ -78,7 +78,10 @@ at most once a week, or sooner when another source starts failing. It uses the s
 as `deploy/run.sh`: `NTFY_USER` and `NTFY_PASS` (nothing is sent without them), `NTFY_URL`
 (default `https://ntfy.oberbrunner.com`) and `NTFY_TOPIC` (default `misc`). A failed
 notification never fails the run. `run.sh` posts separately, at high priority, when a whole
-run fails.
+run fails: on the first failure in a row only, then once more, at normal priority, when the
+command next succeeds. A marker in `var/` (`failing-run`, `failing-refresh`) remembers which
+commands are failing, so a broken commit alerts once, not every 10 minutes. A failed daily run
+also uploads no `status.json`, so the site's stale-data alarm keeps reminding you daily.
 
 ### Weekly regulars
 
