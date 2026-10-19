@@ -73,10 +73,15 @@
     at Harvard (e.g. ArtsThursdays at Paine Hall). The Jazz Bands aren't listed here.
 
 - id: lizard-lounge
-  adapter: tribe
-  url: https://lizardloungeclub.com
+  adapter: ics
+  url: https://lizardloungeclub.com/?post_type=tribe_events&ical=1&eventDisplay=list
   credit: {name: "Lizard Lounge’s calendar", url: https://lizardloungeclub.com/calendar}
   venue: lizard-lounge
+  title_strip: ^No Event Tonight\b.*
+  notes: >-
+    The Events Calendar, but its REST API times out (504 after ~45 s); the site's iCal export
+    answers at once. It lists only the next 30 events, about a month ahead, including the
+    "No Event Tonight" placeholders that title_strip drops.
 
 - id: arts-at-the-armory
   adapter: ics
