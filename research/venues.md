@@ -25,7 +25,7 @@ we either parse the HTML or ask the venue for permission to use the JSON feed.
 
 | Venue | Where | Jazz | Calendar | Data source | Notes |
 |---|---|---|---|---|---|
-| Wally's Café | 427 Mass Ave, South End | Nightly | wallyscafe.com/one-night/ | Recurring | Jam Tue–Sat 7–9, night set 10–12. Lineups only on Instagram. Cloudflare blocks curl. |
+| Wally's Café | 427 Mass Ave, South End | Nightly | wallyscafe.com/ritual/ ("The week, at a glance") | Recurring | Standing weekly lineup (jam and early sets 7–9, night sets to midnight), entered by hand in regulars.yaml. Cloudflare challenges every page but robots.txt, even in a headless browser (2026-10-31), so no scraping. |
 | Scullers Jazz Club | 400 Soldiers Field Rd, Allston | Dedicated | scullersjazz.com/calendar/ | HTML (MusicIDB widget, venueId 715) | TicketWeb. robots allows all. |
 | Regattabar | Charles Hotel, 1 Bennett St, Cambridge | Mostly jazz, some blues/soul | ticketweb.com/venue/regattabar-cambridge-ma/748814 | Blocked by terms: TicketWeb's Terms of Use forbid scraping; try the Ticketmaster API, ArtsBoston, or ask the venue | Its own site has no schedule. |
 | The Lilypad | 1353 Cambridge St, Inman Sq, Cambridge | Mostly jazz/avant | lilypadinman.com/home | HTML (Squarespace) | 64 of 121 upcoming events tagged "Jazz". JSON feed works but is robots-disallowed → ask permission. Also sends a Mailchimp "Wednesday Weekly". |

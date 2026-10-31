@@ -11,13 +11,98 @@
 #   those days
 # nth: optional; which of those weekdays in a month, e.g. [1, 3] for 1st and 3rd, -1 for the last
 
+# Wally's lineup is its "week, at a glance" on /ritual/. The house bands rotate, so recheck often.
 - venue: wallys
-  title: Jam session
-  when: Tuesday–Saturday, 7–9 pm
-  days: [tue, wed, thu, fri, sat]
+  title: "Jam session (Student Music Project), house band: Gabriel Maia Quintet"
+  when: Tuesdays and Fridays, 7–9 pm
+  days: [tue, fri]
   relevance: jazz
-  url: https://www.wallyscafe.com/one-night/
-  checked: 2026-10-15
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
+
+- venue: wallys
+  title: "Jam session (Student Music Project), house band: Benjamin Kassner Quintet"
+  when: Wednesdays and Thursdays, 7–9 pm
+  days: [wed, thu]
+  relevance: jazz
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
+
+- venue: wallys
+  title: "Jam session (Student Music Project), house band: Otto Cook-Sharp Quintet"
+  when: Saturdays, 7–9 pm
+  days: [sat]
+  relevance: jazz
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
+
+- venue: wallys
+  title: Berklee Blues Band
+  when: Mondays, 9 pm–midnight
+  days: [mon]
+  relevance: adjacent
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
+
+- venue: wallys
+  title: The A-Beez
+  when: Tuesdays, 9–11 pm
+  days: [tue]
+  relevance: jazz
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
+
+- venue: wallys
+  title: NWASoul
+  when: 1st and 3rd Wednesdays, 10 pm–midnight
+  days: [wed]
+  nth: [1, 3]
+  relevance: adjacent
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
+
+- venue: wallys
+  title: Soundz of Now
+  when: 2nd and last Wednesdays, 10 pm–midnight
+  days: [wed]
+  nth: [2, -1]
+  relevance: jazz
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
+
+- venue: wallys
+  title: Timba Messengers
+  when: Thursdays, 10 pm–midnight
+  days: [thu]
+  relevance: jazz
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
+
+- venue: wallys
+  title: Noah Preminger Quintet
+  when: Fridays and Saturdays, 10 pm–midnight
+  days: [fri, sat]
+  relevance: jazz
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
+
+- venue: wallys
+  title: Yishay Levin
+  when: 1st and 3rd Sundays, 9 pm–midnight
+  days: [sun]
+  nth: [1, 3]
+  relevance: jazz
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
+
+- venue: wallys
+  title: Camilla Montero
+  when: 2nd and last Sundays, 9 pm–midnight
+  days: [sun]
+  nth: [2, -1]
+  relevance: jazz
+  url: https://wallyscafe.com/ritual/
+  checked: 2026-10-31
 
 - venue: bluebird-bar
   title: Live jazz
