@@ -1,11 +1,16 @@
-"""The jsonld adapter's page-hint options, against real pages from the sources using them."""
+"""The jsonld adapter's options, against real pages from its sources and made-up lists."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
+import httpx
+import pytest
+
+from jazzcal import http as http_module
 from jazzcal.adapters import jsonld
 from jazzcal.adapters.jsonld import JsonLdOptions
 from jazzcal.config import TZ, Registry, VenueConfig
+from jazzcal.http import Http
 from jazzcal.models import Source
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -19,6 +24,9 @@ GLOBAL_ARTS_LIVE = JsonLdOptions.model_validate(
         "no_price": True,
         "ticket_link": "a.event-links",
     }
+)
+GROTON_HILL = JsonLdOptions(
+    ticket_link='a[href*="ovationtix.com"][href*="/performance/"]', no_end=True
 )
 
 
@@ -63,6 +71,55 @@ def test_without_hints_bare_date_is_all_day() -> None:
         event.ticket_url
         == "https://tickets.globalartslive.org/TheatreManager/1/online?performance="
     )
+
+
+def test_groton_hill_start_and_ticket_link() -> None:
+    url = "https://grotonhill.org/concerts/arturo-sandoval/"
+    page = (FIXTURES / "groton-hill-event.html").read_text()
+    [event] = jsonld.parse(page, base_url=url, options=GROTON_HILL)
+    assert event.start == datetime(2027, 4, 23, 20, 0, tzinfo=TZ)
+    assert event.end is None  # every event's endDate is 11:30 pm
+    assert event.ticket_url == "https://ci.ovationtix.com/grotonhill/performance/11880261"
+    assert event.url == url
+
+
+def test_follows_list_pages(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(http_module, "MIN_INTERVAL", 0)
+
+    def card(slug: str) -> str:
+        return f'<a class="event" href="/shows/{slug}/">{slug}</a>'
+
+    def show(name: str, day: int) -> str:
+        return f"""<script type="application/ld+json">{{"@type": "Event",
+          "name": "{name}", "startDate": "2026-11-{day:02}T20:00:00-05:00"}}</script>"""
+
+    site = {
+        "/jazz/": card("trio") + card("quartet") + '<a class="next" href="/jazz/page/2/">»</a>',
+        "/jazz/page/2/": card("trio") + card("past") + '<a class="next" href="/jazz/">»</a>',
+        "/shows/trio/": show("Fictional Trio", 6),
+        "/shows/quartet/": show("Imaginary Quartet", 13),
+        "/shows/past/": "<p>This concert is over.</p>",
+    }
+    fetched: list[str] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/robots.txt":
+            return httpx.Response(404)
+        fetched.append(request.url.path)
+        return httpx.Response(200, text=site[request.url.path])
+
+    source = Source(id="club", adapter="jsonld", url="https://club.test/jazz/")
+    options = JsonLdOptions(follow="a.event", next_page="a.next")
+    with Http(
+        tmp_path / "cache",
+        max_age=timedelta(hours=1),
+        trusted_hosts={"club.test"},
+        transport=httpx.MockTransport(handle),
+    ) as http:
+        events = jsonld.scrape(source, http, options)
+
+    assert [e.title for e in events] == ["Fictional Trio", "Imaginary Quartet"]
+    assert fetched == ["/jazz/", "/jazz/page/2/", "/shows/trio/", "/shows/quartet/", "/shows/past/"]
 
 
 def test_html_in_title() -> None:

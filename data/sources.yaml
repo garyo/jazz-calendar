@@ -294,6 +294,24 @@
     Open Fridays in odd months; the month's sets are posted as plain text on the home page
     a week or two ahead.
 
+- id: groton-hill
+  adapter: jsonld
+  url: https://grotonhill.org/event_listing_category/jazz,vocal-jazz/
+  credit: {name: "Groton Hill’s concert calendar", url: https://grotonhill.org/concerts/}
+  venue: groton-hill
+  relevance: jazz
+  options:
+    follow: a.wpem-event-action-url  # WP Event Manager
+    next_page: a.next.page-numbers
+    ticket_link: a[href*="ovationtix.com"][href*="/performance/"]
+    no_end: true  # every event's endDate is 11:30 pm
+  enabled: false
+  notes: >-
+    Disabled 2026-10-31 for terms of use: Groton Hill's terms (on its privacy policy page) allow
+    links only to the home page and forbid commercial use of its content without a license.
+    Ask info@grotonhill.org. The category archive pages three concerts at a time and keeps past
+    ones, which have no JSON-LD and so drop out.
+
 # --- Submitted gigs ------------------------------------------------------
 # Below the venues' own sources, so a venue's listing of the same show wins.
 

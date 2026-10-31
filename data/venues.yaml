@@ -511,3 +511,11 @@
   url: https://www.spirecenter.org
   jazz_level: occasional
   aliases: [25 1/2 Court Street, Plymouth, MA 02360]
+
+- id: groton-hill
+  name: Groton Hill Music Center
+  address: 122 Old Ayer Rd
+  town: Groton
+  url: https://grotonhill.org
+  jazz_level: regular
+  aliases: [Groton Hill]

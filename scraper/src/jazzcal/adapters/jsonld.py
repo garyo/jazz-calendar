@@ -54,6 +54,10 @@ class JsonLdOptions(Options):
         "JSON-LD but whose event pages have it. Event pages are cached for 5 days.",
     )
     max_follow: int = Field(60, description="Most event pages fetched per run")
+    next_page: Selector | None = Field(
+        None, description="CSS selector for the link to the next list page, for paginated lists"
+    )
+    max_pages: int = Field(10, description="Most list pages fetched per run")
     time_selector: Selector | None = Field(
         None,
         description="CSS selector for an element giving the time ('7:00 PM until 11:00 PM'), "
@@ -68,6 +72,7 @@ class JsonLdOptions(Options):
         None, description="A regex applied to that, whose first group is the venue name"
     )
     no_price: bool = Field(False, description="True when offers carry a placeholder price")
+    no_end: bool = Field(False, description="True when endDate is a placeholder")
     ticket_link: Selector | None = Field(
         None,
         description="CSS selector for the page's ticket link, used in place of the offer's url",
@@ -76,16 +81,35 @@ class JsonLdOptions(Options):
 
 @adapter("jsonld", options=JsonLdOptions)
 def scrape(source: Source, http: Http, options: JsonLdOptions) -> list[ScrapedEvent]:
-    page = http.get(source.url).text
+    pages = _list_pages(source.url, http, options)
     if not options.follow:
-        return parse(page, base_url=source.url, options=options)
-    tree = HTMLParser(page)
-    hrefs = [href for a in tree.css(options.follow) if (href := a.attributes.get("href"))]
+        return [e for url, page in pages for e in parse(page, base_url=url, options=options)]
+    hrefs = [
+        urljoin(url, href)
+        for url, page in pages
+        for a in HTMLParser(page).css(options.follow)
+        if (href := a.attributes.get("href"))
+    ]
     events = []
     for link in unique_urls(hrefs, base_url=source.url)[: options.max_follow]:
         detail = http.get(link, max_age=DETAIL_MAX_AGE).text
         events += parse(detail, base_url=link, options=options)
     return events
+
+
+def _list_pages(url: str, http: Http, options: JsonLdOptions) -> list[tuple[str, str]]:
+    """The list page and, with `next_page`, the pages after it: (url, text) for each."""
+    pages: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    next_url: str | None = url
+    while next_url and next_url not in seen and len(seen) < options.max_pages:
+        seen.add(next_url)
+        page = http.get(next_url).text
+        pages.append((next_url, page))
+        link = HTMLParser(page).css_first(options.next_page) if options.next_page else None
+        href = link.attributes.get("href") if link else None
+        next_url = urljoin(next_url, href) if href else None
+    return pages
 
 
 @dataclass
@@ -95,6 +119,7 @@ class _PageHints:
     times: list[time] = field(default_factory=list)
     venue: str | None = None
     no_price: bool = False
+    no_end: bool = False
     ticket_url: str | None = None
 
 
@@ -115,7 +140,7 @@ def parse(page: str, *, base_url: str, options: JsonLdOptions | None = None) -> 
 
 
 def _hints(tree: HTMLParser, options: JsonLdOptions, base_url: str) -> _PageHints:
-    hints = _PageHints(no_price=options.no_price)
+    hints = _PageHints(no_price=options.no_price, no_end=options.no_end)
     if options.time_selector and (node := tree.css_first(options.time_selector)):
         hints.times = parse_times(node.text(), require_meridiem=True)
     if options.venue_selector and (node := tree.css_first(options.venue_selector)):
@@ -150,7 +175,7 @@ def _parse_event(item: dict, base_url: str, hints: _PageHints) -> ScrapedEvent |
     if not title or not item.get("startDate"):
         return None
     start, all_day = _when(item["startDate"])
-    end = _when(item["endDate"])[0] if item.get("endDate") else None
+    end = _when(item["endDate"])[0] if item.get("endDate") and not hints.no_end else None
     if all_day and hints.times:
         day = start.date()
         start, all_day = datetime.combine(day, hints.times[0], start.tzinfo), False

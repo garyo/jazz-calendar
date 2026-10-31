@@ -102,7 +102,7 @@ Needs per-event jazz filtering.
 | The Cabot / Off Cabot | 286 Cabot St, Beverly | thecabot.org/whats-on/ | API (Spektrix, with genre fields) | Best feed on the North Shore. |
 | Gulu-Gulu Cafe | 247 Essex St, Salem | gulugulucafe.com/events | HTML (Squarespace) | Jazz-funk, blues. |
 | Shalin Liu Performance Center | 37 Main St, Rockport (~40 mi) | rockportmusic.org/genre/jazz-rb-soul/ | API (WP REST `upcoming_shows?genre=86`) + HTML for dates | Christian Sands, Take 6. |
-| Groton Hill Music Center | Groton (~35 mi) | grotonhill.org/concerts/ | API (WP REST with Jazz taxonomy) + HTML for dates | Danilo Pérez, Club d'Elf. |
+| Groton Hill Music Center | Groton (~35 mi) | grotonhill.org/concerts/ | Blocked by terms until they agree: links allowed only to the home page, no commercial use of content (terms are in /privacy-policy/, checked 2026-10-31). Ask info@grotonhill.org. Then: WP REST `event_listing`, categories `jazz` (84), `vocal-jazz` (88) | Danilo Pérez, Club d'Elf. |
 | Methuen Memorial Music Hall | Methuen (~28 mi) | mmmh.org | JSON-LD | Crawl-delay 20. |
 | Spire Center | 25½ Court St, Plymouth | spirecenter.org/event-listings/ | HTML; Etix | |
 | South Shore Conservatory | 1 Conservatory Dr, Hingham | sscmusic.org/events/ | JSON-LD (Modern Events Calendar) | |
