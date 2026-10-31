@@ -227,6 +227,7 @@
     venue_selector: meta[property="og:title"]
     venue_pattern: \bat ((?:(?! at ).)+)$
     no_price: true  # every event's offer says $20
+    ticket_link: a.event-links  # the offer's url has a blank ?performance=
   notes: All genres (much world music); Crawl-delay 10, so a cold run takes ~10 minutes.
 
 - id: regattabar

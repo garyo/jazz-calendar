@@ -17,6 +17,7 @@ GLOBAL_ARTS_LIVE = JsonLdOptions.model_validate(
         "venue_selector": 'meta[property="og:title"]',
         "venue_pattern": r"\bat ((?:(?! at ).)+)$",
         "no_price": True,
+        "ticket_link": "a.event-links",
     }
 )
 
@@ -42,6 +43,7 @@ def test_global_arts_live_dates_time_and_venue() -> None:
     assert event.start == datetime(2026, 11, 19, 19, 30, tzinfo=TZ)
     assert event.venue_name == "Somerville Theatre"
     assert event.price is None
+    assert event.ticket_url == "https://my.globalartslive.org/1590"
     theatre = VenueConfig(
         id="somerville-theatre",
         name="Somerville Theatre",
@@ -57,6 +59,10 @@ def test_without_hints_bare_date_is_all_day() -> None:
     assert event.all_day
     assert event.venue_name is None
     assert event.price == "$20"
+    assert (
+        event.ticket_url
+        == "https://tickets.globalartslive.org/TheatreManager/1/online?performance="
+    )
 
 
 def test_html_in_title() -> None:

@@ -68,6 +68,10 @@ class JsonLdOptions(Options):
         None, description="A regex applied to that, whose first group is the venue name"
     )
     no_price: bool = Field(False, description="True when offers carry a placeholder price")
+    ticket_link: Selector | None = Field(
+        None,
+        description="CSS selector for the page's ticket link, used in place of the offer's url",
+    )
 
 
 @adapter("jsonld", options=JsonLdOptions)
@@ -91,11 +95,12 @@ class _PageHints:
     times: list[time] = field(default_factory=list)
     venue: str | None = None
     no_price: bool = False
+    ticket_url: str | None = None
 
 
 def parse(page: str, *, base_url: str, options: JsonLdOptions | None = None) -> list[ScrapedEvent]:
     tree = HTMLParser(page)
-    hints = _hints(tree, options or JsonLdOptions())
+    hints = _hints(tree, options or JsonLdOptions(), base_url)
     events = {}
     for data in json_ld(tree):
         for item in _event_items(data):
@@ -109,7 +114,7 @@ def parse(page: str, *, base_url: str, options: JsonLdOptions | None = None) -> 
     return list(events.values())
 
 
-def _hints(tree: HTMLParser, options: JsonLdOptions) -> _PageHints:
+def _hints(tree: HTMLParser, options: JsonLdOptions, base_url: str) -> _PageHints:
     hints = _PageHints(no_price=options.no_price)
     if options.time_selector and (node := tree.css_first(options.time_selector)):
         hints.times = parse_times(node.text(), require_meridiem=True)
@@ -119,6 +124,9 @@ def _hints(tree: HTMLParser, options: JsonLdOptions) -> _PageHints:
             match = options.venue_pattern.search(venue)
             venue = match.group(1) if match else None
         hints.venue = clean(venue)
+    if options.ticket_link and (node := tree.css_first(options.ticket_link)):
+        href = node.attributes.get("href")
+        hints.ticket_url = urljoin(base_url, href) if href else None
     return hints
 
 
@@ -159,7 +167,7 @@ def _parse_event(item: dict, base_url: str, hints: _PageHints) -> ScrapedEvent |
         all_day=all_day,
         venue_name=clean(_string(_first(item.get("location"), "name"))) or hints.venue,
         url=url,
-        ticket_url=offers.get("url") if isinstance(offers, dict) else None,
+        ticket_url=hints.ticket_url or (offers.get("url") if isinstance(offers, dict) else None),
         price=_price(offers) if isinstance(offers, dict) and not hints.no_price else None,
         artists=[
             name
