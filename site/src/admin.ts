@@ -582,7 +582,7 @@ function renderHidden(entry: Hidden | null): HTMLLIElement {
     h(
       "p",
       { class: "form-hint" },
-      "Every field given must match. Title words match whole words, ignoring case: “Pat Example” alone hides every listing with that name, at any venue, and their weekly series. Hidden listings leave the site within about 10 minutes.",
+      "Every field given must match. Title words match whole words, ignoring case: “Pat Example” alone hides every listing with that name, at any venue, and their weekly series. Hidden listings leave the site within a minute or two.",
     ),
     h(
       "div",

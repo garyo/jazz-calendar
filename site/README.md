@@ -337,9 +337,9 @@ scraper stays the only publisher of the feed:
    approved regulars as the feed lists them, with
    `when` written from their days and times (`scheduleText`), all read in
    one batch. The scraper lists them after `../data/venues.yaml` and
-   `../data/regulars.yaml`. Its 10-minute `jazzcal refresh` republishes
+   `../data/regulars.yaml`. Its one-minute `jazzcal refresh` republishes
    when the revision has moved on from its last publish, so approvals go
-   live within minutes (see the scraper README).
+   live within a minute or two (see the scraper README).
 
 Submitters' names, emails and notes never leave D1 except through the admin
 API. Admin and submission responses are `Cache-Control: no-store`.

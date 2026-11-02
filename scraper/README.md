@@ -80,7 +80,7 @@ as `deploy/run.sh`: `NTFY_USER` and `NTFY_PASS` (nothing is sent without them), 
 notification never fails the run. `run.sh` posts separately, at high priority, when a whole
 run fails: on the first failure in a row only, then once more, at normal priority, when the
 command next succeeds. A marker in `var/` (`failing-run`, `failing-refresh`) remembers which
-commands are failing, so a broken commit alerts once, not every 10 minutes. A failed daily run
+commands are failing, so a broken commit alerts once, not every minute. A failed daily run
 also uploads no `status.json`, so the site's stale-data alarm keeps reminding you daily.
 
 ### Weekly regulars
@@ -116,7 +116,7 @@ with a private note), and only a venue's opt-out goes in `venues.yaml`.
 | A venue in `venues.yaml` | Set `opted_out: <date>` on it, and `enabled: false` on its own sources. |
 | A series in `regulars.yaml` | Delete the entry, or hide it by title. |
 
-Changes on `/admin` go live within about 10 minutes (see below). A hidden listing's fields must
+Changes on `/admin` go live within a minute or two (see below). A hidden listing's fields must
 all match; title words match as whole words, ignoring case. The scraper reads hidden listings
 with the site's venues and regulars (`site_registry.py`, without the note) and drops every
 source's copy of a match before merging; one without a night also hides matching regulars.
@@ -135,7 +135,7 @@ what the feed shows (an approval, unpublishing, confirming a regular, a venue ed
 that included the approved submissions records the revision it read in `var/published-revision`:
 a full `jazzcal run --publish` (not one limited by `--source`), or `jazzcal refresh`.
 
-`jazzcal refresh` runs every 10 minutes. It reads the registry and stops there unless the
+`jazzcal refresh` runs every minute. It reads the registry and stops there unless the
 revision has moved on. Otherwise it scrapes only the `submissions` source, rebuilds the feed with
 every other source as last scraped, and uploads `events.json`. It leaves the rest to the daily
 run: `status.json` (the site's stale-data alarm watches its age), the healthcheck ping, and the
@@ -216,7 +216,7 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.bostonjazzcalendar.sc
 
 Replace `USERNAME` in the plist with the account that runs it (`sed -i "" "s/USERNAME/$(whoami)/g" ...`).
 
-Then the 10-minute refresh (see "Publishing approvals quickly"):
+Then the one-minute refresh (see "Publishing approvals quickly"):
 
 ```sh
 sudo cp deploy/com.bostonjazzcalendar.refresh.plist /Library/LaunchDaemons/
@@ -225,8 +225,8 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.bostonjazzcalendar.re
 ```
 
 `deploy/run.sh` with no arguments pulls main and does the daily run; `deploy/run.sh refresh`
-runs `jazzcal refresh` on the code already checked out, so the refresh doesn't pull every 10
-minutes and picks up new code after the next daily run.
+runs `jazzcal refresh` on the code already checked out, so the refresh doesn't pull every
+minute and picks up new code after the next daily run.
 
 Day to day:
 - Run now: `sudo launchctl kickstart system/com.bostonjazzcalendar.scraper`

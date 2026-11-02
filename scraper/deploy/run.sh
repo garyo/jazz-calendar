@@ -6,7 +6,7 @@
 # submissions. Reads secrets from an env file kept outside the repo, so the plists hold no
 # secrets. With NTFY_USER/NTFY_PASS set, the first failure of a command in a row posts the end
 # of its output to the ntfy topic, and its next success says it recovered; failures between
-# stay quiet, so a broken commit can't alert every 10 minutes.
+# stay quiet, so a broken commit can't alert every minute.
 set -eu
 ENV_FILE="${JAZZCAL_ENV_FILE:-$HOME/.config/jazzcal/env}"
 set -a
