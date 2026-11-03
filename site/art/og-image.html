@@ -1,0 +1,141 @@
+<!doctype html>
+<!--
+  The link-preview image, public/og-image.png: 1200 × 630, in the Liner Notes
+  theme. To regenerate it after an edit, from site/:
+    agent-browser set viewport 1200 630
+    agent-browser open "file://$PWD/art/og-image.html" && agent-browser wait 1500
+    agent-browser screenshot public/og-image.png
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Boston Jazz Calendar link preview</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,600;1,8..60,400&display=block"
+    />
+    <style>
+      :root {
+        --bg: #fbf7ef;
+        --surface: #f2eadb;
+        --ink: #241d17;
+        --muted: #655a4d;
+        --rule: #e3d9c7;
+        --accent: #7c2231;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "IBM Plex Sans", sans-serif;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+        padding: 64px 80px 44px;
+        border-bottom: 5px double var(--ink);
+      }
+
+      header svg {
+        width: 132px;
+        height: 132px;
+        flex: none;
+      }
+
+      h1 {
+        font-family: "Source Serif 4", serif;
+        font-weight: 600;
+        font-size: 92px;
+        line-height: 1;
+        letter-spacing: -0.01em;
+      }
+
+      .tagline {
+        margin-top: 14px;
+        font-size: 33px;
+        color: var(--muted);
+      }
+
+      ul {
+        list-style: none;
+        padding: 30px 80px 0;
+      }
+
+      li {
+        display: grid;
+        grid-template-columns: 116px 1fr;
+        align-items: baseline;
+        padding: 13px 0;
+        border-bottom: 1px solid var(--rule);
+        font-family: "Source Serif 4", serif;
+        font-weight: 600;
+        font-size: 34px;
+      }
+
+      li:last-child {
+        border-bottom: 0;
+      }
+
+      .time {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 400;
+        font-size: 28px;
+        color: var(--accent);
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 22px 80px;
+        background: var(--surface);
+        font-size: 26px;
+        color: var(--muted);
+      }
+
+      .url {
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 500;
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <!-- public/favicon.svg -->
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <rect width="64" height="64" rx="14" fill="#131015" />
+        <g fill="#d9a64a">
+          <ellipse cx="25" cy="44" rx="9" ry="6.5" transform="rotate(-22 25 44)" />
+          <rect x="31" y="12" width="4" height="32" rx="1" />
+          <path d="M35 12c4 5 13 7 13 17 0 3-1 6-3 8 1-7-4-11-10-12z" />
+        </g>
+      </svg>
+      <div>
+        <h1>Boston Jazz Calendar</h1>
+        <p class="tagline">Live jazz in Greater Boston, night by night</p>
+      </div>
+    </header>
+    <ul>
+      <li><span class="time">7p</span>The clubs</li>
+      <li><span class="time">8p</span>The corner bars and the concert halls</li>
+      <li><span class="time">10p</span>The late sets and the jam sessions</li>
+    </ul>
+    <footer>
+      <span>Every gig linked straight to the venue</span>
+      <span class="url">bostonjazzcalendar.com</span>
+    </footer>
+  </body>
+</html>

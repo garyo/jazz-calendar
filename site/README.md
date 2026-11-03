@@ -8,6 +8,7 @@ through the publish API below. The worker stores it in R2.
 ```
 public/          static files copied into dist/ (index.html, styles.css, _headers, …)
 public/admin.html  the submissions review page (unlinked, noindex), with admin.css
+art/og-image.html  source of public/og-image.png, the link-preview image
 scripts/build.ts the build: bundles, copies public/, hashes asset names (below)
 migrations/      D1 schema for submissions and added venues
 src/main.ts      front-end entry: keeps the view state in step with the URL,
@@ -363,12 +364,6 @@ the two rules' headers with a comma, which browsers enforce as two policies,
 so the page can run only its own bundle and talk only to this site.
 `admin.html` loads no script but `/admin.js` (hashed at build), whose imports never reach
 `analytics.ts`; `src/csp.test.ts` checks both.
-
-`_headers` also sends `X-Robots-Tag: noindex` with every response. That's
-deliberate during the quiet launch: search engines leave the site out of
-their results. `robots.txt` still allows everything on purpose, since a
-crawler has to fetch a page to see its noindex. To launch, delete the
-`X-Robots-Tag` line.
 
 ## Operations / hardening (dashboard)
 

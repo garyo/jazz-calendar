@@ -2,7 +2,6 @@
   Content-Security-Policy: default-src 'self'; script-src 'self' https://analytics.oberbrunner.com/tracker.js https://challenges.cloudflare.com 'sha256-f0AoJbEfKaiCzwVmKseLlZJU6qybXMDU6UmbBBVTYwE='; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://analytics.oberbrunner.com/api/collect; frame-src https://challenges.cloudflare.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
   Referrer-Policy: strict-origin-when-cross-origin
   X-Content-Type-Options: nosniff
-  X-Robots-Tag: noindex
 
 # Scripts and stylesheets, renamed by their content's hash at build
 # (scripts/build.ts), never change, so browsers keep them for a year. Pages
