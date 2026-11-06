@@ -314,7 +314,12 @@ function renderCard(s: Submission): HTMLLIElement {
         `<${s.submitter_email}>`,
       ),
     ),
-    h("p", {}, "Confirms it: ", link(s.url, s.url)),
+    h(
+      "p",
+      {},
+      "Link to verify the gig (the listing links here too): ",
+      link(s.url, s.url),
+    ),
     s.notes && h("blockquote", { class: "review-notes" }, s.notes),
     s.reviewed_at &&
       h("p", { class: "form-hint" }, `Reviewed ${stamp(s.reviewed_at)}`),
