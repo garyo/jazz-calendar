@@ -11,6 +11,7 @@ uv run jazzcal run --source nec    # just one source (repeatable)
 uv run jazzcal show lilypad        # print what a source yields, without storing it
 uv run jazzcal run --offline       # rebuild from cached pages only, no network
 uv run jazzcal publish             # upload var/out/ to the site
+uv run jazzcal submit ../private/gigs.json  # queue gigs for review on /admin (see submit.py)
 uv run jazzcal schema              # regenerate ../schema/events.schema.json
 uv run jazzcal adapters            # list the adapters and the options each takes
 ```

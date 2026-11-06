@@ -351,6 +351,28 @@ describe("POST /api/submissions", () => {
     expect((await post("/api/submissions", gig)).status).toBe(503);
   });
 
+  test("the submit token stands in for Turnstile, and still queues for review", async () => {
+    env.SUBMIT_TOKEN = "submit-token";
+    env.TURNSTILE_SECRET = undefined;
+    const { turnstile: _, ...scripted } = gig;
+    const res = await post("/api/submissions", scripted, "submit-token");
+    expect(res.status).toBe(201);
+    const { id } = (await res.json()) as { id: string };
+    expect(row(id).status).toBe("pending");
+    expect(verified).toHaveLength(0);
+  });
+
+  test("401 for a wrong token, or any token while none is set", async () => {
+    expect((await post("/api/submissions", gig, "submit-token")).status).toBe(
+      401,
+    );
+    env.SUBMIT_TOKEN = "submit-token";
+    for (const token of ["wrong", ADMIN, PUBLISH]) {
+      expect((await post("/api/submissions", gig, token)).status).toBe(401);
+    }
+    expect(verified).toHaveLength(0);
+  });
+
   test("400 for a body that isn't a JSON object; 405 for GET", async () => {
     for (const body of ["not json", "[1]", ""]) {
       const res = await call("/api/submissions", {

@@ -1,7 +1,8 @@
 /**
  * Submissions, gigs and regulars, stored in D1 (schema in ../migrations):
  *
- *   POST /api/submissions                the public form; Turnstile-checked
+ *   POST /api/submissions                the public form, Turnstile-checked; or
+ *                                        a script with SUBMIT_TOKEN
  *   GET  /api/admin/submissions?status=  the review queue (ADMIN_TOKEN)
  *   POST /api/admin/submissions/:id      {action: approve|reject|confirm, edits}
  *   GET  /api/submissions/approved       upcoming approved gigs for the
@@ -57,6 +58,8 @@ export interface SubmissionsEnv extends NotifyEnv, VenuesEnv {
   ADMIN_TOKEN?: string;
   /** Turnstile secret key for the submission form's widget. */
   TURNSTILE_SECRET?: string;
+  /** Lets a script queue submissions without the form's Turnstile check. */
+  SUBMIT_TOKEN?: string;
 }
 
 const SUBMIT_PATH = "/api/submissions";
@@ -142,7 +145,12 @@ async function submit(
   ctx: ExecutionContext,
 ): Promise<Response> {
   if (request.method !== "POST") return methodNotAllowed("POST");
-  if (!env.TURNSTILE_SECRET) {
+  // A script sends the submit token in place of the form's Turnstile token.
+  const scripted = request.headers.has("authorization");
+  if (scripted && !(await hasBearer(request, env.SUBMIT_TOKEN))) {
+    return unauthorized("submissions");
+  }
+  if (!scripted && !env.TURNSTILE_SECRET) {
     return jsonResponse(503, { error: "Submissions aren’t open yet." });
   }
   const body = await readBody(request);
@@ -152,11 +160,14 @@ async function submit(
   const today = dayKey(new Date());
   const fields = validateSubmission(body, { today });
   if (!fields.ok) return invalid(fields.errors);
-  const human = await verifyTurnstile(
-    body.turnstile,
-    env.TURNSTILE_SECRET,
-    request.headers.get("cf-connecting-ip"),
-  );
+  const human =
+    scripted ||
+    (!!env.TURNSTILE_SECRET &&
+      (await verifyTurnstile(
+        body.turnstile,
+        env.TURNSTILE_SECRET,
+        request.headers.get("cf-connecting-ip"),
+      )));
   if (!human) {
     return jsonResponse(403, {
       error: "The spam check didn’t go through. Please try again.",

@@ -159,6 +159,9 @@ expects.
    4. `bunx wrangler secret put ADMIN_TOKEN` with another long random token
       (`openssl rand -base64 32`). Paste it into `/admin` when it asks; the
       tab keeps it (in `sessionStorage`) until you close it or sign out.
+   5. Optional, for `jazzcal submit`: `bunx wrangler secret put SUBMIT_TOKEN`
+      with a third token, and the same value as `JAZZCAL_SUBMIT_TOKEN` in
+      `~/.config/jazzcal/env` wherever you run it.
 4. Set up notices to the owner (new submissions, stale data). `NTFY_URL`
    and `NTFY_TOPIC` are plain `[vars]` in `wrangler.toml`; the credentials
    are a secret: `bunx wrangler secret put NTFY_TOKEN`, the base64 of
@@ -187,7 +190,7 @@ else directly, at no worker CPU cost.
 | `GET /calendar.ics` | Every listing as iCalendar, built from `events.json` (below) |
 | `GET /calendar.ics?venue=…&town=…&adjacent=0` | A feed of just that selection (below) |
 | `PUT /api/publish/:key` | Upload `events.json` or `status.json` (see below) |
-| `POST /api/submissions` | A gig from the form (see [Gig submissions](#gig-submissions)) |
+| `POST /api/submissions` | A gig from the form, or from a script with `SUBMIT_TOKEN` (see [Gig submissions](#gig-submissions)) |
 | `GET /api/submissions/approved` | Upcoming approved gigs, for the scraper (`PUBLISH_TOKEN`) |
 | `GET /api/admin/submissions?status=…` | The review queue (`ADMIN_TOKEN`) |
 | `POST /api/admin/submissions/:id` | Approve or reject one (`ADMIN_TOKEN`) |
@@ -310,6 +313,11 @@ scraper stays the only publisher of the feed:
    Cloudflare's test secrets (the `.dev.vars` one under Development),
    siteverify reports `example.com` and no action, so only its success
    counts.
+
+   A script (`jazzcal submit`) sends `Authorization: Bearer <SUBMIT_TOKEN>`
+   in place of the Turnstile token and gets the same checks otherwise. Its
+   gigs land in the same queue. A wrong token, or any token while
+   `SUBMIT_TOKEN` is unset, gets `401`.
 3. The owner reviews at `/admin` (`public/admin.html`, not linked and
    `noindex`), which shows every field, the submitter's name and email, and
    the confirmation link. Approving saves any edits (title, how often, date

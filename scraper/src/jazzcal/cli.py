@@ -6,11 +6,12 @@ import json
 import logging
 import os
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import httpx
 from pydantic import ValidationError
 
-from jazzcal import evaluate, export, pipeline, runlock, site_registry
+from jazzcal import evaluate, export, pipeline, runlock, site_registry, submit
 from jazzcal.adapters import adapters
 from jazzcal.config import ROOT, TZ, VAR_DIR, Registry
 from jazzcal.http import Http
@@ -62,6 +63,10 @@ def main() -> None:
     show = commands.add_parser("show", help="print what a source yields, without storing it")
     show.add_argument("source")
     show.add_argument("--offline", action="store_true")
+    queue = commands.add_parser(
+        "submit", help="queue gigs from a JSON batch for review on /admin (see submit.py)"
+    )
+    queue.add_argument("batch", type=Path)
     commands.add_parser("schema", help="write schema/events.schema.json")
     commands.add_parser("adapters", help="list the adapters and the options each takes")
 
@@ -93,6 +98,9 @@ def main() -> None:
             with _http(args.offline, MAX_AGE_HOURS) as http:
                 for e in pipeline.scrape_source(source, http):
                     print(e.model_dump_json(exclude={"text"}, exclude_none=True))
+        case "submit":
+            if not submit.submit(args.batch):
+                raise SystemExit(1)
         case "schema":
             schema = json.dumps(feed_schema(), indent=2)
             (ROOT / "schema" / "events.schema.json").write_text(schema + "\n")
