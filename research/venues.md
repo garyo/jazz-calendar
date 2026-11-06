@@ -40,7 +40,7 @@ we either parse the HTML or ask the venue for permission to use the JSON feed.
 |---|---|---|---|---|---|
 | The Beehive | 541 Tremont St, South End | Some nights + weekend brunch jam | beehiveboston.com/musiccalendar | JSON-LD (Wix Events detail pages) | Same owner opening "King Bee" in South Boston. |
 | Long Live Roxbury | 152 Hampden St, Roxbury | Thursday Jazz Night 6–9, free | longlivebeerworks.com/boston | HTML (static text, Squarespace) | Artists listed through Dec 17. |
-| The Square Root — Jazz Sundays | 2 Corinth St, Roslindale | ~2 Sundays/mo, Sep–Jun | squarerootrozzie.com/events/ | ICS (Tockify `sqrozzietester`) + HTML (brianfriedland.com for artists) | Curated by Brian Friedland. |
+| The Square Root — Jazz Sundays | 2 Corinth St, Roslindale | ~2 Sundays/mo, Sep–Jun | squarerootrozzie.com/events/ | Tockify `sqrozzietester` embed, but tockify.com's robots.txt disallows `/api/` (the ICS feed and the embed's data), checked 2026-11-06. Jazz Sundays are mostly 2nd and 4th Sundays at 7 pm; also Hellbender on some Wednesdays. brianfriedland.com for artists | Curated by Brian Friedland. |
 | Midway Café | 3496 Washington St, Jamaica Plain | Wednesday jazz (Fully Celebrated Orchestra, Persistent Fools) | none (Instagram/Facebook) | Blocked; use Songkick venue 418641 or Kohlhase's list | robots blocks AI bots and the calendar path. |
 | HobGoblin | 48 Temple Pl, Downtown Crossing | Thu–Sat jazz-leaning piano | hobgoblinbar.com/events/ | JSON-LD (BentoBox) | Yoko Miwa, Rebecca Cline, etc. |
 | Grace by Nia | 60 Seaport Blvd #325, Seaport | Jazz/soul/R&B Fri–Sat + Sun brunch | gracebynia.com | Recurring | No performer listings. Squarespace. |
@@ -88,7 +88,7 @@ Needs per-event jazz filtering.
 | Lizard Lounge | 1667 Mass Ave, Cambridge | lizardloungeclub.com | API (Tribe REST, 232 events) | Organ Fairchild, Dub Apocalypse. Drop "No Event Tonight" placeholders. |
 | McCarthy's & Toad | 1912–1920 Mass Ave, Porter Sq | mccarthystoad.com/calendar | API (Elfsight widget JSON) | Toad reopened 2025. |
 | Club Passim | 47 Palmer St, Harvard Sq | passim.org/live-music/ | HTML (embedded JS object with genre tags) | ~3 of 87 tagged Jazz/Latin. |
-| The Sinclair | 52 Church St, Harvard Sq | sinclaircambridge.com/events | HTML (`--compressed`); AXS | |
+| The Sinclair | 52 Church St, Harvard Sq | sinclaircambridge.com/events | Blocked: Fastly answers our bot with 406 (2026-11-05). AEG/Bowery Boston venue, tickets on AXS. Ask the venue, or try JamBase | The Bad Plus |
 | The Cantab Lounge | 738 Mass Ave, Central Sq | thecantablounge.com/lounge | HTML (TuneHatch embed) | cantab-lounge.com is not the Cantab's site. |
 | Arts at the Armory | 191 Highland Ave, Somerville | artsatthearmory.org/events/ | ICS (`/events.ics`) | Plus West Coast Swing. |
 | Somerville Theatre / Crystal Ballroom | 55 Davis Sq | somervilletheatre.com/events/ | HTML; Ticketmaster | John Scofield Nov 19 (Global Arts Live). |
@@ -110,7 +110,7 @@ Needs per-event jazz filtering.
 | ICA Boston | 25 Harbor Shore Dr, Seaport | icaboston.org/calendar/?event_type[]=music | JSON-LD on event pages | A few music shows a year, now and then jazz; BSO co-productions. |
 | Larz Anderson Auto Museum | 15 Newton St, Brookline | larzanderson.org/eventschedule | JSON-LD (Wix Events) | Winter swing dances. |
 | Eustis Estate (Historic New England) | 1424 Canton Ave, Milton | my.historicnewengland.org | HTML (Tessitura) | Concert series; August jazz festival. |
-| House of Blues / Roadrunner / Leader Bank Pavilion / Boch Center | Boston | various | JSON-LD (HoB, Pavilion, Boch); API (Roadrunner AEG JSON) | Rare jazz-adjacent; keyword filter. |
+| House of Blues / Roadrunner / Leader Bank Pavilion / Boch Center | Boston | various | JSON-LD (HoB, Pavilion, Boch); API (Roadrunner AEG JSON; its site answers our bot with 403, 2026-11-05) | Rare jazz-adjacent; keyword filter. |
 
 ## Presenters
 
