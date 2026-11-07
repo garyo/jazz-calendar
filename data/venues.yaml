@@ -138,6 +138,15 @@
   jazz_level: regular
   aliases: [NEC, NEC's Jordan Hall, Jordan Hall]
 
+- id: the-bebop
+  name: The Bebop
+  address: 1116 Boylston St
+  town: Boston
+  neighborhood: Fenway
+  url: https://www.thebebopboston.com
+  jazz_level: occasional
+  aliases: [Bebop]
+
 - id: symphony-hall
   name: Symphony Hall
   address: 301 Massachusetts Ave

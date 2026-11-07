@@ -277,6 +277,19 @@
   venue: plough-and-stars
   notes: Act names only, no genres; mostly rock/folk, so few events pass the classifier.
 
+- id: the-bebop
+  adapter: squarespace
+  url: https://www.thebebopboston.com/new-events
+  credit: {name: "The Bebop’s calendar", url: https://www.thebebopboston.com/new-events}
+  venue: the-bebop
+  exclude: ^no\b|\bclosed\b
+  title_strip: \s+at The Bebop!?$
+  notes: >-
+    Squarespace calendar view, read from its <noscript> list, which covers only the current
+    month (the calendar itself loads from /api/, which robots.txt disallows). No site terms.
+    "NO GYPSY JAZZ" and "CLOSED" entries mark nights off. Jazz: Monday Jazz Jam and the
+    Saturday gypsy jazz brunch.
+
 - id: the-burren
   adapter: burren
   url: https://www.burren.com/music.html
