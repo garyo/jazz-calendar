@@ -220,7 +220,6 @@ export function filterRegulars(
 }
 
 const orList = new Intl.ListFormat("en", { type: "disjunction" });
-const andList = new Intl.ListFormat("en", { type: "conjunction" });
 
 /** The list view's days in a sentence: "tonight", "on Saturday, Oct 17"; null for no limit. */
 function datePhrase(state: ViewState, today: DayKey): string | null {
@@ -263,31 +262,19 @@ export function regularsIntro(state: ViewState, today: DayKey): string {
 }
 
 /**
- * The notice for a view with no dated shows but some weekly regulars,
- * pointing to them without presenting them as listings. Null when there are
- * none, or when the view isn't limited to some days.
+ * The line for a view with no dated shows but some weekly regulars, pointing
+ * down to them: "No dated shows tonight, but see the regular weekly gig below."
+ * Null when there are no regulars.
  */
 export function regularsNotice(
-  regulars: readonly Regular[],
-  venues: ReadonlyMap<string, Venue>,
+  count: number,
   state: ViewState,
   today: DayKey,
-): { title: string; body: string } | null {
-  const dates = datePhrase(state, today);
-  const when = regularsWhen(state, today);
-  if (!dates || !when || regulars.length === 0) return null;
-  const series =
-    regulars.length === 1
-      ? "this weekly series usually runs"
-      : "these weekly series usually run";
-  const names = regulars.map(
-    (regular) =>
-      `${regular.title} at ${venues.get(regular.venue)?.name ?? regular.venue}`,
-  );
-  return {
-    title: `No listed shows ${dates}.`,
-    body: `But ${series} ${when}: ${andList.format(names)}. Check with the venue before you go.`,
-  };
+  filtered: boolean,
+): string | null {
+  if (count === 0) return null;
+  const dates = datePhrase(state, today) ?? (filtered ? "match" : "listed");
+  return `No dated shows ${dates}, but see the regular weekly ${count === 1 ? "gig" : "gigs"} below.`;
 }
 
 /**

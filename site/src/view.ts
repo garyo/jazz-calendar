@@ -94,13 +94,15 @@ export function listingsView(clear: () => void): ListingsView {
   function noShowsNotice(
     state: ViewState,
     regulars: readonly Regular[],
-    feed: Feed,
     today: DayKey,
   ): HTMLElement {
-    const onlyRegulars = regularsNotice(regulars, feed.venues, state, today);
-    if (onlyRegulars) {
-      return renderNotice(onlyRegulars.title, onlyRegulars.body, clearAction);
-    }
+    const pointer = regularsNotice(
+      regulars.length,
+      state,
+      today,
+      isFiltered(state),
+    );
+    if (pointer) return h("p", { class: "regulars-pointer" }, pointer);
     if (isFiltered(state)) {
       return renderNotice(
         "Nothing matches those filters.",
@@ -144,7 +146,7 @@ export function listingsView(clear: () => void): ListingsView {
     const body =
       shown.length > 0
         ? reuseNights(renderDays(groups, feed.venues, feed.credits, now, today))
-        : [noShowsNotice(state, regulars, feed, today)];
+        : [noShowsNotice(state, regulars, today)];
     placeChildren(results, banner ? [banner, ...body] : body);
     regularsIntroText.textContent = regularsIntro(state, today);
     regularsList.replaceChildren(...renderRegulars(regulars, feed.venues));

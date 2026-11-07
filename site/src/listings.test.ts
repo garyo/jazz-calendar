@@ -334,7 +334,6 @@ describe("filterRegulars", () => {
 describe("regulars' wording", () => {
   const today = "2026-10-15"; // Thursday
   const view = (state: Partial<ViewState>) => ({ ...DEFAULT_STATE, ...state });
-  const regulars = sample.regulars ?? [];
 
   test("the introduction names the view's weekdays", () => {
     expect(regularsIntro(view({}), today)).toStartWith(
@@ -351,30 +350,25 @@ describe("regulars' wording", () => {
     );
   });
 
-  test("with no dated shows, the notice points to the regulars", () => {
-    const wallys = regulars.filter((r) => r.venue === "wallys");
-    expect(
-      regularsNotice(wallys, venues, view({ when: "tonight" }), today),
-    ).toEqual({
-      title: "No listed shows tonight.",
-      body: "But this weekly series usually runs on Thursdays: Jam session at Wally's Café. Check with the venue before you go.",
-    });
-    expect(
-      regularsNotice(regulars, venues, view({ day: "2026-10-17" }), today),
-    ).toEqual({
-      title: "No listed shows on Saturday, Oct 17.",
-      body: "But these weekly series usually run on Saturdays: Jam session at Wally's Café and Saturday band sessions at The Wellington. Check with the venue before you go.",
-    });
-    expect(
-      regularsNotice(regulars, venues, view({ day: today }), today)?.title,
-    ).toBe("No listed shows tonight.");
+  test("with no dated shows, a line points to the regulars", () => {
+    expect(regularsNotice(1, view({ when: "tonight" }), today, true)).toBe(
+      "No dated shows tonight, but see the regular weekly gig below.",
+    );
+    expect(regularsNotice(2, view({ day: "2026-10-17" }), today, true)).toBe(
+      "No dated shows on Saturday, Oct 17, but see the regular weekly gigs below.",
+    );
+    expect(regularsNotice(2, view({ query: "wally" }), today, true)).toBe(
+      "No dated shows match, but see the regular weekly gigs below.",
+    );
+    expect(regularsNotice(2, view({}), today, false)).toBe(
+      "No dated shows listed, but see the regular weekly gigs below.",
+    );
   });
 
-  test("no notice without regulars, or when dates don't apply", () => {
-    expect(regularsNotice([], venues, view({ when: "tonight" }), today)).toBe(
+  test("no line without regulars", () => {
+    expect(regularsNotice(0, view({ when: "tonight" }), today, true)).toBe(
       null,
     );
-    expect(regularsNotice(regulars, venues, view({}), today)).toBeNull();
   });
 });
 
