@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "bun scripts/build.ts",
-    "dev": "bun run build && wrangler dev",
+    "dev": "bun scripts/dev.ts",
     "seed:local": "wrangler r2 object put bostonjazzcalendar-data/events.json --local --file ../schema/sample-events.json --content-type 'application/json; charset=utf-8'",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.worker.json --noEmit",
     "lint": "biome check .",

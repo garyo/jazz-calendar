@@ -11,7 +11,7 @@ import { basename, join } from "node:path";
 
 const SITE = join(import.meta.dir, "..");
 const ENTRIES = ["src/main.ts", "src/admin.ts"];
-const PAGES = ["index.html", "admin.html"];
+export const PAGES = ["index.html", "admin.html"];
 export const ASSETS = "assets";
 
 /** "styles.css" with its content's hash: "styles-1a2b3c4d5e.css". */

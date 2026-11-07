@@ -84,12 +84,15 @@ and `nth`), still in their own section and never in the month grid or feeds.
 ```sh
 bun install
 bun run seed:local   # put ../schema/sample-events.json into local R2 as events.json
-bun run dev          # build, then wrangler dev on http://localhost:8787
+bun run dev          # wrangler dev on http://localhost:8787, rebuilding as you edit
 ```
 
-`wrangler dev` reloads static files when `dist/` changes. After editing
-front-end code, run `bun run build` in another terminal. Local R2 data lives
-in `.wrangler/state` and persists between runs.
+`scripts/dev.ts` builds `dist/`, runs `wrangler dev` (arguments pass
+through: `bun run dev -- --port 8790`), and rebuilds whenever `public/` or
+`src/` changes. In dev each page also loads `/dev-reload.js`, which reloads
+it after a rebuild. (Wrangler's own `--live-reload` injects an inline
+script, which our Content-Security-Policy blocks.) Local R2 data lives in
+`.wrangler/state` and persists between runs.
 
 `bun run build` (`scripts/build.ts`) copies `public/` into `dist/`, bundles
 `src/main.ts` and `src/admin.ts`, and moves every script and stylesheet to
