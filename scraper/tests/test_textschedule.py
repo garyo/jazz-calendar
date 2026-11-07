@@ -41,3 +41,31 @@ def test_year_rolls_over() -> None:
         today=date(2026, 12, 20),
     )
     assert event.start.date() == date(2027, 1, 8)
+
+
+def test_sets_over_several_lines() -> None:
+    page = """
+Our Run Begins THIS Friday, November 6th!
+Friday, November 6th
+7:30
+First Feature:
+(new here) Pat Doe saxophone, Sam Roe drums
+8:30
+KR5
+Sunday, November 8th SONGBOOK NIGHT with Kim Moe!
+7 PM: The house orchestra plays a wild array of instrumental compositions from its book.
+8 PM: Kim Moe, the singer from just down the street, sings standards with the orchestra.
+Saturday, November 14th
+Student Night
+Schedule TBA!
+"""
+    events = textschedule.parse(page, page_url="https://club.example/", today=date(2026, 11, 1))
+    assert [e.title for e in events] == ["First Feature", "KR5", "SONGBOOK NIGHT with Kim Moe"]
+    feature, kr5, songbook = events
+    assert feature.start == datetime(2026, 11, 6, 19, 30, tzinfo=TZ)
+    assert feature.end == kr5.start
+    assert feature.artists == ["Sam Roe"]
+    assert kr5.artists == []
+    assert songbook.start == datetime(2026, 11, 8, 19, 0, tzinfo=TZ)
+    assert songbook.end == datetime(2026, 11, 8, 21, 0, tzinfo=TZ)
+    assert songbook.artists == []
