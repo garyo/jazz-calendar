@@ -1629,10 +1629,18 @@ a.event-link:hover {
   overflow-wrap: anywhere;
 }
 
-/* Where listings come from: a disclosure in the About section. */
+/* Disclosures: where listings come from (in About), and other calendars. */
+
+.other-calendars {
+  grid-column: 1 / -1;
+}
 
 .sources {
   margin: 0 0 0.75rem;
+}
+
+.other-calendars .sources {
+  margin-bottom: 0.4rem;
 }
 
 .sources summary {
