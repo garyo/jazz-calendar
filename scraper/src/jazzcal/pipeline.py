@@ -62,7 +62,7 @@ def scrape(
         if source.venue and registry.venues[source.venue].opted_out:
             continue
         try:
-            events = scrape_source(source, http)
+            events, problem = scrape_source(source, http)
         except Exception as e:
             # One broken source must not stop the others; its last good listings stand.
             log.exception("source %s failed", source.id)
@@ -76,26 +76,50 @@ def scrape(
             and not source.exact
             and (had := sum(not _past(e, now) for e in store.last_found(source.id)))
         ):
-            error = f"0 events (had {had} upcoming last run)"
+            found_by = (
+                f"{source.adapter} or {source.fallback}" if source.fallback else source.adapter
+            )
+            error = f"0 events from {found_by} (had {had} upcoming last run)"
             log.warning("source %s: %s; keeping its listings", source.id, error)
             store.record_failure(source.id, error)
             continue
-        store.record_success(source.id, events)
+        store.record_success(source.id, events, problem)
 
     listings = store.prune(now - KEEP_FOR)
     pages = 0 if http.offline else http.prune_cache(KEEP_FOR)  # offline runs need the cache
     log.info("pruned %d old listings and %d cached pages", listings, pages)
 
 
-def scrape_source(source: Source, http: Http) -> list[ScrapedEvent]:
-    """What a source lists: its adapter's events, with the source's title rewrites applied,
-    less any they leave without a title."""
-    events = get_adapter(source.adapter)(source, http)
-    if not (source.title_strip or source.title_replace):
-        return events
-    return [
-        e.model_copy(update={"title": title}) for e in events if (title := source.retitle(e.title))
-    ]
+def scrape_source(source: Source, http: Http) -> tuple[list[ScrapedEvent], str | None]:
+    """What a source lists, with the source's title rewrites applied, less any they leave
+    without a title; and a problem to report, if any.
+
+    The events are its adapter's or, when the adapter finds none and the source has a
+    fallback, the fallback's. The fallback finding something means the adapter has likely
+    stopped reading the page, which is the problem; the fallback failing raises."""
+    events, problem = get_adapter(source.adapter)(source, http), None
+    if not events and source.fallback:
+        try:
+            events = get_adapter(source.fallback)(source, http)
+        except Exception as e:
+            raise FallbackError(
+                f"{source.adapter} found nothing and {source.fallback} failed: "
+                f"{type(e).__name__}: {e}"
+            ) from e
+        if events:
+            problem = f"{source.adapter} found nothing; {source.fallback} found {len(events)}"
+            log.warning("source %s: %s", source.id, problem)
+    if source.title_strip or source.title_replace:
+        events = [
+            e.model_copy(update={"title": title})
+            for e in events
+            if (title := source.retitle(e.title))
+        ]
+    return events, problem
+
+
+class FallbackError(Exception):
+    """A source's adapter found nothing, and its fallback failed."""
 
 
 def _past(event: ScrapedEvent, now: datetime) -> bool:

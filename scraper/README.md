@@ -56,8 +56,12 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
   - After each scrape, the store forgets listings a source has dropped whose events ended over
     30 days ago, and the cache deletes pages unused for 30 days (except on `--offline` runs).
 - **`pipeline.scrape_source`** runs a source's adapter and applies its `title_strip` and
-  `title_replace` to the titles (`Source.retitle`, ignoring case). `jazzcal show` prints
-  what it returns.
+  `title_replace` to the titles (`Source.retitle`, ignoring case). When the adapter finds
+  nothing and the source has a `fallback` (`llmtext`), it tries that on the same page. The
+  fallback's events are listed, but the run is recorded as failed ("textschedule found
+  nothing; llmtext found 12"), so the adapter that stopped reading the page shows in
+  `status.json` and in alerts. Both finding nothing is an empty calendar, judged as above;
+  the fallback failing fails the run. `jazzcal show` prints what it returns.
 - **`pipeline.build`**:
   1. Resolves venues (by id, name, alias or street address).
   2. Classifies each event as jazz, adjacent or other (`classify.py`).
@@ -175,6 +179,19 @@ only new or changed listings cost anything.
 `uv run jazzcal eval [--classifier MODEL]` scores rules alone and rules plus the model against
 the hand labels in `eval/labels.yaml`. It leads with missed shows. Any classifier that has a
 `name` and `classify(questions) -> {id: Verdict}` can be compared this way.
+
+### Reading pages with a model
+
+The `llmtext` adapter reads a page's text with a language model (`$JAZZCAL_EXTRACTOR`,
+default `claude-haiku-5-5`, with `ANTHROPIC_API_KEY`), for schedules written as prose or in
+layouts no adapter knows. It's meant mostly as a source's `fallback`, for when the page
+changes and the source's own adapter finds nothing, until that adapter is fixed. It only
+keeps what the page bears out:
+each listing quotes the page's words for its date and time, and is dropped unless the quotes
+and the title are on the page and our own parsers read the same date and start time from the
+quotes. Answers are cached by the page's text (`var/cache/llmtext/`), so an unchanged page
+costs nothing. Effort stays at `medium`: at `low`, models stopped after a dozen listings of a
+long page.
 
 We publish facts and links only, never venue descriptions or images. Every event links back to
 its venue or source. The feed's `sources` list credits each source its events came from, and a

@@ -1,6 +1,6 @@
 import hashlib
 import re
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -12,9 +12,9 @@ from jazzcal import pipeline
 from jazzcal import store as store_module
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key, night_of
-from jazzcal.http import Http, redact
+from jazzcal.http import FetchError, Http, redact
 from jazzcal.llm import Question, Verdict
-from jazzcal.models import Credit, Regular, ScrapedEvent, Source
+from jazzcal.models import Credit, Regular, ScrapedEvent, Source, SourceStatus
 from jazzcal.store import Store
 
 NOW = datetime(2026, 10, 15, 12, tzinfo=TZ)
@@ -329,9 +329,57 @@ def test_empty_run_after_a_full_one_is_a_failure(scrape: Scraper, store: Store) 
         assert [e.title for e in feed.events] == ["Gig"]
         by_id = {s.id: s for s in status.sources}
         assert not by_id["s"].ok
-        assert by_id["s"].error == "0 events (had 1 upcoming last run)"
+        assert by_id["s"].error == "0 events from fake (had 1 upcoming last run)"
         # A source that had nothing last time either is fine.
         assert by_id["t"].ok
+
+
+def test_a_fallback_fills_in_but_is_reported(
+    store: Store, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = Source(id="s", adapter="own", url="https://a", venue="club", fallback="model")
+    registry = Registry({"club": venue("club", "dedicated")}, [source])
+    broken = FetchError("model: no complete answer")
+
+    def run(own: list[ScrapedEvent], model: list[ScrapedEvent] | Exception) -> SourceStatus:
+        def get_adapter(name: str) -> Callable[[Source, Http], list[ScrapedEvent]]:
+            def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
+                found = own if name == "own" else model
+                if isinstance(found, Exception):
+                    raise found
+                return found
+
+            return scrape
+
+        monkeypatch.setattr(pipeline, "get_adapter", get_adapter)
+        with Http(tmp_path / "cache", offline=True, max_age=timedelta(hours=6)) as http:
+            pipeline.scrape(registry, store, http, now=NOW)
+        status = store.status("s")
+        assert status
+        return status
+
+    # A calendar with nothing on it is nothing to both, and fine.
+    assert run([], []).ok
+    # The adapter's own finds stand; the fallback isn't asked.
+    assert run([event("1", "Pat Doe Quartet")], broken).ok
+    # When only the fallback finds anything, its finds are listed but the run counts as
+    # failed, so the broken adapter shows on the status page and in alerts.
+    for runs in (1, 2):
+        status = run([], [event("2", "Lee Roe Trio")])
+        assert (status.ok, status.events) == (False, 1)
+        assert status.error == "own found nothing; model found 1"
+        assert [e.title for e in store.current("s", 1)] == ["Lee Roe Trio"]
+        assert [f.runs for f in store.failing(1)] == [runs]
+    # The fallback failing too is a failure, naming both.
+    status = run([], broken)
+    assert status.error == (
+        "FallbackError: own found nothing and model failed: FetchError: model: no complete answer"
+    )
+    assert [e.title for e in store.current("s", 1)] == ["Lee Roe Trio"]
+    assert run([], []).error == "0 events from own or model (had 1 upcoming last run)"
+    # The adapter reading the page again clears it all.
+    assert run([event("1", "Pat Doe Quartet")], broken).ok
+    assert store.failing(1) == []
 
 
 def test_scrape_rewrites_titles(scrape: Scraper, store: Store) -> None:

@@ -74,7 +74,11 @@ class Store:
     def close(self) -> None:
         self.db.close()
 
-    def record_success(self, source: str, events: list[ScrapedEvent]) -> None:
+    def record_success(
+        self, source: str, events: list[ScrapedEvent], problem: str | None = None
+    ) -> None:
+        """Store what a run found. A problem (its own adapter found nothing, so a fallback's
+        events are stored) still counts the run as failed, so it shows and alerts."""
         now = _now()
         with self.db:
             # Count a miss against everything, then clear it for what this run found.
@@ -87,9 +91,14 @@ class Store:
                 [(source, e.uid, e.model_dump_json(), now, now) for e in events],
             )
             self.db.execute(
-                """insert or replace into run (source, last_attempt, last_success, ok, events)
-                   values (?, ?, ?, 1, ?)""",
-                (source, now, now, len(events)),
+                """insert into run (source, last_attempt, last_success, ok, events, error, failures)
+                   values (?, ?, ?, ?, ?, ?, ?)
+                   on conflict (source) do update
+                   set last_attempt = excluded.last_attempt, last_success = excluded.last_success,
+                       ok = excluded.ok, events = excluded.events, error = excluded.error,
+                       failures = iif(excluded.ok, 0, failures + 1),
+                       notified = iif(excluded.ok, null, notified)""",
+                (source, now, now, problem is None, len(events), problem, int(problem is not None)),
             )
 
     def record_failure(self, source: str, error: str) -> None:

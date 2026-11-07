@@ -3,7 +3,9 @@
 #
 # adapter:   ics | tribe | jsonld | localist | spektrix | bibliocommons | squarespace |
 #            musicidb | ploughandstars | burren | bentobox | textschedule | ticketmaster |
-#            submissions   (see scraper/src/jazzcal/adapters/)
+#            llmtext | submissions   (see scraper/src/jazzcal/adapters/)
+# fallback:  llmtext, to read the page with a language model when the adapter finds nothing
+#            (see "Reading pages with a model" in scraper/README.md)
 # venue:     venue id, for single-venue sources
 # credit:    how the site credits the source, required when enabled:
 #            name — for people ("The Lilypad’s calendar"); url — a public page, never an API
@@ -299,13 +301,15 @@
 
 - id: postunderground
   adapter: textschedule
+  fallback: llmtext
   url: https://www.postunderground.com/
   credit: {name: "POSTunderground", url: https://www.postunderground.com/}
   venue: postunderground
   relevance: jazz
   notes: >-
     Open Fridays in odd months; the month's sets are posted as plain text on the home page
-    a week or two ahead.
+    a week or two ahead. Its layout changed in November 2026 and textschedule found nothing
+    until it learned the new one, hence the fallback.
 
 - id: groton-hill
   adapter: jsonld

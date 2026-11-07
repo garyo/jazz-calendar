@@ -122,6 +122,8 @@ def check_options(source: Source) -> None:
     """Raise ValueError unless the source names an adapter and suits its options."""
     try:
         _registered(source.adapter).options.model_validate(source.options)
+        if source.fallback and _registered(source.fallback).options.model_fields:
+            raise ValueError(f"fallback {source.fallback!r} takes options; it can't be a fallback")
     except KeyError as e:
         raise ValueError(f"source {source.id!r}: {e.args[0]}") from None
     except ValueError as e:
@@ -131,6 +133,15 @@ def check_options(source: Source) -> None:
 def html_to_text(fragment: str) -> str:
     text = HTMLParser(fragment).text(separator=" ")
     return re.sub(r"\s+", " ", text).strip()
+
+
+def page_text(page: str) -> str:
+    """A page's visible text, one cleaned line per text node, without scripts and styles."""
+    tree = HTMLParser(page)
+    for node in tree.css("script, style, noscript, svg"):
+        node.decompose()
+    text = tree.body.text(separator="\n") if tree.body else ""
+    return "\n".join(line for raw in text.splitlines() if (line := clean(raw)))
 
 
 def clean(value: str | None) -> str | None:

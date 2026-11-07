@@ -96,7 +96,7 @@ def main() -> None:
         case "show":
             source = _registry().source(args.source)
             with _http(args.offline, MAX_AGE_HOURS) as http:
-                for e in pipeline.scrape_source(source, http):
+                for e in pipeline.scrape_source(source, http)[0]:
                     print(e.model_dump_json(exclude={"text"}, exclude_none=True))
         case "submit":
             if not submit.submit(args.batch):

@@ -15,9 +15,7 @@ occurrence on or after a few weeks ago is used.
 import re
 from datetime import date, datetime, time, timedelta
 
-from selectolax.lexbor import LexborHTMLParser as HTMLParser
-
-from jazzcal.adapters import adapter, clean, to_local
+from jazzcal.adapters import adapter, clean, page_text, to_local
 from jazzcal.adapters.times import month_number, parse_times
 from jazzcal.config import TZ
 from jazzcal.http import Http
@@ -43,10 +41,7 @@ type Set = tuple[time, str]
 
 @adapter("textschedule")
 def scrape(source: Source, http: Http) -> list[ScrapedEvent]:
-    tree = HTMLParser(http.get(source.url).text)
-    for node in tree.css("script, style, noscript, svg"):
-        node.decompose()
-    text = tree.body.text(separator="\n") if tree.body else ""
+    text = page_text(http.get(source.url).text)
     return parse(text, page_url=source.url, today=datetime.now(TZ).date())
 
 

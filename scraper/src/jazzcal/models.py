@@ -94,6 +94,11 @@ class Source(Model):
 
     id: str
     adapter: str = Field(description="Adapter name, see jazzcal.adapters")
+    fallback: str | None = Field(
+        None,
+        description="An adapter taking no options (llmtext) tried on the same page when the "
+        "source's own finds nothing",
+    )
     url: str
     venue: str | None = Field(None, description="Venue id for single-venue sources")
     credit: Credit | None = Field(None, description="Required for enabled sources")
