@@ -76,6 +76,8 @@ def test_resolve_venue() -> None:
     ("title", "level", "expected"),
     [
         ("Trivia Night", "dedicated", "other"),
+        ("The Fictional Five Meet & Greet Experience", "dedicated", "other"),
+        ("The Fictional Five VIP Merch Package", "occasional", "other"),
         ("The Outskirts", "dedicated", "jazz"),
         ("Big Band Monday", "occasional", "jazz"),
         ("Dub Collective: funk night", "occasional", "adjacent"),

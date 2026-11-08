@@ -42,7 +42,8 @@ COMBO = re.compile(
 NOT_MUSIC = re.compile(
     r"\b(karaoke|trivia|comedy|stand-up|improv night|bingo|drag|podcast|lecture|"
     r"book club|market|yoga|workshop for kids|closed|no event tonight|private event|"
-    r"dj set|dance party|open mic)\b",
+    r"dj set|dance party|open mic|meet (&|and) greet|vip (package|experience|upgrade)|"
+    r"merch(andise)? (package|bundle))\b",
     re.IGNORECASE,
 )
 
