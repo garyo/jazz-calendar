@@ -566,6 +566,22 @@ def test_doubts_are_looked_up_and_what_stays_doubtful_is_reviewed(store: Store) 
     assert [a.title for a in review.acts] == ["Pat Doe"]
 
 
+def test_review_catches_a_confident_lookup_that_drops_an_act(store: Store) -> None:
+    source = Source(id="s", adapter="ics", url="https://a", venue="room")
+    registry = Registry({"room": venue("room", "regular")}, [source])
+    store.record_success("s", [event("1", "Pat Doe + Sam Poe", hours=1)])
+    unknown = Verdict(relevance="unknown", confidence=0.4, reason="three names")
+    first = FakeClassifier({"Pat Doe + Sam Poe": unknown})
+    wrong = Verdict(relevance="other", confidence=0.95, reason="a power-pop band, not jazz")
+    lookup = FakeClassifier({"Pat Doe + Sam Poe": wrong})
+    lookup.name = "fake+search"
+    feed, _, review = pipeline.build(registry, store, NOW, first, lookup)
+    assert feed.events == []
+    assert [(a.title, a.verdict, a.listed) for a in review.acts] == [
+        ("Pat Doe + Sam Poe", "other", None)
+    ]
+
+
 def test_review_reminders_are_weekly(store: Store) -> None:
     act = ReviewAct(
         venue="room", venue_name="Room", title="Pat Doe", nights=[NOW.date()], url=None,

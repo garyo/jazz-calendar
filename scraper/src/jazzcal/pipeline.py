@@ -23,6 +23,7 @@ from jazzcal.llm import Classifier, Question, Verdict
 from jazzcal.models import (
     Event,
     EventsFile,
+    JazzLevel,
     ReviewAct,
     ReviewFile,
     ScrapedEvent,
@@ -46,7 +47,7 @@ ADD_CONFIDENCE = 0.5
 """...and add one the rules left out only when at least this sure."""
 REVIEW_BELOW = 0.8
 """Answers less sure than this, or "unknown", are looked up on the web (with a lookup
-classifier), and any still in doubt go to the owner for review."""
+classifier), and any still in doubt go to the owner for review (see _for_review)."""
 REMIND_EVERY = timedelta(days=7)
 """How often to remind the owner of acts awaiting review."""
 DESCRIPTION_LIMIT = 1200
@@ -362,13 +363,7 @@ def _review(candidates: list[Candidate], registry: Registry) -> list[ReviewAct]:
     """The acts the owner should look at: see REVIEW_BELOW. One per title at a venue."""
     acts: dict[tuple[str, str], list[Candidate]] = {}
     for c in candidates:
-        # Unknowns that weren't looked up count only where jazz is regular: elsewhere nearly
-        # all are other music.
-        if (v := c.verdict) and (
-            v.confidence < REVIEW_BELOW
-            if v.relevance != "unknown"
-            else c.searched or registry.venues[c.venue].jazz_level == "regular"
-        ):
+        if (v := c.verdict) and _for_review(c, v, registry.venues[c.venue].jazz_level):
             acts.setdefault((c.venue, c.scraped.title), []).append(c)
     review = []
     for (venue, title), group in acts.items():
@@ -390,6 +385,19 @@ def _review(candidates: list[Candidate], registry: Registry) -> list[ReviewAct]:
             )
         )
     return sorted(review, key=lambda a: a.nights[0])
+
+
+def _for_review(c: Candidate, verdict: Verdict, jazz_level: JazzLevel) -> bool:
+    """Whether the owner should look at a listing's act: its answer is doubtful (unknowns that
+    weren't looked up count only where jazz is regular: elsewhere nearly all are other music),
+    or a lookup left it off the calendar where jazz is regular, since a lookup can confidently
+    mistake a local player for someone else of the same name."""
+    regular = jazz_level == "regular"
+    if verdict.relevance == "unknown":
+        return c.searched or regular
+    return verdict.confidence < REVIEW_BELOW or (
+        c.searched and regular and c.ruling.relevance == "other"
+    )
 
 
 def remind_review(

@@ -183,8 +183,10 @@ web: a listing's text often doesn't say what the act plays, and a small model ma
 name. Up to three searches per act, at about a cent each.
 
 The owner reviews what stays doubtful. Each build lists in `review.json` the acts answered with
-under 80% confidence, and the "unknown"s that were looked up or are at venues that book jazz
-regularly (unknowns elsewhere are nearly all other music). The site's review page shows them (the Acts
+under 80% confidence, the "unknown"s that were looked up or are at venues that book jazz
+regularly (unknowns elsewhere are nearly all other music), and, at those venues, acts a lookup
+left off the calendar: a lookup can confidently mistake a local player for someone else of the
+same name. The site's review page shows them (the Acts
 tab), and a weekly ntfy note says how many are waiting. The owner's ruling comes back through
 `/api/registry` and settles that title at that venue for good, over the rules and the model.
 
