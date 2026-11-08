@@ -177,9 +177,14 @@ store by content, model and prompt, so only new or changed listings cost anythin
 - A source's `unknown:` setting gives the fallback for rooms where unfamiliar acts are
   usually jazz.
 
-The owner reviews what the model is unsure of. Each build lists in `review.json` the acts it
-answered with under 80% confidence, and its "unknown"s at venues that book jazz regularly (its
-unknowns elsewhere are nearly all other music). The site's review page shows them (the Acts
+With `--lookup claude-haiku-5-5` (or `JAZZCAL_LOOKUP`), the answers it's unsure of (under 80%
+confidence, or "unknown") are asked again, one act at a time, by a model that can search the
+web: a listing's text often doesn't say what the act plays, and a small model may not know the
+name. Up to three searches per act, at about a cent each.
+
+The owner reviews what stays doubtful. Each build lists in `review.json` the acts answered with
+under 80% confidence, and the "unknown"s that were looked up or are at venues that book jazz
+regularly (unknowns elsewhere are nearly all other music). The site's review page shows them (the Acts
 tab), and a weekly ntfy note says how many are waiting. The owner's ruling comes back through
 `/api/registry` and settles that title at that venue for good, over the rules and the model.
 
