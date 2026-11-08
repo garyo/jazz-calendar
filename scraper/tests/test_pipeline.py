@@ -458,6 +458,24 @@ def test_classifier_leans_toward_keeping_listings(store: Store) -> None:
     assert len(classifier.asked) == 4
 
 
+def test_one_question_per_act_and_venue(store: Store) -> None:
+    source = Source(id="s", adapter="ics", url="https://a", venue="room")
+    registry = Registry({"room": venue("room")}, [source])
+    store.record_success(
+        "s",
+        [
+            event("1", "Pat Doe", hours=5, text="Early show."),
+            event("2", "Pat Doe", hours=8, text="Late show: Pat Doe plays jazz standards."),
+        ],
+    )
+    classifier = FakeClassifier(
+        {"Pat Doe": Verdict(relevance="jazz", confidence=0.9, reason="standards")}
+    )
+    feed, _ = pipeline.build(registry, store, NOW, classifier)
+    assert classifier.asked == ["Pat Doe"]
+    assert [e.relevance for e in feed.events] == ["jazz", "jazz"]
+
+
 def test_regulars_are_published_apart_from_events(store: Store) -> None:
     regular = Regular(
         venue="club",

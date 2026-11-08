@@ -168,8 +168,9 @@ it rests on something decisive: the source's word, an explicit jazz genre in the
 or a dedicated jazz room. The rest are guesses.
 
 With `--classifier claude-haiku-5-5` (or `JAZZCAL_CLASSIFIER`), those guesses go to a language
-model (`llm.py`), 25 listings per request. Its verdicts are cached by content in the store, so
-only new or changed listings cost anything.
+model (`llm.py`), 25 listings per request, one question per title at each venue. A model may
+carry an effort, as in `claude-sonnet-5-5@medium` (default low). Verdicts are cached in the
+store by content, model and prompt, so only new or changed listings cost anything.
 - It may answer "unknown", which changes nothing.
 - It can drop a listing the rules kept only when at least 85% sure. Missing a local gig is
   worse than listing a stray show.

@@ -240,19 +240,26 @@ def build(
 def overrule(
     classifier: Classifier, store: Store, registry: Registry, candidates: list[Candidate]
 ) -> None:
-    """Replace uncertain rulings with the classifier's verdicts, asking only about new listings."""
-    keyed: dict[str, tuple[Question, list[Candidate]]] = {}
+    """Replace uncertain rulings with the classifier's verdicts, asking only about new listings.
+
+    Listings with one title at one venue (an early and a late show, a run of nights) are one
+    question, asked with the fullest description among them, so they get one verdict."""
+    acts: dict[tuple[str, str], list[Candidate]] = {}
     for c in candidates:
-        venue = registry.venues[c.venue]
+        acts.setdefault((c.venue, c.scraped.title), []).append(c)
+    keyed: dict[str, tuple[Question, list[Candidate]]] = {}
+    for (venue_id, title), group in acts.items():
+        venue = registry.venues[venue_id]
+        fullest = max(group, key=lambda c: len(c.scraped.text or ""))
         q = Question(
             id=str(len(keyed)),
-            title=c.scraped.title,
+            title=title,
             venue=f"{venue.name}, {venue.town}",
             venue_profile=VENUE_PROFILES[venue.jazz_level],
-            tags=c.scraped.categories,
-            description=(c.scraped.text or "")[:DESCRIPTION_LIMIT] or None,
+            tags=fullest.scraped.categories,
+            description=(fullest.scraped.text or "")[:DESCRIPTION_LIMIT] or None,
         )
-        keyed.setdefault(q.cache_key(classifier.name), (q, []))[1].append(c)
+        keyed.setdefault(q.cache_key(classifier.name), (q, []))[1].extend(group)
     verdicts = store.verdicts(list(keyed))
     missing = {key: q for key, (q, _) in keyed.items() if key not in verdicts}
     if missing:

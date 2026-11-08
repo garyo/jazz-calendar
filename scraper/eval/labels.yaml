@@ -499,3 +499,124 @@
 - source: the-burren
   title: DAVE HERLIHY Record Release Party
   label: other
+# 2026-11-07: City Winery, and listings that moved when the prompt changed
+- source: city-winery
+  title: "Spyro Gyra"
+  label: jazz
+- source: city-winery
+  title: "Jonathan Suazo"
+  label: jazz
+- source: city-winery
+  title: "Kat Edmonson: Have Your Merry Christmas With Me"
+  label: jazz
+- source: city-winery
+  title: "Jody Nardone Trio \"A Charlie Brown Christmas\" - A Tribute to Vince Guaraldi"
+  label: jazz
+- source: city-winery
+  title: "A Sinatra Christmas w/ Rich DiMare & Ron Poster Trio"
+  label: jazz
+- source: city-winery
+  title: "Marissa Mulder \"Merry & Bright\" Brunch"
+  label: unsure
+- source: city-winery
+  title: "Corey Staggers"
+  label: unsure
+- source: city-winery
+  title: "Trey Daniels"
+  label: unsure
+- source: city-winery
+  title: "Safiya presents \"A Caribbean Christmas\""
+  label: unsure
+- source: city-winery
+  title: "Chrisette Michele"
+  label: adjacent
+- source: city-winery
+  title: "The James Hunter Six w/ special guest McKinley James"
+  label: adjacent
+- source: city-winery
+  title: "Uncrowned: A Tribute to Ida Cox"
+  label: adjacent
+- source: city-winery
+  title: "Cem Adrian"
+  label: adjacent
+- source: city-winery
+  title: "Doobie Powell"
+  label: unsure
+- source: city-winery
+  title: "An Evening with Richard Saunders"
+  label: unsure
+- source: city-winery
+  title: "PureSoul Presents: D'Angelo vs. Maxwell"
+  label: unsure
+- source: city-winery
+  title: "A PureSoul Christmas"
+  label: unsure
+- source: city-winery
+  title: "Joshua Radin"
+  label: other
+- source: city-winery
+  title: "Dar Williams"
+  label: other
+- source: city-winery
+  title: "Marshall Crenshaw"
+  label: other
+- source: city-winery
+  title: "Juliana Hatfield"
+  label: other
+- source: city-winery
+  title: "Brother Ali"
+  label: other
+- source: city-winery
+  title: "Boy Band Brunch"
+  label: other
+- source: city-winery
+  title: "Simply Whitney: A Tribute to Whitney Houston"
+  label: other
+- source: city-winery
+  title: "Piff the Magic Dragon"
+  label: other
+- source: global-arts-live
+  title: "KEYON HARROLD"
+  label: jazz
+- source: global-arts-live
+  title: "CIRQUE KABALANTE: AFRIQUE EN CIRQUE"
+  label: other
+- source: global-arts-live
+  title: "JUANITO PASCUAL: FLAMENCO CELEBRATION OF JIMI HENDRIX"
+  label: unsure
+- source: global-arts-live
+  title: "SAHA GNAWA"
+  label: unsure
+- source: longy
+  title: "Matt Savage | Ray of Light | Faculty Artist Recital"
+  label: unsure
+- source: longy
+  title: "Donald Berman, piano | Other Transcendentalists"
+  label: other
+- source: lilypad
+  title: "The Jorge Perez-Albela Trio w/ Kenny Werner and John Lockwood"
+  label: jazz
+- source: lilypad
+  title: "Jorge Perez-Albela’s New Earth Band w/ Rick Dimuzio, Maxim Lubarsky & James Heazlewood"
+  label: unsure
+- source: lilypad
+  title: "Kass Richards + Chris Brokaw"
+  label: other
+- source: the-burren
+  title: "JGB Tribute, THE DIAMOND BLUES"
+  label: other
+- source: lizard-lounge
+  title: "Duke Levine & The Super Sweet Sounds Of The 70s Early Show"
+  label: other
+- source: lizard-lounge
+  title: "Lyle Brewer \"Learning Curve\" Album Release"
+  label: unsure
+- source: arts-at-the-armory
+  title: "GottaBal! Dance"
+  label: other
+- source: arts-at-the-armory
+  title: "Passim Presents Fiddle Funk Folk Festival"
+  label: unsure
+- source: beehive
+  title: "Sarah Brindell"
+  label: unsure

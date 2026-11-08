@@ -237,6 +237,8 @@
   url: https://awsapi.citywinery.com/feeds/Boston/events.ics
   credit: {name: "City Winery Boston’s calendar", url: https://citywinery.com/pages/events/boston}
   venue: city-winery
+  # A title naming the genre is a theme night (R&B brunches, sing-alongs, parties), not an act.
+  exclude: \bR&B\b
   notes: >-
     The iCal feed the events page links as its alternate (rel="alternate"), with the Main Stage
     and the Haymarket Lounge, about two months ahead; its times say America/Detroit, which keeps
