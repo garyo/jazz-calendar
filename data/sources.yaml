@@ -232,6 +232,18 @@
     ticket_link: a.event-links  # the offer's url has a blank ?performance=
   notes: All genres (much world music); Crawl-delay 10, so a cold run takes ~10 minutes.
 
+- id: city-winery
+  adapter: ics
+  url: https://awsapi.citywinery.com/feeds/Boston/events.ics
+  credit: {name: "City Winery Boston’s calendar", url: https://citywinery.com/pages/events/boston}
+  venue: city-winery
+  notes: >-
+    The iCal feed the events page links as its alternate (rel="alternate"), with the Main Stage
+    and the Haymarket Lounge, about two months ahead; its times say America/Detroit, which keeps
+    Boston's clock. The site's terms cover tickets only, and the feed host's robots.txt is a
+    403, which RFC 9309 reads as no limits (checked 2026-11-07). Mostly touring pop, soul and
+    comedy; jazz is occasional.
+
 - id: regattabar
   adapter: ticketmaster
   url: https://app.ticketmaster.com/discovery/v2/events.json
