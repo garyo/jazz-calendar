@@ -59,7 +59,7 @@
   town: Boston
   neighborhood: Jamaica Plain
   url: https://www.midwaycafe.com
-  jazz_level: regular
+  jazz_level: occasional
   aliases: [Midway Cafe]
 
 - id: hobgoblin
@@ -76,7 +76,7 @@
   town: Boston
   neighborhood: Seaport
   url: https://www.gracebynia.com
-  jazz_level: regular
+  jazz_level: occasional
 
 - id: the-fed
   name: The Fed at The Langham
@@ -374,7 +374,7 @@
   town: Somerville
   neighborhood: Union Square
   url: https://www.sallyobriensbar.com
-  jazz_level: regular
+  jazz_level: occasional
 
 - id: the-burren
   name: The Burren
@@ -453,7 +453,7 @@
   town: Newton
   neighborhood: West Newton
   url: https://www.thebluebirdbar.com
-  jazz_level: regular
+  jazz_level: occasional
   aliases: [Bluebird Bar]
 
 - id: mosesian-center
@@ -489,7 +489,7 @@
   name: QArts Gallery
   address: 1229 Hancock St
   town: Quincy
-  jazz_level: regular
+  jazz_level: occasional
 
 - id: the-cabot
   name: The Cabot
