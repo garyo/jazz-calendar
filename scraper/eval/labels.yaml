@@ -1,6 +1,7 @@
 # Hand-labeled listings for `jazzcal eval`, sampled from the listings the keyword rules
 # are unsure about (2026-10-15). label: jazz | adjacent | other | unsure (left out of scoring).
-# Drafted from general knowledge of the acts; review and correct freely.
+# Drafted from general knowledge of the acts. Reviewed 2026-11-07 against an independent
+# labeling (Codex, with web search) and the classifier; the owner settled disagreements.
 - source: the-cabot
   title: The Temptations
   label: adjacent
@@ -30,13 +31,13 @@
   label: unsure
 - source: hobgoblin
   title: Teddy Horangic Duo with Jake Walters
-  label: unsure
+  label: jazz
 - source: hobgoblin
   title: Camila Quintero duo with Lucas Labeau
   label: jazz
 - source: hobgoblin
   title: Jake Walters (solo piano)
-  label: unsure
+  label: jazz
 - source: hobgoblin
   title: Doug Johnson (solo piano)
   label: jazz
@@ -63,28 +64,28 @@
   label: jazz
 - source: global-arts-live
   title: MARYNA KRUT
-  label: unsure
+  label: other
 - source: global-arts-live
   title: BRIA SKONBERG
   label: jazz
 - source: global-arts-live
   title: ZOHAR & ADAM
-  label: unsure
+  label: jazz
 - source: global-arts-live
   title: KEYON HARROLD
   label: jazz
 - source: global-arts-live
   title: SUBJECT:MATTER "Outside"
-  label: unsure
+  label: jazz
 - source: global-arts-live
   title: KANDACE SPRINGS
   label: jazz
 - source: global-arts-live
   title: MANAS
-  label: unsure
+  label: jazz
 - source: global-arts-live
   title: TAMARA JOKIĆ
-  label: unsure
+  label: jazz
 - source: global-arts-live
   title: GRETCHEN PARLATO
   label: jazz
@@ -102,22 +103,22 @@
   label: jazz
 - source: global-arts-live
   title: SAHA GNAWA
-  label: other
+  label: adjacent
 - source: global-arts-live
   title: THE HOT SARDINES
   label: jazz
 - source: global-arts-live
   title: 'JUANITO PASCUAL: FLAMENCO CELEBRATION OF JIMI HENDRIX'
-  label: other
+  label: adjacent
 - source: global-arts-live
   title: MARQUIS HILL
   label: jazz
 - source: global-arts-live
   title: FLAMENKORA
-  label: other
+  label: jazz
 - source: global-arts-live
   title: 'RED BARAAT: FESTIVAL OF COLORS'
-  label: unsure
+  label: adjacent
 - source: global-arts-live
   title: LAURA ANGLADE
   label: jazz
@@ -225,7 +226,7 @@
   label: other
 - source: arts-at-the-armory
   title: Arts at the Armory Spotlight Series Presents Tito Puente Jr.
-  label: adjacent
+  label: jazz
 - source: arts-at-the-armory
   title: Smut Slam
   label: other
@@ -252,13 +253,13 @@
   label: other
 - source: arts-at-the-armory
   title: Arts at the Armory Spotlight Series Presents Blind Boys of Alabama
-  label: unsure
+  label: adjacent
 - source: arts-at-the-armory
   title: 'The Bowery Presents: Bedouine with Other Delights'
   label: other
 - source: arts-at-the-armory
   title: The Bowery Presents Liana Flores
-  label: other
+  label: adjacent
 - source: northeastern
   title: Concert Band and Wind Ensemble Outdoor Concert
   label: other
@@ -303,7 +304,7 @@
   label: unsure
 - source: bpl
   title: Grooving With the Pat Loomis Trio (Uphams Corner branch)
-  label: unsure
+  label: jazz
 - source: beehive
   title: Blake Newman
   label: unsure
@@ -369,7 +370,7 @@
   label: other
 - source: global-arts-live
   title: MAYRIG
-  label: unsure
+  label: other
 - source: global-arts-live
   title: CELLOGAYAGUEM
   label: other
@@ -381,7 +382,7 @@
   label: other
 - source: global-arts-live
   title: NICOLÁS EMDEN
-  label: unsure
+  label: other
 - source: global-arts-live
   title: LE VENT DU NORD
   label: other
@@ -441,13 +442,13 @@
   label: other
 - source: plough-and-stars
   title: Mean Black Spider
-  label: other
+  label: unsure
 - source: plough-and-stars
   title: Western Faults
   label: other
 - source: plough-and-stars
   title: Dub Apocalypse
-  label: adjacent
+  label: other
 - source: plough-and-stars
   title: The Starlings with
   label: other
@@ -462,7 +463,7 @@
   label: other
 - source: plough-and-stars
   title: Samantha Farrell
-  label: other
+  label: jazz
 - source: the-burren
   title: Alice Howe & Freebo
   label: other
@@ -489,7 +490,7 @@
   label: other
 - source: the-burren
   title: Collective Measures
-  label: unsure
+  label: other
 - source: the-burren
   title: PORCH PARTY MAMAS with LIZ COOK
   label: other
@@ -517,16 +518,16 @@
   label: jazz
 - source: city-winery
   title: "Marissa Mulder \"Merry & Bright\" Brunch"
-  label: unsure
+  label: jazz
 - source: city-winery
   title: "Corey Staggers"
-  label: unsure
+  label: jazz
 - source: city-winery
   title: "Trey Daniels"
-  label: unsure
+  label: jazz
 - source: city-winery
   title: "Safiya presents \"A Caribbean Christmas\""
-  label: unsure
+  label: jazz
 - source: city-winery
   title: "Chrisette Michele"
   label: adjacent
@@ -538,19 +539,19 @@
   label: adjacent
 - source: city-winery
   title: "Cem Adrian"
-  label: adjacent
+  label: other
 - source: city-winery
   title: "Doobie Powell"
-  label: unsure
+  label: adjacent
 - source: city-winery
   title: "An Evening with Richard Saunders"
-  label: unsure
+  label: other
 - source: city-winery
   title: "PureSoul Presents: D'Angelo vs. Maxwell"
-  label: unsure
+  label: adjacent
 - source: city-winery
   title: "A PureSoul Christmas"
-  label: unsure
+  label: adjacent
 - source: city-winery
   title: "Joshua Radin"
   label: other
@@ -575,21 +576,9 @@
 - source: city-winery
   title: "Piff the Magic Dragon"
   label: other
-- source: global-arts-live
-  title: "KEYON HARROLD"
-  label: jazz
-- source: global-arts-live
-  title: "CIRQUE KABALANTE: AFRIQUE EN CIRQUE"
-  label: other
-- source: global-arts-live
-  title: "JUANITO PASCUAL: FLAMENCO CELEBRATION OF JIMI HENDRIX"
-  label: unsure
-- source: global-arts-live
-  title: "SAHA GNAWA"
-  label: unsure
 - source: longy
   title: "Matt Savage | Ray of Light | Faculty Artist Recital"
-  label: unsure
+  label: jazz
 - source: longy
   title: "Donald Berman, piano | Other Transcendentalists"
   label: other
@@ -598,25 +587,22 @@
   label: jazz
 - source: lilypad
   title: "Jorge Perez-Albela’s New Earth Band w/ Rick Dimuzio, Maxim Lubarsky & James Heazlewood"
-  label: unsure
+  label: jazz
 - source: lilypad
   title: "Kass Richards + Chris Brokaw"
   label: other
-- source: the-burren
-  title: "JGB Tribute, THE DIAMOND BLUES"
-  label: other
 - source: lizard-lounge
   title: "Duke Levine & The Super Sweet Sounds Of The 70s Early Show"
-  label: other
+  label: adjacent
 - source: lizard-lounge
   title: "Lyle Brewer \"Learning Curve\" Album Release"
-  label: unsure
+  label: adjacent
 - source: arts-at-the-armory
   title: "GottaBal! Dance"
   label: other
 - source: arts-at-the-armory
   title: "Passim Presents Fiddle Funk Folk Festival"
-  label: unsure
+  label: adjacent
 - source: beehive
   title: "Sarah Brindell"
   label: unsure

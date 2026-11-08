@@ -220,7 +220,6 @@
   adapter: jsonld
   url: https://www.globalartslive.org/events/list-events
   credit: {name: "Global Arts Live", url: https://www.globalartslive.org/events/list-events}
-  trust_text: true
   options:
     follow: a[href^="/content/event_page/"]
     max_follow: 60
@@ -230,7 +229,10 @@
     venue_pattern: \bat ((?:(?! at ).)+)$
     no_price: true  # every event's offer says $20
     ticket_link: a.event-links  # the offer's url has a blank ?performance=
-  notes: All genres (much world music); Crawl-delay 10, so a cold run takes ~10 minutes.
+  notes: >-
+    All genres (much world music); Crawl-delay 10, so a cold run takes ~10 minutes. No
+    trust_text: its blurbs mention jazz in passing ("Afro-jazz", "flamenco meets jazz"), which
+    listed circus and world-music shows; the classifier still finds its jazz (2026-11-07).
 
 - id: city-winery
   adapter: ics
