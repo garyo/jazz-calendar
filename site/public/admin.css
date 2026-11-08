@@ -32,12 +32,30 @@
   flex: 1 1 auto;
 }
 
+.tab-badge {
+  display: inline-block;
+  min-width: 1.4em;
+  margin-left: 0.15em;
+  padding: 0 0.35em;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.tab-badge[hidden] {
+  display: none;
+}
+
 .admin-help {
   margin: 0 0 0.5rem;
 }
 
 .review-list {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
   margin: 0;
   padding: 0;
@@ -130,4 +148,26 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
+}
+
+.review-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.review-divider::after {
+  flex: 1;
+  border-top: 1px solid var(--rule);
+  content: "";
+}
+
+.review-divider h2 {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }

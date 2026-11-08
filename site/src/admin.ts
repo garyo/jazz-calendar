@@ -443,8 +443,9 @@ function edits(form: HTMLFormElement): Record<string, unknown> {
 }
 
 /**
- * Sends one card's change. On success reloads the tab, saying what was done;
- * otherwise shows what went wrong on the card.
+ * Sends one card's change. On success reloads the tab, saying what was done,
+ * and when the change takes the card off this tab (`leaves`), first plays it
+ * out; otherwise shows what went wrong on the card.
  */
 async function send(
   form: HTMLFormElement,
@@ -452,6 +453,7 @@ async function send(
   path: string,
   body: unknown,
   done: (result: ApiResult) => string,
+  leaves = false,
 ): Promise<void> {
   outcome.textContent = "Saving…";
   outcome.dataset.kind = "info";
@@ -459,7 +461,10 @@ async function send(
     const result = await api(path, body);
     showFieldErrors(form, result.body.fields ?? {});
     if (result.status === 200 || result.status === 201) {
-      await load(done(result));
+      const message = done(result);
+      outcome.textContent = `✓ ${message}`;
+      const card = form.closest("li");
+      await load(message, leaves && card ? leave(card) : undefined);
       return;
     }
     outcome.textContent = result.body.error ?? `Error ${result.status}`;
@@ -469,6 +474,35 @@ async function send(
     outcome.textContent = "Couldn’t reach the site.";
     outcome.dataset.kind = "error";
   }
+}
+
+/**
+ * Plays a card off the list: it slides aside and fades, then the space it
+ * held closes. The list is a flex column, so the negative margin takes up the
+ * gap below the card too.
+ */
+async function leave(card: HTMLElement): Promise<void> {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  await card.animate([{}, { opacity: 0, transform: "translateX(2rem)" }], {
+    duration: 350,
+    delay: 250,
+    easing: "ease-in",
+    fill: "forwards",
+  }).finished;
+  card.style.overflow = "hidden";
+  const gap = getComputedStyle(list).rowGap;
+  await card.animate(
+    [
+      { height: `${card.offsetHeight}px` },
+      {
+        height: "0",
+        paddingBlock: "0",
+        borderWidth: "0",
+        marginBottom: `-${gap}`,
+      },
+    ],
+    { duration: 250, easing: "ease-out", fill: "forwards" },
+  ).finished;
 }
 
 const DONE = {
@@ -490,9 +524,15 @@ function act(
       : action === "reject"
         ? { action, edits: { editor_note: changes.editor_note } }
         : { action };
-  return send(form, outcome, `${API}/${s.id}`, body, (result) => {
-    return `${DONE[action]} “${result.body.submission?.title ?? s.title}”.`;
-  });
+  return send(
+    form,
+    outcome,
+    `${API}/${s.id}`,
+    body,
+    (result) =>
+      `${DONE[action]} “${result.body.submission?.title ?? s.title}”.`,
+    action !== "confirm",
+  );
 }
 
 /** A card for a venue added here, or for adding one when `v` is null. */
@@ -529,9 +569,14 @@ function renderVenue(v: Venue | null): HTMLLIElement {
     } else if (action === "save" || action === "delete") {
       const path = `${VENUES_API}/${encodeURIComponent(v.id)}`;
       const done = action === "save" ? "Saved" : "Deleted";
-      void send(form, outcome, path, { action, ...fields }, () => {
-        return `${done} ${name}.`;
-      });
+      void send(
+        form,
+        outcome,
+        path,
+        { action, ...fields },
+        () => `${done} ${name}.`,
+        action === "delete",
+      );
     }
   });
   return h("li", { class: "review-card" }, form);
@@ -578,6 +623,7 @@ function renderHidden(entry: Hidden | null): HTMLLIElement {
         path,
         { action: "delete" },
         () => "Shown again.",
+        true,
       );
     });
     return h("li", { class: "review-card" }, form);
@@ -684,9 +730,14 @@ function renderAct(act: ReviewAct): HTMLLIElement {
     )
       return;
     const body = { venue: act.venue, title: act.title, relevance };
-    void send(form, outcome, RULINGS_API, body, () => {
-      return `“${act.title}”: ${VERDICTS[relevance].toLowerCase()}.`;
-    });
+    void send(
+      form,
+      outcome,
+      RULINGS_API,
+      body,
+      () => `“${act.title}”: ${VERDICTS[relevance].toLowerCase()}.`,
+      true,
+    );
   });
   return h("li", { class: "review-card" }, form);
 }
@@ -720,6 +771,7 @@ function renderRuling(ruling: Ruling): HTMLLIElement {
       RULINGS_API,
       body,
       () => `Undid “${ruling.title}”.`,
+      true,
     );
   });
   return h("li", { class: "review-card" }, form);
@@ -749,8 +801,14 @@ async function tabCards(): Promise<[HTMLLIElement[], string]> {
   }
   if (tab === "acts") {
     const { acts = [], rulings = [] } = (await api(REVIEW_API)).body;
+    const decided = rulings.length
+      ? [
+          h("li", { class: "review-divider" }, h("h2", {}, "Decided")),
+          ...rulings.map(renderRuling),
+        ]
+      : [];
     return [
-      [...acts.map(renderAct), ...rulings.map(renderRuling)],
+      [...acts.map(renderAct), ...decided],
       `${acts.length} awaiting a ruling, ${rulings.length} decided`,
     ];
   }
@@ -766,11 +824,35 @@ async function tabCards(): Promise<[HTMLLIElement[], string]> {
   return [submissions.map(renderCard), `${submissions.length} ${tab}`];
 }
 
-async function load(message = ""): Promise<void> {
+/** Shows on the Pending and Acts tabs how many things await a decision. */
+async function loadBadges(): Promise<void> {
+  const [pending, review] = await Promise.all([
+    api(`${API}?status=pending`),
+    api(REVIEW_API),
+  ]);
+  const counts: Record<string, number | undefined> = {
+    pending: pending.body.submissions?.length,
+    acts: review.body.acts?.length,
+  };
+  for (const badge of document.querySelectorAll<HTMLElement>("[data-badge]")) {
+    const count = counts[badge.dataset.badge ?? ""] ?? 0;
+    badge.textContent = String(count);
+    badge.hidden = count === 0;
+  }
+}
+
+/**
+ * Reloads the current tab, saying `message` if given. The new cards replace
+ * the old once `ready` settles: a card playing out (`leave`) finishes first.
+ */
+async function load(message = "", ready?: Promise<void>): Promise<void> {
   reviewStatus.textContent = "Loading…";
   try {
-    await loadVenues();
-    const [cards, count] = await tabCards();
+    const [[cards, count]] = await Promise.all([
+      loadVenues().then(tabCards),
+      loadBadges(),
+    ]);
+    await ready;
     list.replaceChildren(...cards);
     reviewStatus.textContent = message ? `${message} ${count}.` : `${count}.`;
   } catch (error) {
