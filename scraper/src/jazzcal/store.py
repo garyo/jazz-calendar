@@ -40,6 +40,18 @@ create table if not exists run (
     failures integer not null default 0,  -- consecutive failed runs
     notified text  -- when we last sent word of those failures
 );
+create table if not exists labeled (  -- listings with a label, kept for jazzcal eval
+    source text not null,
+    venue text not null,
+    title text not null,
+    data text not null,
+    saved text not null,
+    primary key (source, title)
+);
+create table if not exists reminder (
+    name text primary key,
+    sent text not null
+);
 """
 ADDED_COLUMNS = {
     "listing": {"event_id": "text"},
@@ -130,6 +142,32 @@ class Store:
             self.db.executemany(
                 "update run set notified = ? where source = ?",
                 [(when.isoformat(timespec="seconds"), source) for source in sources],
+            )
+
+    def save_labeled(self, source: str, venue: str, event: ScrapedEvent) -> None:
+        """Keep a copy of a labeled listing, so `jazzcal eval` can score its label after the
+        listing itself is pruned."""
+        with self.db:
+            self.db.execute(
+                "insert or replace into labeled values (?, ?, ?, ?, ?)",
+                (source, venue, event.title, event.model_dump_json(), _now()),
+            )
+
+    def labeled(self) -> list[tuple[str, str, ScrapedEvent]]:
+        """The labeled listings kept: (source, venue, listing)."""
+        rows = self.db.execute("select source, venue, data from labeled order by source, title")
+        return [(s, v, ScrapedEvent.model_validate_json(d)) for s, v, d in rows]
+
+    def reminded(self, name: str) -> datetime | None:
+        """When the reminder `name` was last sent."""
+        row = self.db.execute("select sent from reminder where name = ?", (name,)).fetchone()
+        return datetime.fromisoformat(row[0]) if row else None
+
+    def mark_reminded(self, name: str, when: datetime) -> None:
+        with self.db:
+            self.db.execute(
+                "insert or replace into reminder values (?, ?)",
+                (name, when.isoformat(timespec="seconds")),
             )
 
     def current(self, source: str, max_misses: int = MAX_MISSES) -> list[ScrapedEvent]:

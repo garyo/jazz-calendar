@@ -523,6 +523,39 @@ export function scheduleText(
  * A listing left out on request (worker-hidden.ts). Every field given must
  * match: words in the title, the venue, the night.
  */
+/** A ruling's answer: listed as jazz or adjacent, or left out. */
+export type Ruled = "jazz" | "adjacent" | "other";
+export const RULED: readonly Ruled[] = ["jazz", "adjacent", "other"];
+
+/** An act the classifier was unsure of: ReviewAct in the scraper's models.py. */
+export interface ReviewAct {
+  venue: string;
+  venue_name: string;
+  title: string;
+  /** The upcoming nights it's listed under. */
+  nights: DayKey[];
+  url: string | null;
+  verdict: Ruled | "unknown";
+  confidence: number;
+  reason: string;
+  /** How the feed lists it now; null when it's left out. */
+  listed: Exclude<Ruled, "other"> | null;
+}
+
+/** The owner's call on an act at a venue: Ruling in the scraper's site_registry.py. */
+export interface Ruling {
+  venue: string;
+  title: string;
+  relevance: Ruled;
+  /** "YYYY-MM-DD" */
+  decided: DayKey;
+}
+
+/** A title as rulings match it: lower case, single spaces. */
+export function titleKey(title: string): string {
+  return title.split(/\s+/).filter(Boolean).join(" ").toLowerCase();
+}
+
 export interface Hidden {
   id: number;
   title: string | null;

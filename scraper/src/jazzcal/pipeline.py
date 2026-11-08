@@ -9,6 +9,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from textwrap import shorten
+from typing import NamedTuple
 
 from rapidfuzz import fuzz
 
@@ -16,9 +17,19 @@ from jazzcal import notify
 from jazzcal.adapters import get_adapter
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, night_of
+from jazzcal.export import site_url
 from jazzcal.http import Http, redact
-from jazzcal.llm import Classifier, Question
-from jazzcal.models import Event, EventsFile, ScrapedEvent, Source, SourceCredit, StatusFile
+from jazzcal.llm import Classifier, Question, Verdict
+from jazzcal.models import (
+    Event,
+    EventsFile,
+    ReviewAct,
+    ReviewFile,
+    ScrapedEvent,
+    Source,
+    SourceCredit,
+    StatusFile,
+)
 from jazzcal.store import MAX_MISSES, Store
 
 log = logging.getLogger(__name__)
@@ -33,6 +44,11 @@ DROP_CONFIDENCE = 0.85
 """A classifier may drop a listing the rules kept only when at least this sure."""
 ADD_CONFIDENCE = 0.5
 """...and add one the rules left out only when at least this sure."""
+REVIEW_BELOW = 0.8
+"""Answers less sure than this, or "unknown", are looked up on the web (with a lookup
+classifier), and any still in doubt go to the owner for review."""
+REMIND_EVERY = timedelta(days=7)
+"""How often to remind the owner of acts awaiting review."""
 DESCRIPTION_LIMIT = 1200
 """Characters of description a classifier sees; enough to identify the act."""
 VENUE_PROFILES = {
@@ -156,6 +172,10 @@ class Candidate:
     """When the source first listed it, as stored (ISO 8601, UTC)."""
     published_id: str | None = None
     """The id it was last published under."""
+    verdict: Verdict | None = None
+    """The classifier's answer, when it was asked."""
+    searched: bool = False
+    """Whether that answer came from looking the act up."""
     merged: list["Candidate"] = field(default_factory=list)
     id: str = ""
     """The id to publish it under, once _assign_ids has run."""
@@ -165,9 +185,19 @@ class Candidate:
         return [self.source.id, *(m.source.id for m in self.merged)]
 
 
+class Built(NamedTuple):
+    feed: EventsFile
+    status: StatusFile
+    review: ReviewFile
+
+
 def build(
-    registry: Registry, store: Store, now: datetime, classifier: Classifier | None = None
-) -> tuple[EventsFile, StatusFile]:
+    registry: Registry,
+    store: Store,
+    now: datetime,
+    classifier: Classifier | None = None,
+    lookup: Classifier | None = None,
+) -> Built:
     candidates = []
     unresolved: Counter[str] = Counter()
     withheld = 0
@@ -192,7 +222,13 @@ def build(
             if registry.withheld(venue_id, scraped.title, night_of(scraped)):
                 withheld += 1
                 continue
-            ruling = classify(scraped, source, registry.venues[venue_id])
+            if owned := registry.ruled(venue_id, scraped.title):
+                store.save_labeled(source.id, venue_id, scraped)
+            ruling = (
+                Ruling(owned, True)
+                if owned
+                else classify(scraped, source, registry.venues[venue_id])
+            )
             if ruling.certain and ruling.relevance == "other":
                 continue
             first_seen, published_id = published_ids[scraped.uid]
@@ -204,7 +240,8 @@ def build(
     if withheld:
         log.info("left out %d listings on request", withheld)
     if classifier:
-        overrule(classifier, store, registry, [c for c in candidates if not c.ruling.certain])
+        uncertain = [c for c in candidates if not c.ruling.certain]
+        overrule(classifier, store, registry, uncertain, lookup)
 
     listed = [c for c in candidates if c.ruling.relevance != "other"]
     deduped = _dedup(listed)
@@ -219,7 +256,7 @@ def build(
     )
     events = sorted((_publish(c, registry) for c in deduped), key=lambda e: e.start)
     used = {source_id for e in events for source_id in e.sources}
-    return (
+    return Built(
         EventsFile(
             generated_at=now,
             venues=[v.public() for v in registry.venues.values() if not v.opted_out],
@@ -234,46 +271,57 @@ def build(
             ],
         ),
         StatusFile(generated_at=now, sources=statuses),
+        ReviewFile(generated_at=now, acts=_review(candidates, registry)),
     )
 
 
 def overrule(
-    classifier: Classifier, store: Store, registry: Registry, candidates: list[Candidate]
+    classifier: Classifier,
+    store: Store,
+    registry: Registry,
+    candidates: list[Candidate],
+    lookup: Classifier | None = None,
 ) -> None:
     """Replace uncertain rulings with the classifier's verdicts, asking only about new listings.
 
     Listings with one title at one venue (an early and a late show, a run of nights) are one
-    question, asked with the fullest description among them, so they get one verdict."""
+    question, asked with the fullest description among them, so they get one verdict. With
+    `lookup`, a classifier that searches the web, the acts the first answers leave in doubt
+    are asked about again, and those answers stand."""
     acts: dict[tuple[str, str], list[Candidate]] = {}
     for c in candidates:
         acts.setdefault((c.venue, c.scraped.title), []).append(c)
-    keyed: dict[str, tuple[Question, list[Candidate]]] = {}
-    for (venue_id, title), group in acts.items():
+    questions: list[tuple[Question, list[Candidate]]] = []
+    for i, ((venue_id, title), group) in enumerate(acts.items()):
         venue = registry.venues[venue_id]
         fullest = max(group, key=lambda c: len(c.scraped.text or ""))
         q = Question(
-            id=str(len(keyed)),
+            id=str(i),
             title=title,
             venue=f"{venue.name}, {venue.town}",
             venue_profile=VENUE_PROFILES[venue.jazz_level],
             tags=fullest.scraped.categories,
             description=(fullest.scraped.text or "")[:DESCRIPTION_LIMIT] or None,
         )
-        keyed.setdefault(q.cache_key(classifier.name), (q, []))[1].extend(group)
-    verdicts = store.verdicts(list(keyed))
-    missing = {key: q for key, (q, _) in keyed.items() if key not in verdicts}
-    if missing:
-        log.info("asking %s about %d listings", classifier.name, len(missing))
-        answers = classifier.classify(list(missing.values()))
-        fresh = {key: answers[q.id] for key, q in missing.items() if q.id in answers}
-        store.save_verdicts(fresh)
-        verdicts |= fresh
+        questions.append((q, group))
+    verdicts = _verdicts(classifier, store, [q for q, _ in questions])
+    looked_up: dict[str, Verdict] = {}
+    if lookup:
+        unsure = [q for q, _ in questions if q.id not in verdicts or doubtful(verdicts[q.id])]
+        looked_up = _verdicts(lookup, store, unsure)
+        verdicts |= looked_up
     # Missing a local gig is worse than listing a stray show, so "unknown" changes nothing and
     # dropping a listing the rules kept takes a confident verdict.
-    for key, (q, group) in keyed.items():
-        verdict = verdicts.get(key)
-        if verdict is None or verdict.relevance == "unknown":
+    for q, group in questions:
+        verdict = verdicts.get(q.id)
+        if verdict is None:
             continue
+        searched = q.id in looked_up
+        for c in group:
+            c.verdict, c.searched = verdict, searched
+        if verdict.relevance == "unknown":
+            continue
+        name = lookup.name if lookup and searched else classifier.name
         relevance = verdict.relevance
         for c in group:
             ruled = c.ruling.relevance
@@ -283,10 +331,81 @@ def overrule(
                 continue
             if ruled != relevance:
                 log.info(
-                    "%s: %r at %s: %s -> %s (%.2f, %s)", classifier.name, q.title, c.venue,
+                    "%s: %r at %s: %s -> %s (%.2f, %s)", name, q.title, c.venue,
                     ruled, relevance, verdict.confidence, verdict.reason,
                 )  # fmt: skip
             c.ruling = Ruling(relevance, True)
+
+
+def doubtful(verdict: Verdict) -> bool:
+    """An answer worth a second look: "unknown", or less sure than REVIEW_BELOW."""
+    return verdict.relevance == "unknown" or verdict.confidence < REVIEW_BELOW
+
+
+def _verdicts(
+    classifier: Classifier, store: Store, questions: list[Question]
+) -> dict[str, Verdict]:
+    """The classifier's answers by question id, from the cache or asked now."""
+    keys = {q.id: q.cache_key(classifier.name, classifier.prompt) for q in questions}
+    cached = store.verdicts(list(keys.values()))
+    missing = [q for q in questions if keys[q.id] not in cached]
+    if missing:
+        log.info("asking %s about %d listings", classifier.name, len(missing))
+        answers = classifier.classify(missing)
+        fresh = {keys[q.id]: answers[q.id] for q in missing if q.id in answers}
+        store.save_verdicts(fresh)
+        cached |= fresh
+    return {q.id: cached[keys[q.id]] for q in questions if keys[q.id] in cached}
+
+
+def _review(candidates: list[Candidate], registry: Registry) -> list[ReviewAct]:
+    """The acts the owner should look at: see REVIEW_BELOW. One per title at a venue."""
+    acts: dict[tuple[str, str], list[Candidate]] = {}
+    for c in candidates:
+        # Unknowns that weren't looked up count only where jazz is regular: elsewhere nearly
+        # all are other music.
+        if (v := c.verdict) and (
+            v.confidence < REVIEW_BELOW
+            if v.relevance != "unknown"
+            else c.searched or registry.venues[c.venue].jazz_level == "regular"
+        ):
+            acts.setdefault((c.venue, c.scraped.title), []).append(c)
+    review = []
+    for (venue, title), group in acts.items():
+        first = min(group, key=lambda c: c.scraped.start)
+        verdict = first.verdict
+        assert verdict
+        relevance = first.ruling.relevance
+        review.append(
+            ReviewAct(
+                venue=venue,
+                venue_name=registry.venues[venue].name,
+                title=title,
+                nights=sorted({night_of(c.scraped) for c in group}),
+                url=first.scraped.url,
+                verdict=verdict.relevance,
+                confidence=verdict.confidence,
+                reason=verdict.reason,
+                listed=None if relevance == "other" else relevance,
+            )
+        )
+    return sorted(review, key=lambda a: a.nights[0])
+
+
+def remind_review(
+    review: ReviewFile,
+    store: Store,
+    now: datetime,
+    send: Callable[[str, str], bool] = notify.send,
+) -> None:
+    """Tell the owner how many acts await review, at most every REMIND_EVERY."""
+    count = len(review.acts)
+    last = store.reminded("review")
+    if not count or (last and now - last < REMIND_EVERY):
+        return
+    acts = "act awaits" if count == 1 else "acts await"
+    if send(f"Boston Jazz Calendar: {count} {acts} review", f"{site_url()}/admin"):
+        store.mark_reminded("review", now)
 
 
 def _dedup(candidates: list[Candidate]) -> list[Candidate]:

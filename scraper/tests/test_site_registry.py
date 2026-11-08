@@ -57,6 +57,19 @@ def test_added_venues_and_regulars_join_the_registry(
     assert "skipping regular 'Orphan Jam': unknown venue 'gone'" in caplog.text
 
 
+def test_rulings_match_titles_ignoring_case_and_spacing(tmp_path: Path) -> None:
+    write_data(tmp_path)
+    added = SiteRegistry.model_validate(
+        {"rulings": [
+            {"venue": "club", "title": "Pat  Doe", "relevance": "other", "decided": "2026-11-07"},
+        ]}
+    )  # fmt: skip
+    registry = Registry.load(tmp_path, added)
+    assert registry.ruled("club", "pat doe") == "other"
+    assert registry.ruled("club", "Pat Doe Trio") is None
+    assert registry.ruled("elsewhere", "Pat Doe") is None
+
+
 def test_load_before_the_first_sync(tmp_path: Path) -> None:
     assert site_registry.load(tmp_path / "missing.json") == SiteRegistry()
 

@@ -54,6 +54,7 @@ def test_publish_uploads_status_last_and_retries(out_dir: Path) -> None:
         "PUT /api/publish/events.json",
         "PUT /api/publish/events.json",
         "PUT /api/publish/events.json",
+        "PUT /api/publish/review.json",
         "PUT /api/publish/status.json",
         "PUT /api/publish/status.json",
         f"GET {PING}",

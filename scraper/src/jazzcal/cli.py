@@ -59,6 +59,12 @@ def main() -> None:
             help="model for listings the rules can't settle, e.g. claude-haiku-5-5 "
             "(default: $JAZZCAL_CLASSIFIER; none if unset)",
         )
+        p.add_argument(
+            "--lookup",
+            default=os.environ.get("JAZZCAL_LOOKUP"),
+            help="model that looks up on the web the acts the classifier is unsure of, e.g. "
+            "claude-haiku-5-5 (default: $JAZZCAL_LOOKUP; none if unset)",
+        )
     commands.add_parser("publish", help="upload the built files")
     show = commands.add_parser("show", help="print what a source yields, without storing it")
     show.add_argument("source")
@@ -83,13 +89,13 @@ def main() -> None:
                 _run(args)
         case "refresh":
             with runlock.held(LOCK), _http(offline=False, max_age_hours=MAX_AGE_HOURS) as http:
-                refresh(http, _classifier(args.classifier))
+                refresh(http, *_classifiers(args))
         case "build":
             with runlock.held(LOCK):
-                _build(_registry(), Store(DB), _classifier(args.classifier))
+                _build(_registry(), Store(DB), *_classifiers(args))
         case "eval":
             with runlock.held(LOCK):
-                print(evaluate.report(_registry(), Store(DB), _classifier(args.classifier)))
+                print(evaluate.report(_registry(), Store(DB), *_classifiers(args)))
         case "publish":
             with runlock.held(LOCK):
                 export.publish(OUT_DIR)
@@ -117,15 +123,16 @@ def _run(args: argparse.Namespace) -> None:
     if not args.offline:
         pipeline.alert_failing(registry, store, datetime.now(TZ))
     if args.command == "run":
-        _build(registry, store, _classifier(args.classifier))
+        built = _build(registry, store, *_classifiers(args))
         if args.publish:
             export.publish(OUT_DIR)
             # Only a full run is sure to have read the approved submissions.
             if not args.source:
                 _record_published(added)
+                pipeline.remind_review(built.review, store, datetime.now(TZ))
 
 
-def refresh(http: Http, classifier: Classifier | None) -> None:
+def refresh(http: Http, classifier: Classifier | None, lookup: Classifier | None) -> None:
     """Republish when the site's revision has moved on from the last publish: scrape only the
     approved submissions, rebuild with everything else as last scraped, and upload events.json.
 
@@ -146,7 +153,7 @@ def refresh(http: Http, classifier: Classifier | None) -> None:
         return
     store = Store(DB)
     pipeline.scrape(registry, store, http, submissions)
-    _build(registry, store, classifier, generated_at=_last_generated())
+    _build(registry, store, classifier, lookup, generated_at=_last_generated())
     export.publish(OUT_DIR, ["events.json"], ping=False)
     _record_published(added)
 
@@ -197,20 +204,31 @@ def _describe_adapters() -> str:
     return "\n".join(lines)
 
 
-def _classifier(model: str | None) -> Classifier | None:
-    return ClaudeClassifier(model) if model and model != "none" else None
+def _classifiers(args: argparse.Namespace) -> tuple[Classifier | None, Classifier | None]:
+    """The classifier, and the one that looks up what it's unsure of (only with a classifier)."""
+    first = args.classifier if args.classifier != "none" else None
+    lookup = args.lookup if first and args.lookup != "none" else None
+    return (
+        ClaudeClassifier(first) if first else None,
+        ClaudeClassifier(lookup, search=True) if lookup else None,
+    )
 
 
 def _build(
     registry: Registry,
     store: Store,
     classifier: Classifier | None,
+    lookup: Classifier | None = None,
     generated_at: datetime | None = None,
-) -> None:
+) -> pipeline.Built:
     """Build and write the feed; `generated_at` overrides the feed's time, which is now."""
-    feed, status = pipeline.build(registry, store, datetime.now(TZ), classifier)
+    built = pipeline.build(registry, store, datetime.now(TZ), classifier, lookup)
+    feed = built.feed
     if generated_at:
         feed = feed.model_copy(update={"generated_at": generated_at})
-    export.write(OUT_DIR, feed, status)
+    export.write(OUT_DIR, feed, built.status, built.review)
     by_relevance = {r: sum(e.relevance == r for e in feed.events) for r in ("jazz", "adjacent")}
     logging.info("built %d events %s into %s", len(feed.events), by_relevance, OUT_DIR)
+    if built.review.acts:
+        logging.info("%d acts await review", len(built.review.acts))
+    return built

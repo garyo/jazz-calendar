@@ -168,6 +168,13 @@ describe("publish", () => {
     expect(await (await call("/data/status.json")).text()).toBe(body);
   });
 
+  test("keeps review.json for the review page, never serving it", async () => {
+    const res = await put("/api/publish/review.json", '{"acts":[]}', TOKEN);
+    expect(res.status).toBe(204);
+    expect(store.get("review.json")?.text).toBe('{"acts":[]}');
+    expect(await (await call("/data/review.json")).text()).toBe("asset");
+  });
+
   test("401 without or with a wrong token", async () => {
     expect((await put("/api/publish/events.json", "{}")).status).toBe(401);
     expect((await put("/api/publish/events.json", "{}", "nope")).status).toBe(

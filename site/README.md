@@ -192,11 +192,13 @@ else directly, at no worker CPU cost.
 | `GET /data/status.json` | R2 key `status.json`, `application/json` |
 | `GET /calendar.ics` | Every listing as iCalendar, built from `events.json` (below) |
 | `GET /calendar.ics?venue=…&town=…&adjacent=0` | A feed of just that selection (below) |
-| `PUT /api/publish/:key` | Upload `events.json` or `status.json` (see below) |
+| `PUT /api/publish/:key` | Upload `events.json`, `status.json`, or `review.json` (never served publicly) |
 | `POST /api/submissions` | A gig from the form, or from a script with `SUBMIT_TOKEN` (see [Gig submissions](#gig-submissions)) |
 | `GET /api/submissions/approved` | Upcoming approved gigs, for the scraper (`PUBLISH_TOKEN`) |
 | `GET /api/admin/submissions?status=…` | The review queue (`ADMIN_TOKEN`) |
 | `POST /api/admin/submissions/:id` | Approve or reject one (`ADMIN_TOKEN`) |
+| `GET /api/admin/review` | Acts awaiting a ruling, and the rulings made (`ADMIN_TOKEN`) |
+| `POST /api/admin/rulings` | Rule on an act, or undo a ruling (`ADMIN_TOKEN`) |
 
 Data responses carry `Cache-Control: public, max-age=300`, an `ETag`, and
 `Access-Control-Allow-Origin: *`, since the feed is meant to be reused. A
@@ -335,9 +337,13 @@ scraper stays the only publisher of the feed:
    unpublishes it. The Hidden tab hides listings on request: words from a
    title, a venue, a night, or a combination, with a private note
    (`src/worker-hidden.ts`; kept here so the public repo never records who
-   asked). Every change to what the feed shows (an approval, unpublishing,
-   confirming a regular, a venue added, edited or deleted, a listing hidden
-   or shown again) bumps the feed's revision (`src/worker-revision.ts`) in
+   asked). The Acts tab lists the acts the scraper's classifier wasn't sure
+   of, from the `review.json` each run uploads, less those already ruled on.
+   A ruling (jazz, jazz-adjacent or not jazz) settles that title at that
+   venue for good, over the scraper's rules and classifier, and Undo takes
+   it back (`src/worker-rulings.ts`). Every change to what the feed shows
+   (an approval, unpublishing, confirming a regular, a venue added, edited
+   or deleted, a listing hidden or shown again, a ruling) bumps the feed's revision (`src/worker-revision.ts`) in
    the same batch.
 4. The scraper's `submissions` source reads
    `GET /api/submissions/approved` with its publish token: upcoming approved
@@ -345,7 +351,8 @@ scraper stays the only publisher of the feed:
    price, link, relevance). They join the next daily build, below the
    venues' own sources, so a venue's listing of the same show wins.
 5. Each scrape also reads `GET /api/registry` (same token): the revision,
-   the added venues, the hidden listings (without their notes), and the
+   the added venues, the hidden listings (without their notes), the
+   rulings, and the
    approved regulars as the feed lists them, with
    `when` written from their days and times (`scheduleText`), all read in
    one batch. The scraper lists them after `../data/venues.yaml` and

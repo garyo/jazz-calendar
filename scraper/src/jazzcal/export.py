@@ -11,24 +11,27 @@ from pathlib import Path
 
 import httpx
 
-from jazzcal.models import EventsFile, StatusFile
+from jazzcal.models import EventsFile, ReviewFile, StatusFile
 
 log = logging.getLogger(__name__)
 
 SITE = "https://bostonjazzcalendar.com"
 FILES = {
     "events.json": "application/json",
+    "review.json": "application/json",
     "status.json": "application/json",
 }
-"""Uploaded in this order: status.json last, so it describes a publish that completed."""
+"""Uploaded in this order: status.json last, so it describes a publish that completed.
+review.json is for the site's review page only; the site doesn't serve it publicly."""
 PUT_RETRIES = 3
 PUT_BACKOFF = 2.0
 """Seconds before the first retry of an upload; doubled for each one after."""
 
 
-def write(out_dir: Path, feed: EventsFile, status: StatusFile) -> None:
+def write(out_dir: Path, feed: EventsFile, status: StatusFile, review: ReviewFile) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "events.json").write_text(feed.model_dump_json(indent=1))
+    (out_dir / "review.json").write_text(review.model_dump_json(indent=1))
     (out_dir / "status.json").write_text(status.model_dump_json(indent=1))
 
 

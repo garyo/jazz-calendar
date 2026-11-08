@@ -47,6 +47,7 @@
             <label><input type="radio" name="status" value="pending" checked /><span>Pending</span></label>
             <label><input type="radio" name="status" value="approved" /><span>Approved</span></label>
             <label><input type="radio" name="status" value="rejected" /><span>Rejected</span></label>
+            <label><input type="radio" name="status" value="acts" /><span>Acts</span></label>
             <label><input type="radio" name="status" value="venues" /><span>Venues</span></label>
             <label><input type="radio" name="status" value="hidden" /><span>Hidden</span></label>
           </fieldset>
@@ -57,7 +58,9 @@
           Approved changes reach the site within a minute or two, once the
           scraper next checks. For a listing at an unlisted venue, fill in the
           new venue’s details on its card; Venues lists the ones added here.
-          Venues in <code>data/venues.yaml</code> are edited there.
+          Venues in <code>data/venues.yaml</code> are edited there. Acts lists
+          the shows the classifier wasn’t sure of; your call settles that act at
+          that venue for good.
         </p>
         <p id="review-status" class="count" role="status" aria-live="polite"></p>
         <ol id="review-list" class="review-list"></ol>

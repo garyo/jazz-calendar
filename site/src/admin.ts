@@ -10,6 +10,9 @@ import {
   type FieldErrors,
   type Hidden,
   OTHER_VENUE,
+  type ReviewAct,
+  type Ruled,
+  type Ruling,
   repeatsOf,
   STATUSES,
   type Status,
@@ -31,6 +34,8 @@ const TOKEN_KEY = "admin-token";
 const API = "/api/admin/submissions";
 const VENUES_API = "/api/admin/venues";
 const HIDDEN_API = "/api/admin/hidden";
+const REVIEW_API = "/api/admin/review";
+const RULINGS_API = "/api/admin/rulings";
 /** A regular not confirmed for this many days is due a check. */
 const RECHECK_DAYS = 90;
 
@@ -84,7 +89,8 @@ let token = readToken();
 let venues = new Map<string, Venue>();
 /** The venues added here, which this page can change. */
 let added: Venue[] = [];
-let tab: Status | "venues" | "hidden" = "pending";
+const PAGES = ["acts", "venues", "hidden"] as const;
+let tab: Status | (typeof PAGES)[number] = "pending";
 
 function readToken(): string {
   try {
@@ -123,6 +129,8 @@ interface ApiResult {
     submission?: Submission;
     venues?: Venue[];
     hidden?: Hidden[];
+    acts?: ReviewAct[];
+    rulings?: Ruling[];
   };
 }
 
@@ -621,6 +629,102 @@ function renderHidden(entry: Hidden | null): HTMLLIElement {
   return h("li", { class: "review-card" }, form);
 }
 
+const VERDICTS: Record<Ruled | "unknown", string> = {
+  jazz: "Jazz",
+  adjacent: "Jazz-adjacent",
+  other: "Not jazz",
+  unknown: "Can’t tell",
+};
+
+/** A card for an act awaiting a ruling. */
+function renderAct(act: ReviewAct): HTMLLIElement {
+  const outcome = h("p", { class: "submit-status", role: "status" });
+  const sure =
+    act.verdict === "unknown"
+      ? ""
+      : `, ${Math.round(act.confidence * 100)}% sure`;
+  const form = h(
+    "form",
+    { novalidate: "" },
+    h(
+      "p",
+      { class: "review-when" },
+      h("strong", {}, act.url ? link(act.url, act.title) : act.title),
+      ` · ${act.venue_name}`,
+    ),
+    h(
+      "p",
+      { class: "form-hint" },
+      act.nights.map((night) => formatDate(night) ?? night).join(", "),
+    ),
+    h("p", {}, `Classifier: ${VERDICTS[act.verdict]}${sure}. ${act.reason}`),
+    h(
+      "p",
+      { class: "form-hint" },
+      act.listed
+        ? `Listed now as ${VERDICTS[act.listed].toLowerCase()}.`
+        : "Left off the calendar now.",
+    ),
+    h(
+      "div",
+      { class: "review-actions" },
+      button("Jazz", "jazz"),
+      button("Jazz-adjacent", "adjacent"),
+      button("Not jazz", "other"),
+      outcome,
+    ),
+  );
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const relevance = (event.submitter as HTMLButtonElement | null)?.value;
+    if (
+      relevance !== "jazz" &&
+      relevance !== "adjacent" &&
+      relevance !== "other"
+    )
+      return;
+    const body = { venue: act.venue, title: act.title, relevance };
+    void send(form, outcome, RULINGS_API, body, () => {
+      return `“${act.title}”: ${VERDICTS[relevance].toLowerCase()}.`;
+    });
+  });
+  return h("li", { class: "review-card" }, form);
+}
+
+/** A card for a ruling made, to undo it. */
+function renderRuling(ruling: Ruling): HTMLLIElement {
+  const outcome = h("p", { class: "submit-status", role: "status" });
+  const venue = venues.get(ruling.venue)?.name ?? ruling.venue;
+  const form = h(
+    "form",
+    { novalidate: "" },
+    h(
+      "p",
+      { class: "review-when" },
+      h("strong", {}, ruling.title),
+      ` · ${venue}: ${VERDICTS[ruling.relevance]}`,
+    ),
+    h(
+      "p",
+      { class: "form-hint" },
+      `Decided ${formatDate(ruling.decided) ?? ruling.decided}.`,
+    ),
+    h("div", { class: "review-actions" }, button("Undo", "delete"), outcome),
+  );
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const body = { venue: ruling.venue, title: ruling.title, action: "delete" };
+    void send(
+      form,
+      outcome,
+      RULINGS_API,
+      body,
+      () => `Undid “${ruling.title}”.`,
+    );
+  });
+  return h("li", { class: "review-card" }, form);
+}
+
 /** The feed's venues and those added here. */
 async function loadVenues(): Promise<void> {
   const [feed, mine] = await Promise.all([
@@ -642,6 +746,13 @@ async function tabCards(): Promise<[HTMLLIElement[], string]> {
   if (tab === "venues") {
     const cards = [renderVenue(null), ...added.map(renderVenue)];
     return [cards, `${added.length} added here`];
+  }
+  if (tab === "acts") {
+    const { acts = [], rulings = [] } = (await api(REVIEW_API)).body;
+    return [
+      [...acts.map(renderAct), ...rulings.map(renderRuling)],
+      `${acts.length} awaiting a ruling, ${rulings.length} decided`,
+    ];
   }
   if (tab === "hidden") {
     const hidden = (await api(HIDDEN_API)).body.hidden ?? [];
@@ -688,9 +799,9 @@ signin.addEventListener("submit", (event) => {
 byId("status-tabs").addEventListener("change", (event) => {
   const value = (event.target as HTMLInputElement).value;
   tab =
-    value === "venues" || value === "hidden"
-      ? value
-      : (STATUSES.find((known) => known === value) ?? "pending");
+    PAGES.find((page) => page === value) ??
+    STATUSES.find((known) => known === value) ??
+    "pending";
   void load();
 });
 byId("refresh").addEventListener("click", () => void load());

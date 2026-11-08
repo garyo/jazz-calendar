@@ -77,7 +77,7 @@ def refresh(site: Site, tmp_path: Path) -> None:
         trusted_hosts={"jazz.test"},
         transport=httpx.MockTransport(site.handle),
     ) as http:
-        cli.refresh(http, classifier=None)
+        cli.refresh(http, classifier=None, lookup=None)
 
 
 def test_refresh_publishes_each_revision_once(

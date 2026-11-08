@@ -2,7 +2,8 @@
  * Cloudflare Worker for bostonjazzcalendar.com.
  *
  * Serves the scraper's output from R2 (/data/events.json, /data/status.json)
- * and accepts fresh copies from the scraper via PUT /api/publish/:key. The
+ * and accepts fresh copies from the scraper via PUT /api/publish/:key, with
+ * review.json for the review page. The
  * /calendar.ics feeds are built from events.json in worker-calendar.ts, gig
  * submissions and their review live in worker-submissions.ts, and the
  * hourly cron's stale-data check in worker-freshness.ts.
@@ -26,10 +27,14 @@ export interface Env extends SubmissionsEnv {
   PUBLISH_TOKEN?: string;
 }
 
-/** The R2 keys the site serves and accepts, with their content types. */
+/**
+ * The R2 keys the site accepts, with their content types. It serves those
+ * in PUBLIC_PATHS; review.json is for the review page only (worker-rulings.ts).
+ */
 const CONTENT_TYPES = {
   "events.json": "application/json; charset=utf-8",
   "status.json": "application/json; charset=utf-8",
+  "review.json": "application/json; charset=utf-8",
 } as const;
 
 type DataKey = keyof typeof CONTENT_TYPES;

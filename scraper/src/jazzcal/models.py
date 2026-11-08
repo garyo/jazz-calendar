@@ -274,3 +274,26 @@ class StatusFile(Model):
 
     generated_at: AwareDatetime
     sources: list[SourceStatus]
+
+
+class ReviewAct(Model):
+    """An act at a venue the classifier was unsure of. The owner's call on it, made on the site's
+    review page, comes back through /api/registry as a ruling."""
+
+    venue: str = Field(description="Venue id")
+    venue_name: str
+    title: str
+    nights: list[date] = Field(description="The upcoming nights it's listed under")
+    url: str | None
+    verdict: Relevance | Literal["unknown"] = Field(description="The classifier's answer")
+    confidence: float
+    reason: str
+    listed: Listed | None = Field(description="How the feed lists it now; null when left out")
+
+
+class ReviewFile(Model):
+    """The acts awaiting the owner's review, uploaded as review.json and shown only on the
+    site's review page."""
+
+    generated_at: AwareDatetime
+    acts: list[ReviewAct]

@@ -14,7 +14,16 @@ from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, VenueConfig, address_key, night_of
 from jazzcal.http import FetchError, Http, redact
 from jazzcal.llm import Question, Verdict
-from jazzcal.models import Credit, Regular, ScrapedEvent, Source, SourceStatus
+from jazzcal.models import (
+    Credit,
+    Regular,
+    ReviewAct,
+    ReviewFile,
+    ScrapedEvent,
+    Source,
+    SourceStatus,
+)
+from jazzcal.site_registry import act_key
 from jazzcal.store import Store
 
 NOW = datetime(2026, 10, 15, 12, tzinfo=TZ)
@@ -133,7 +142,7 @@ def test_unknown_venue_id_is_skipped(store: Store) -> None:
             event("2", "Dana Moe Trio", venue="gone", relevance="jazz"),
         ],
     )
-    feed, _ = pipeline.build(registry, store, NOW)
+    feed = pipeline.build(registry, store, NOW).feed
     assert [(e.title, e.relevance) for e in feed.events] == [("Pat Doe Quartet", "jazz")]
 
 
@@ -164,7 +173,7 @@ def test_build_dedups_and_prefers_earlier_source(store: Store) -> None:
             event("b3", "Lost Venue", venue_name="Nowhere"),
         ],
     )
-    feed, status = pipeline.build(registry, store, NOW)
+    feed, status, _ = pipeline.build(registry, store, NOW)
     titles = {e.title: e for e in feed.events}
     assert set(titles) == {"Pat Doe Quartet", "Another Band"}
     merged = titles["Pat Doe Quartet"]
@@ -211,7 +220,7 @@ def test_build_merges_a_late_set_listed_either_side_of_midnight(store: Store) ->
     registry = Registry({"club": venue("club", "dedicated")}, sources)
     store.record_success("venue-site", [event("a1", "Midnight Hour", hours=12.25)])
     store.record_success("aggregator", [event("b1", "The Midnight Hour", hours=11.75)])
-    feed, _ = pipeline.build(registry, store, NOW)
+    feed = pipeline.build(registry, store, NOW).feed
     assert [(e.title, e.sources) for e in feed.events] == [
         ("Midnight Hour", ["venue-site", "aggregator"])
     ]
@@ -229,7 +238,7 @@ def ticking_store(store: Store, monkeypatch: pytest.MonkeyPatch) -> Store:
 
 def ids(registry: Registry, store: Store) -> dict[tuple[str, ...], str]:
     """Published event ids by the sources listing each event."""
-    feed, _ = pipeline.build(registry, store, NOW)
+    feed = pipeline.build(registry, store, NOW).feed
     return {tuple(e.sources): e.id for e in feed.events}
 
 
@@ -316,7 +325,7 @@ def test_an_exact_source_drops_listings_at_once(scrape: Scraper, store: Store) -
     feed = pipeline.build(scrape.registry, store, NOW)[0]
     assert [e.title for e in feed.events] == ["Other Gig"]
     scrape(s=[], t=[])
-    feed, status = pipeline.build(scrape.registry, store, NOW)
+    feed, status, _ = pipeline.build(scrape.registry, store, NOW)
     assert feed.events == []
     assert all(s.ok for s in status.sources)
 
@@ -325,7 +334,7 @@ def test_empty_run_after_a_full_one_is_a_failure(scrape: Scraper, store: Store) 
     scrape(s=[event("1", "Gig"), event("2", "Old Gig", hours=-30)], t=[])
     for _ in range(3):
         scrape(s=[], t=[])
-        feed, status = pipeline.build(scrape.registry, store, NOW)
+        feed, status, _ = pipeline.build(scrape.registry, store, NOW)
         assert [e.title for e in feed.events] == ["Gig"]
         by_id = {s.id: s for s in status.sources}
         assert not by_id["s"].ok
@@ -402,13 +411,14 @@ def test_failed_source_keeps_last_listings(store: Store) -> None:
     registry = Registry({"club": venue("club", "dedicated")}, [source])
     store.record_success("s", [event("1", "Gig")])
     store.record_failure("s", "HTTP 504")
-    feed, status = pipeline.build(registry, store, NOW)
+    feed, status, _ = pipeline.build(registry, store, NOW)
     assert len(feed.events) == 1
     assert status.sources[0].error == "HTTP 504"
 
 
 class FakeClassifier:
     name = "fake"
+    prompt = ""
 
     def __init__(self, answers: dict[str, Verdict]) -> None:
         self.answers = answers
@@ -440,7 +450,7 @@ def test_classifier_leans_toward_keeping_listings(store: Store) -> None:
             "Sam Poe": Verdict(relevance="jazz", confidence=0.7, reason="jazz saxophonist"),
         }
     )
-    feed, _ = pipeline.build(registry, store, NOW, classifier)
+    feed = pipeline.build(registry, store, NOW, classifier).feed
     assert {e.title for e in feed.events} == {
         "Pat Doe Trio",
         "Riley Roe Trio",
@@ -458,6 +468,126 @@ def test_classifier_leans_toward_keeping_listings(store: Store) -> None:
     assert len(classifier.asked) == 4
 
 
+def test_the_owners_ruling_beats_rules_and_classifier(store: Store) -> None:
+    source = Source(id="s", adapter="ics", url="https://a", venue="room")
+    registry = Registry({"room": venue("room", "regular")}, [source])
+    registry.rulings[act_key("room", "Big Band Monday")] = "other"
+    registry.rulings[act_key("room", "Sam Poe")] = "adjacent"
+    store.record_success(
+        "s", [event("1", "Big Band Monday", hours=1), event("2", "Sam Poe", hours=2)]
+    )
+    classifier = FakeClassifier(
+        {"Sam Poe": Verdict(relevance="jazz", confidence=0.9, reason="saxophonist")}
+    )
+    feed = pipeline.build(registry, store, NOW, classifier).feed
+    assert [(e.title, e.relevance) for e in feed.events] == [("Sam Poe", "adjacent")]
+    assert classifier.asked == []
+
+
+def test_review_lists_the_classifiers_doubts(store: Store) -> None:
+    sources = [
+        Source(id="r", adapter="ics", url="https://a", venue="room"),
+        Source(id="o", adapter="ics", url="https://b", venue="hall"),
+    ]
+    registry = Registry({"room": venue("room", "regular"), "hall": venue("hall")}, sources)
+    store.record_success(
+        "r",
+        [
+            event("1", "Pat Doe", hours=1),
+            event("2", "Pat Doe", hours=26),
+            event("3", "Lee Roe", hours=2),
+            event("4", "Kim Moe", hours=3),
+        ],
+    )
+    store.record_success("o", [event("5", "Ray Low", hours=4), event("6", "Sam Poe", hours=5)])
+    classifier = FakeClassifier(
+        {
+            "Pat Doe": Verdict(relevance="jazz", confidence=0.6, reason="maybe a saxophonist"),
+            "Lee Roe": Verdict(relevance="unknown", confidence=0.3, reason="no idea"),
+            "Kim Moe": Verdict(relevance="jazz", confidence=0.95, reason="jazz singer"),
+            "Ray Low": Verdict(relevance="unknown", confidence=0.3, reason="no idea"),
+            "Sam Poe": Verdict(relevance="adjacent", confidence=0.7, reason="soul"),
+        }
+    )
+    review = pipeline.build(registry, store, NOW, classifier).review
+    # Unsure answers anywhere, and unknowns only where jazz is regular.
+    assert [(a.title, a.verdict, a.listed) for a in review.acts] == [
+        ("Pat Doe", "jazz", "jazz"),
+        ("Lee Roe", "unknown", None),
+        ("Sam Poe", "adjacent", "adjacent"),
+    ]
+    assert review.acts[0].nights == [
+        night_of(event("1", "x", hours=1)),
+        night_of(event("2", "x", hours=26)),
+    ]
+    # Ruling on an act takes it off the list.
+    registry.rulings[act_key("room", "Pat Doe")] = "jazz"
+    assert "Pat Doe" not in [
+        a.title for a in pipeline.build(registry, store, NOW, classifier).review.acts
+    ]
+
+
+def test_doubts_are_looked_up_and_what_stays_doubtful_is_reviewed(store: Store) -> None:
+    source = Source(id="s", adapter="ics", url="https://a", venue="hall")
+    registry = Registry({"hall": venue("hall")}, [source])  # books jazz occasionally
+    store.record_success(
+        "s",
+        [
+            event("1", "Sam Poe: Joy", hours=1),
+            event("2", "Pat Doe", hours=2),
+            event("3", "Lee Roe", hours=3),
+            event("4", "Kim Moe", hours=4),
+        ],
+    )
+    unknown = Verdict(relevance="unknown", confidence=0.4, reason="genre not stated")
+    first = FakeClassifier(
+        {
+            "Sam Poe: Joy": unknown,
+            "Pat Doe": unknown,
+            "Lee Roe": Verdict(relevance="other", confidence=0.95, reason="a rock band"),
+            "Kim Moe": Verdict(relevance="jazz", confidence=0.6, reason="maybe a singer"),
+        }
+    )
+    lookup = FakeClassifier(
+        {
+            "Sam Poe: Joy": Verdict(relevance="jazz", confidence=0.95, reason="jazz saxophonist"),
+            "Pat Doe": unknown,
+            "Kim Moe": Verdict(relevance="jazz", confidence=0.9, reason="jazz singer"),
+        }
+    )
+    lookup.name = "fake+search"
+    feed, _, review = pipeline.build(registry, store, NOW, first, lookup)
+    assert sorted(lookup.asked) == ["Kim Moe", "Pat Doe", "Sam Poe: Joy"]  # not the sure one
+    assert [(e.title, e.relevance) for e in feed.events] == [
+        ("Sam Poe: Joy", "jazz"),
+        ("Kim Moe", "jazz"),
+    ]
+    # Still unknown after a lookup goes to review, whatever the venue.
+    assert [a.title for a in review.acts] == ["Pat Doe"]
+
+
+def test_review_reminders_are_weekly(store: Store) -> None:
+    act = ReviewAct(
+        venue="room", venue_name="Room", title="Pat Doe", nights=[NOW.date()], url=None,
+        verdict="unknown", confidence=0.3, reason="no idea", listed=None,
+    )  # fmt: skip
+    sent: list[str] = []
+
+    def send(title: str, message: str) -> bool:
+        sent.append(title)
+        return True
+
+    remind = pipeline.remind_review
+    remind(ReviewFile(generated_at=NOW, acts=[]), store, NOW, send)
+    remind(ReviewFile(generated_at=NOW, acts=[act]), store, NOW, send)
+    remind(ReviewFile(generated_at=NOW, acts=[act, act]), store, NOW + timedelta(days=6), send)
+    remind(ReviewFile(generated_at=NOW, acts=[act, act]), store, NOW + timedelta(days=7), send)
+    assert sent == [
+        "Boston Jazz Calendar: 1 act awaits review",
+        "Boston Jazz Calendar: 2 acts await review",
+    ]
+
+
 def test_one_question_per_act_and_venue(store: Store) -> None:
     source = Source(id="s", adapter="ics", url="https://a", venue="room")
     registry = Registry({"room": venue("room")}, [source])
@@ -471,7 +601,7 @@ def test_one_question_per_act_and_venue(store: Store) -> None:
     classifier = FakeClassifier(
         {"Pat Doe": Verdict(relevance="jazz", confidence=0.9, reason="standards")}
     )
-    feed, _ = pipeline.build(registry, store, NOW, classifier)
+    feed = pipeline.build(registry, store, NOW, classifier).feed
     assert classifier.asked == ["Pat Doe"]
     assert [e.relevance for e in feed.events] == ["jazz", "jazz"]
 
@@ -487,7 +617,7 @@ def test_regulars_are_published_apart_from_events(store: Store) -> None:
         checked=date(2026, 10, 15),
     )
     registry = Registry({"club": venue("club", "dedicated")}, [], [regular])
-    feed, _ = pipeline.build(registry, store, NOW)
+    feed = pipeline.build(registry, store, NOW).feed
     assert feed.events == []
     assert feed.regulars == [regular]
 
@@ -555,7 +685,7 @@ def test_feed_credits_the_sources_it_lists(store: Store) -> None:
     store.record_success("own", [event("1", "Pat Doe Quartet")])
     store.record_success("tm", [event("2", "Pat Doe Quartet"), event("3", "Lee Roe Trio")])
     store.record_success("idle", [])
-    feed, _ = pipeline.build(registry, store, NOW)
+    feed = pipeline.build(registry, store, NOW).feed
     assert {e.title: e.sources for e in feed.events} == {
         "Pat Doe Quartet": ["own", "tm"],
         "Lee Roe Trio": ["tm"],

@@ -1,4 +1,4 @@
-"""Venues, regulars and hidden listings managed on the site's review page.
+"""Venues, regulars, hidden listings and rulings managed on the site's review page.
 
 Hidden listings live there, not in data/, so the public repo never records who asked to be
 left out. The site serves all three at /api/registry, behind the token the scraper publishes
@@ -20,7 +20,7 @@ from pydantic import BaseModel, Field, ValidationError, model_validator
 
 from jazzcal.export import site_url
 from jazzcal.http import FetchError, Http
-from jazzcal.models import Regular, Venue
+from jazzcal.models import Regular, Relevance, Venue
 
 log = logging.getLogger(__name__)
 
@@ -60,6 +60,21 @@ def _words(text: str) -> re.Pattern[str]:
     return re.compile(rf"(?<!\w){words}(?!\w)", re.IGNORECASE)
 
 
+class Ruling(BaseModel):
+    """The owner's call on an act at a venue, made on the review page: `Ruling` in
+    site/src/worker-rulings.ts. It settles every listing with that title there."""
+
+    venue: str = Field(description="Venue id")
+    title: str
+    relevance: Relevance
+    decided: date
+
+
+def act_key(venue: str, title: str) -> tuple[str, str]:
+    """An act at a venue, its title compared ignoring case and spacing."""
+    return venue, " ".join(title.split()).casefold()
+
+
 class SiteRegistry(BaseModel):
     """What /api/registry serves: in site/src/worker-submissions.ts."""
 
@@ -67,6 +82,7 @@ class SiteRegistry(BaseModel):
     venues: list[Venue] = Field(default_factory=list)
     regulars: list[Regular] = Field(default_factory=list)
     hidden: list[Hidden] = Field(default_factory=list)
+    rulings: list[Ruling] = Field(default_factory=list)
 
 
 def load(path: Path) -> SiteRegistry:

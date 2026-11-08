@@ -54,6 +54,9 @@ function fakeD1(db: Database): D1Database {
 function fakeBucket(feed: string | null): R2Bucket {
   return {
     get: async (key: string) => {
+      if (key === "review.json") {
+        return review && { json: async () => JSON.parse(review as string) };
+      }
       feedReads++;
       return key === "events.json" && feed
         ? { json: async () => JSON.parse(feed) }
@@ -61,6 +64,9 @@ function fakeBucket(feed: string | null): R2Bucket {
     },
   } as unknown as R2Bucket;
 }
+
+/** The scraper's review.json, when it has uploaded one. */
+let review: string | null;
 
 let db: Database;
 let env: Env;
@@ -95,6 +101,7 @@ beforeEach(() => {
   human = true;
   outcome = FROM_FORM;
   feedReads = 0;
+  review = null;
   globalThis.fetch = (async (url: string, init?: RequestInit) => {
     if (url === "https://ntfy.example.com") {
       notices.push({
@@ -897,6 +904,7 @@ describe("GET /api/registry", () => {
         },
       ],
       hidden: [],
+      rulings: [],
     });
 
     // Regulars stay out of the dated gigs.
@@ -1018,6 +1026,109 @@ describe("hidden listings", () => {
   test("needs the admin token", async () => {
     expect((await call("/api/admin/hidden")).status).toBe(401);
     const res = await post("/api/admin/hidden", { title: "x" }, PUBLISH);
+    expect(res.status).toBe(401);
+  });
+});
+
+describe("rulings on acts", () => {
+  const revision = () =>
+    (db.query("SELECT n FROM revision").get() as { n: number }).n;
+  const act = (title: string) => ({
+    venue: "lilypad",
+    venue_name: "The Lilypad",
+    title,
+    nights: ["2026-11-20"],
+    url: null,
+    verdict: "unknown",
+    confidence: 0.3,
+    reason: "Can’t place the act.",
+    listed: null,
+  });
+  const rule = (body: object) => post("/api/admin/rulings", body, ADMIN);
+  const pending = async () =>
+    (await (
+      await call("/api/admin/review", { headers: ADMIN_HEADERS })
+    ).json()) as {
+      acts: { title: string }[];
+      rulings: { title: string; relevance: string }[];
+    };
+
+  test("a ruling settles an act for the scraper, and can be undone", async () => {
+    review = JSON.stringify({
+      generated_at: "2026-11-07T21:00:00-05:00",
+      acts: [act("Pat Doe Trio"), act("Lee Roe")],
+    });
+    expect((await pending()).acts.map((a) => a.title)).toEqual([
+      "Pat Doe Trio",
+      "Lee Roe",
+    ]);
+
+    expect(
+      (
+        await rule({
+          venue: "lilypad",
+          title: "pat  doe trio",
+          relevance: "jazz",
+        })
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await rule({
+          venue: "lilypad",
+          title: "Pat Doe Trio",
+          relevance: "adjacent",
+        })
+      ).status,
+    ).toBe(200);
+    expect(revision()).toBe(2);
+    const after = await pending();
+    expect(after.acts.map((a) => a.title)).toEqual(["Lee Roe"]);
+    expect(after.rulings).toEqual([
+      expect.objectContaining({ title: "Pat Doe Trio", relevance: "adjacent" }),
+    ]);
+
+    const registry = await call("/api/registry", {
+      headers: { authorization: `Bearer ${PUBLISH}` },
+    });
+    const { rulings } = (await registry.json()) as { rulings: unknown[] };
+    expect(rulings).toEqual([
+      {
+        venue: "lilypad",
+        title: "Pat Doe Trio",
+        relevance: "adjacent",
+        decided: today,
+      },
+    ]);
+
+    const undo = { venue: "lilypad", title: "Pat Doe Trio", action: "delete" };
+    expect((await rule(undo)).status).toBe(200);
+    expect((await rule(undo)).status).toBe(404);
+    expect(revision()).toBe(3);
+    expect((await pending()).acts).toHaveLength(2);
+  });
+
+  test("checks the venue, title and answer", async () => {
+    for (const [body, expected] of [
+      [{ venue: "nowhere", title: "x", relevance: "jazz" }, ["venue"]],
+      [{ venue: "lilypad", title: "  ", relevance: "jazz" }, ["title"]],
+      [{ venue: "lilypad", title: "x", relevance: "maybe" }, ["relevance"]],
+    ] as const) {
+      expect(await errors(await rule(body))).toEqual([...expected]);
+    }
+    expect(revision()).toBe(0);
+    expect(await pending()).toEqual(
+      expect.objectContaining({ acts: [], rulings: [] }),
+    );
+  });
+
+  test("needs the admin token", async () => {
+    expect((await call("/api/admin/review")).status).toBe(401);
+    const res = await post(
+      "/api/admin/rulings",
+      { venue: "lilypad", title: "x", relevance: "jazz" },
+      PUBLISH,
+    );
     expect(res.status).toBe(401);
   });
 });

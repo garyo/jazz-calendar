@@ -12,8 +12,8 @@ from zoneinfo import ZoneInfo
 import yaml
 from pydantic import Field, TypeAdapter, ValidationError
 
-from jazzcal.models import Regular, ScrapedEvent, Source, Venue
-from jazzcal.site_registry import Hidden, SiteRegistry
+from jazzcal.models import Regular, Relevance, ScrapedEvent, Source, Venue
+from jazzcal.site_registry import Hidden, SiteRegistry, act_key
 
 log = logging.getLogger(__name__)
 
@@ -77,6 +77,8 @@ class Registry:
     sources: list[Source]
     regulars: list[Regular] = field(default_factory=list)
     hidden: list[Hidden] = field(default_factory=list)
+    rulings: dict[tuple[str, str], Relevance] = field(default_factory=dict)
+    """The owner's calls on acts, by act_key."""
 
     @classmethod
     def load(cls, data_dir: Path = DATA_DIR, added: SiteRegistry | None = None) -> "Registry":
@@ -120,6 +122,7 @@ class Registry:
             else:
                 log.warning("skipping regular %r: unknown venue %r", r.title, r.venue)
         self.hidden.extend(added.hidden)
+        self.rulings |= {act_key(r.venue, r.title): r.relevance for r in added.rulings}
 
     def _opted_out_keys(self) -> set[str]:
         return {key for v in self.venues.values() if v.opted_out for key in _venue_keys(v)}
@@ -130,6 +133,10 @@ class Registry:
         return bool(self.venues[venue].opted_out) or any(
             h.matches(venue, title, night) for h in self.hidden
         )
+
+    def ruled(self, venue: str, title: str) -> Relevance | None:
+        """The owner's call on an act at a venue, if they've made one."""
+        return self.rulings.get(act_key(venue, title))
 
     @cached_property
     def _by_name(self) -> dict[str, str]:

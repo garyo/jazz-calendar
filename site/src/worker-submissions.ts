@@ -8,13 +8,13 @@
  *   GET  /api/submissions/approved       upcoming approved gigs for the
  *                                        scraper (PUBLISH_TOKEN)
  *   GET  /api/registry                   approved regulars, added venues,
- *                                        hidden listings and the feed's
- *                                        revision, for the scraper
+ *                                        hidden listings, rulings and the
+ *                                        feed's revision, for the scraper
  *                                        (PUBLISH_TOKEN)
  *
  * The admin venue routes are in worker-venues.ts, the hidden listings' in
- * worker-hidden.ts. Submitters' names, emails
- * and notes leave D1 only through the admin API. A new submission pings the
+ * worker-hidden.ts, the rulings' in worker-rulings.ts. Submitters' names,
+ * emails and notes leave D1 only through the admin API. A new submission pings the
  * owner's ntfy topic with just the listing's title, time and venue.
  */
 
@@ -42,6 +42,12 @@ import {
 } from "./worker-http";
 import { type NotifyEnv, notify } from "./worker-notify";
 import { bumpRevision, readRevision } from "./worker-revision";
+import {
+  ADMIN_REVIEW_PATH,
+  ADMIN_RULINGS_PATH,
+  adminRulings,
+  selectRulings,
+} from "./worker-rulings";
 import {
   ADMIN_VENUES_PATH,
   adminVenues,
@@ -260,21 +266,25 @@ async function registry(
   if (!(await hasBearer(request, env.PUBLISH_TOKEN))) {
     return unauthorized("publish");
   }
-  const [revision, venues, regulars, hidden] = await env.DB.batch<Row>([
-    readRevision(env.DB),
-    selectVenues(env),
-    env.DB.prepare(
-      `SELECT * FROM submissions
+  const [revision, venues, regulars, hidden, rulings] = await env.DB.batch<Row>(
+    [
+      readRevision(env.DB),
+      selectVenues(env),
+      env.DB.prepare(
+        `SELECT * FROM submissions
        WHERE status = 'approved' AND kind = 'regular'
        ORDER BY title`,
-    ),
-    selectHidden(env.DB),
-  ]);
+      ),
+      selectHidden(env.DB),
+      selectRulings(env.DB),
+    ],
+  );
   return jsonResponse(200, {
     revision: revision.results[0].n,
     venues: venues.results,
     regulars: regulars.results.map((row) => regularOf(fromRow(row))),
     hidden: hidden.results,
+    rulings: rulings.results,
   });
 }
 
@@ -408,6 +418,9 @@ async function admin(
   if (under(pathname, ADMIN_HIDDEN_PATH)) {
     return adminHidden(request, env, pathname.slice(ADMIN_HIDDEN_PATH.length));
   }
+  if (pathname === ADMIN_REVIEW_PATH || pathname === ADMIN_RULINGS_PATH) {
+    return adminRulings(request, env, pathname);
+  }
   if (pathname.startsWith(ADMIN_VENUES_PATH)) {
     return adminVenues(request, env, pathname.slice(ADMIN_VENUES_PATH.length));
   }
@@ -434,9 +447,13 @@ export function routeSubmissions(
   if (pathname === APPROVED_PATH) return approvedFeed(request, env);
   if (pathname === REGISTRY_PATH) return registry(request, env);
   if (
-    [ADMIN_PATH, ADMIN_VENUES_PATH, ADMIN_HIDDEN_PATH].some((p) =>
-      under(pathname, p),
-    )
+    [
+      ADMIN_PATH,
+      ADMIN_VENUES_PATH,
+      ADMIN_HIDDEN_PATH,
+      ADMIN_REVIEW_PATH,
+      ADMIN_RULINGS_PATH,
+    ].some((p) => under(pathname, p))
   ) {
     return admin(request, env, url);
   }

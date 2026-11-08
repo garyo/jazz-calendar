@@ -1,8 +1,12 @@
-"""Score classification against hand labels in scraper/eval/labels.yaml.
+"""Score classification against hand labels: scraper/eval/labels.yaml, and the owner's rulings
+from the site's review page.
 
-Each label names a source and a listing title, with the right answer: jazz, adjacent, other,
-or unsure (shown but not scored). The report compares the keyword rules alone with rules plus a
-classifier, and leads with missed shows, since dropping a real gig is the costliest mistake.
+A label in labels.yaml names a source and a listing title; a ruling, a venue and a title. Each
+gives the right answer: jazz, adjacent, other, or unsure (shown but not scored). Labeled
+listings are scored from the store while their source lists them, then from the copy saved
+then (Store.save_labeled), so labels outlive the shows. The report compares the keyword rules
+alone with rules plus a classifier, and leads with missed shows, since dropping a real gig is
+the costliest mistake.
 """
 
 from dataclasses import dataclass
@@ -13,8 +17,9 @@ import yaml
 from jazzcal.classify import classify
 from jazzcal.config import Registry
 from jazzcal.llm import Classifier
-from jazzcal.models import Relevance
+from jazzcal.models import Relevance, ScrapedEvent, Source
 from jazzcal.pipeline import Candidate, overrule
+from jazzcal.site_registry import act_key
 from jazzcal.store import Store
 
 LABELS = Path(__file__).resolve().parents[2] / "eval" / "labels.yaml"
@@ -29,23 +34,24 @@ class _Case:
     candidate: Candidate
 
 
-def report(registry: Registry, store: Store, classifier: Classifier | None) -> str:
+def report(
+    registry: Registry,
+    store: Store,
+    classifier: Classifier | None,
+    lookup: Classifier | None = None,
+) -> str:
     cases, missing = _cases(registry, store)
-    lines = [f"{len(cases)} labeled listings found; {len(missing)} not in the store"]
+    lines = [f"{len(cases)} labeled listings found; {len(missing)} never stored"]
     if classifier:
-        overrule(
-            classifier,
-            store,
-            registry,
-            [c.candidate for c in cases if not c.candidate.ruling.certain],
-        )
+        uncertain = [c.candidate for c in cases if not c.candidate.ruling.certain]
+        overrule(classifier, store, registry, uncertain, lookup)
     modes: list[tuple[str, dict[int, Relevance]]] = [
         ("rules", {i: c.rules for i, c in enumerate(cases)})
     ]
     if classifier:
         modes.append(
             (
-                f"rules + {classifier.name}",
+                f"rules + {classifier.name}" + (f" + {lookup.name}" if lookup else ""),
                 {i: c.candidate.ruling.relevance for i, c in enumerate(cases)},
             )
         )
@@ -55,22 +61,41 @@ def report(registry: Registry, store: Store, classifier: Classifier | None) -> s
 
 
 def _cases(registry: Registry, store: Store) -> tuple[list[_Case], list[str]]:
-    cases, missing = [], []
     by_source = {s.id: s for s in registry.sources}
+    found: dict[tuple[str, str], tuple[Source, ScrapedEvent, str]] = {}
+    """Labelable listings by (source id, title): current ones, then saved copies."""
+    for source in registry.sources:
+        for scraped in store.current(source.id):
+            if venue := registry.venue_for(source, scraped):
+                found.setdefault((source.id, scraped.title), (source, scraped, venue))
+    for source_id, venue, scraped in store.labeled():
+        if (source := by_source.get(source_id)) and venue in registry.venues:
+            found.setdefault((source_id, scraped.title), (source, scraped, venue))
+
+    cases, missing, seen = [], [], set()
     for item in yaml.safe_load(LABELS.read_text()):
-        source = by_source[item["source"]]
-        scraped = next((e for e in store.current(source.id) if e.title == item["title"]), None)
-        if scraped is None:
+        hit = found.get((item["source"], item["title"]))
+        if hit is None:
             missing.append(item["title"])
             continue
-        venue = registry.venue_for(source, scraped)
-        if not venue:
-            missing.append(item["title"])
-            continue
-        ruling = classify(scraped, source, registry.venues[venue])
-        candidate = Candidate(0, source, scraped, venue, ruling)
-        cases.append(_Case(item["title"], venue, item["label"], ruling.relevance, candidate))
+        source, scraped, venue = hit
+        store.save_labeled(source.id, venue, scraped)
+        seen.add(act_key(venue, scraped.title))
+        cases.append(_case(registry, source, scraped, venue, item["label"]))
+    for source, scraped, venue in found.values():
+        key = act_key(venue, scraped.title)
+        if key not in seen and (label := registry.rulings.get(key)):
+            seen.add(key)
+            cases.append(_case(registry, source, scraped, venue, label))
     return cases, missing
+
+
+def _case(
+    registry: Registry, source: Source, scraped: ScrapedEvent, venue: str, label: str
+) -> _Case:
+    ruling = classify(scraped, source, registry.venues[venue])
+    candidate = Candidate(0, source, scraped, venue, ruling)
+    return _Case(scraped.title, venue, label, ruling.relevance, candidate)
 
 
 def _score(cases: list[_Case], answers: dict[int, Relevance]) -> list[str]:

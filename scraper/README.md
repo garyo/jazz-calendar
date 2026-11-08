@@ -177,9 +177,17 @@ store by content, model and prompt, so only new or changed listings cost anythin
 - A source's `unknown:` setting gives the fallback for rooms where unfamiliar acts are
   usually jazz.
 
+The owner reviews what the model is unsure of. Each build lists in `review.json` the acts it
+answered with under 80% confidence, and its "unknown"s at venues that book jazz regularly (its
+unknowns elsewhere are nearly all other music). The site's review page shows them (the Acts
+tab), and a weekly ntfy note says how many are waiting. The owner's ruling comes back through
+`/api/registry` and settles that title at that venue for good, over the rules and the model.
+
 `uv run jazzcal eval [--classifier MODEL]` scores rules alone and rules plus the model against
-the hand labels in `eval/labels.yaml`. It leads with missed shows. Any classifier that has a
-`name` and `classify(questions) -> {id: Verdict}` can be compared this way.
+the hand labels in `eval/labels.yaml` and the owner's rulings. It leads with missed shows. A
+labeled listing is scored from a private copy in the store once its source drops it
+(`Store.save_labeled`), so labels outlive their shows. Any classifier that has a `name` and
+`classify(questions) -> {id: Verdict}` can be compared this way.
 
 ### Reading pages with a model
 
