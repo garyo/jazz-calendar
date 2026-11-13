@@ -51,6 +51,11 @@
             <label><input type="radio" name="status" value="venues" /><span>Venues</span></label>
             <label><input type="radio" name="status" value="hidden" /><span>Hidden</span></label>
           </fieldset>
+          <label class="admin-search">
+            <span class="sr-only">Search this tab</span>
+            <input id="review-search" type="search" placeholder="Search this tab" autocomplete="off" spellcheck="false" />
+            <span id="review-search-count" class="form-hint" aria-live="polite"></span>
+          </label>
           <button id="refresh" type="button" class="button button-small">Refresh</button>
           <button id="signout" type="button" class="link-button">Sign out</button>
         </div>

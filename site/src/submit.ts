@@ -2,10 +2,14 @@
  * The "Submit a gig" dialog: opened by any link to #submit, checked with the
  * same validation the Worker applies, then sent to POST /api/submissions
  * with a Cloudflare Turnstile token. Turnstile loads on first open, so
- * visitors who never submit don't fetch it.
+ * visitors who never submit don't fetch it. As soon as a venue and night
+ * (or weekdays) are chosen, the form shows what the calendar already lists
+ * there then, so the same gig isn't sent twice.
  */
 
 import { byId, h } from "./dom";
+import type { Feed } from "./feed";
+import { alreadyListed, listedText } from "./listings";
 import {
   type FieldErrors,
   MAX_DAYS_AHEAD,
@@ -15,7 +19,7 @@ import {
   validateSubmission,
 } from "./submission";
 import { addDays, dayKey } from "./time";
-import type { Venue } from "./types";
+import type { Venue, Weekday } from "./types";
 
 /**
  * The Turnstile widget's site key (Cloudflare dashboard → Turnstile), whose
@@ -104,7 +108,7 @@ export function showGroup(group: HTMLElement, shown: boolean): void {
 }
 
 export interface SubmitDialog {
-  setVenues(venues: Venue[]): void;
+  setFeed(feed: Feed): void;
 }
 
 export function submitDialog(): SubmitDialog {
@@ -123,14 +127,17 @@ export function submitDialog(): SubmitDialog {
     byId<HTMLInputElement>("submit-start"),
     byId<HTMLInputElement>("submit-end"),
   ];
+  const listedNote = byId<HTMLElement>("submit-listed");
   const status = byId<HTMLElement>("submit-status");
   const send = byId<HTMLButtonElement>("submit-send");
+  const sendLabel = send.textContent;
   const widgetSlot = byId<HTMLElement>("submit-turnstile");
   const done = byId<HTMLElement>("submit-done");
   const doneTitle = byId<HTMLElement>("submit-done-title");
   const [placeholder] = venue.options;
   const other = byId<HTMLOptionElement>("submit-venue-other");
   let venues = new Set<string>();
+  let feed: Feed | null = null;
   let widget: string | null = null;
   let sending = false;
 
@@ -145,6 +152,31 @@ export function submitDialog(): SubmitDialog {
     status.dataset.kind = kind;
   }
 
+  /**
+   * Shows what the calendar already lists at the chosen venue on the chosen
+   * night, or a regular's weekdays, and offers to "Send anyway"; hides it
+   * when there's nothing.
+   */
+  function showListed(): void {
+    const data = new FormData(form);
+    const date = data.get("date");
+    const slot = {
+      venue: venue.value,
+      date: typeof date === "string" && date ? date : null,
+      days: data.getAll("days") as Weekday[],
+    };
+    const today = dayKey(new Date());
+    const listed = feed
+      ? alreadyListed(slot, feed.events, feed.regulars, today)
+      : [];
+    listedNote.hidden = listed.length === 0;
+    send.textContent = listed.length ? "Send anyway" : sendLabel;
+    if (listed.length === 0) return;
+    const name = feed?.venues.get(slot.venue)?.name ?? "that venue";
+    const when = slot.date ? "that night" : "on those days";
+    listedNote.textContent = `Already on the calendar at ${name} ${when}: ${listedText(listed)}. If yours is one of these, there’s no need to send it again. If it’s a different show, or something has changed, send it anyway and say what in the notes.`;
+  }
+
   function syncFields(): void {
     const repeats = form.elements.namedItem("repeats") as RadioNodeList;
     const regular = repeats.value !== "once";
@@ -155,6 +187,7 @@ export function submitDialog(): SubmitDialog {
     showGroup(otherVenue, venue.value === OTHER_VENUE);
     for (const input of times) input.disabled = tba.checked;
     times[0].required = !tba.checked;
+    showListed();
   }
 
   function startTurnstile(): void {
@@ -315,11 +348,14 @@ export function submitDialog(): SubmitDialog {
   if (location.hash === HASH) open();
 
   return {
-    setVenues(list) {
+    setFeed(next) {
+      feed = next;
+      const list = [...next.venues.values()];
       venues = new Set(list.map((v) => v.id));
       const chosen = venue.value;
       venue.replaceChildren(placeholder, ...venueOptions(list), other);
       venue.value = chosen;
+      showListed();
     },
   };
 }

@@ -7,6 +7,12 @@
 
 import { byId, h, safeUrl } from "./dom";
 import {
+  alreadyListed,
+  listedText,
+  matchesTerms,
+  searchTerms,
+} from "./listings";
+import {
   type FieldErrors,
   type Hidden,
   OTHER_VENUE,
@@ -28,7 +34,7 @@ import {
   formatWallClock,
   TIME_ZONE,
 } from "./time";
-import type { EventsFile, Venue } from "./types";
+import type { CalendarEvent, EventsFile, Regular, Venue } from "./types";
 
 const TOKEN_KEY = "admin-token";
 const API = "/api/admin/submissions";
@@ -83,12 +89,19 @@ const signinStatus = byId<HTMLElement>("signin-status");
 const review = byId<HTMLElement>("review");
 const list = byId<HTMLOListElement>("review-list");
 const reviewStatus = byId<HTMLElement>("review-status");
+const search = byId<HTMLInputElement>("review-search");
+const searchCount = byId<HTMLElement>("review-search-count");
 
 let token = readToken();
 /** Every listed venue: the feed's and those added here. */
 let venues = new Map<string, Venue>();
 /** The venues added here, which this page can change. */
 let added: Venue[] = [];
+/** What the calendar lists now, to show what a pending submission may repeat. */
+let listings: { events: CalendarEvent[]; regulars: Regular[] } = {
+  events: [],
+  regulars: [],
+};
 const PAGES = ["acts", "venues", "hidden"] as const;
 let tab: Status | (typeof PAGES)[number] = "pending";
 
@@ -294,6 +307,44 @@ function confirmation(s: Submission): Node | null {
     : h("p", { class: "form-hint" }, text);
 }
 
+/** What a pending submission may repeat that the calendar already lists. */
+function listedFlag(s: Submission): Node | null {
+  if (s.status !== "pending") return null;
+  const { events, regulars } = listings;
+  const today = dayKey(new Date());
+  const listed = alreadyListed(s, events, regulars, today);
+  if (listed.length === 0) return null;
+  const when = s.date ? "that night" : "on those days";
+  return h(
+    "p",
+    { class: "review-flag" },
+    `Already listed there ${when}: ${listedText(listed)}.`,
+  );
+}
+
+/** A list item holding a card's form, found by searching for any of `texts`. */
+function card(
+  form: HTMLFormElement,
+  ...texts: (string | null)[]
+): HTMLLIElement {
+  const search = texts.filter(Boolean).join(" ");
+  return h("li", { class: "review-card", "data-search": search }, form);
+}
+
+/** Hides the cards that don't match the search, and says how many do. */
+function applySearch(): void {
+  const terms = searchTerms(search.value);
+  const cards = list.querySelectorAll<HTMLElement>("[data-search]");
+  let shown = 0;
+  for (const item of cards) {
+    item.hidden = !matchesTerms([item.dataset.search ?? ""], terms);
+    if (!item.hidden) shown += 1;
+  }
+  searchCount.textContent = terms.length
+    ? `${shown} of ${cards.length} match`
+    : "";
+}
+
 function button(label: string, value: string, primary = false): Node {
   const kind = primary ? "button button-primary" : "button";
   return h("button", { type: "submit", class: kind, value }, label);
@@ -332,6 +383,7 @@ function renderCard(s: Submission): HTMLLIElement {
     s.reviewed_at &&
       h("p", { class: "form-hint" }, `Reviewed ${stamp(s.reviewed_at)}`),
     confirmation(s),
+    listedFlag(s),
   );
   const repeats = select("repeats", REPEATS, repeatsOf(s));
   const date = field("Date", input("date", s.date, "date"));
@@ -409,7 +461,16 @@ function renderCard(s: Submission): HTMLLIElement {
       void act(form, s, action, outcome);
     }
   });
-  return h("li", { class: "review-card" }, form);
+  return card(
+    form,
+    s.title,
+    where(s),
+    when(s),
+    s.submitter_name,
+    s.submitter_email,
+    s.notes,
+    s.editor_note,
+  );
 }
 
 /** The form's text fields by name; fields hidden (so disabled) are left out. */
@@ -579,7 +640,9 @@ function renderVenue(v: Venue | null): HTMLLIElement {
       );
     }
   });
-  return h("li", { class: "review-card" }, form);
+  return v
+    ? card(form, v.name, v.town, v.id, v.neighborhood ?? null)
+    : h("li", { class: "review-card" }, form);
 }
 
 /** A card for a hidden listing, or for hiding one when `entry` is null. */
@@ -626,7 +689,7 @@ function renderHidden(entry: Hidden | null): HTMLLIElement {
         true,
       );
     });
-    return h("li", { class: "review-card" }, form);
+    return card(form, entry.title, venue, entry.note);
   }
   const venue = h(
     "select",
@@ -739,7 +802,7 @@ function renderAct(act: ReviewAct): HTMLLIElement {
       true,
     );
   });
-  return h("li", { class: "review-card" }, form);
+  return card(form, act.title, act.venue_name);
 }
 
 /** A card for a ruling made, to undo it. */
@@ -774,7 +837,7 @@ function renderRuling(ruling: Ruling): HTMLLIElement {
       true,
     );
   });
-  return h("li", { class: "review-card" }, form);
+  return card(form, ruling.title, venue);
 }
 
 /** The feed's venues and those added here. */
@@ -787,6 +850,7 @@ async function loadVenues(): Promise<void> {
     api(VENUES_API),
   ]);
   added = mine.body.venues ?? [];
+  listings = { events: feed?.events ?? [], regulars: feed?.regulars ?? [] };
   venues = new Map(
     [...(feed?.venues ?? []), ...added].map((venue) => [venue.id, venue]),
   );
@@ -854,6 +918,7 @@ async function load(message = "", ready?: Promise<void>): Promise<void> {
     ]);
     await ready;
     list.replaceChildren(...cards);
+    applySearch();
     reviewStatus.textContent = message ? `${message} ${count}.` : `${count}.`;
   } catch (error) {
     if (error instanceof Unauthorized) {
@@ -887,6 +952,7 @@ byId("status-tabs").addEventListener("change", (event) => {
   void load();
 });
 byId("refresh").addEventListener("click", () => void load());
+search.addEventListener("input", applySearch);
 byId("signout").addEventListener("click", () => showSignin());
 
 if (token) void start();

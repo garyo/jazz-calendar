@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  alreadyListed,
   byName,
   extraArtists,
   filterEvents,
@@ -7,17 +8,18 @@ import {
   groupByDay,
   isOnNow,
   isUpcoming,
+  listedText,
   matchingEvents,
   nextShowChange,
   normalize,
   presetRange,
-  regularsIntro,
   regularsNotice,
   runsOn,
   sortName,
   stripDays,
   venueLocation,
   venuesWithListings,
+  withRegulars,
 } from "./listings";
 import type { CalendarEvent, EventsFile, Regular } from "./types";
 import { DEFAULT_STATE, type ViewState } from "./url-state";
@@ -335,21 +337,6 @@ describe("regulars' wording", () => {
   const today = "2026-10-15"; // Thursday
   const view = (state: Partial<ViewState>) => ({ ...DEFAULT_STATE, ...state });
 
-  test("the introduction names the view's weekdays", () => {
-    expect(regularsIntro(view({}), today)).toStartWith(
-      "Standing series the venues list without specific dates.",
-    );
-    expect(regularsIntro(view({ when: "tonight" }), today)).toStartWith(
-      "Standing series that usually run on Thursdays. ",
-    );
-    expect(regularsIntro(view({ when: "weekend" }), today)).toStartWith(
-      "Standing series that usually run on Fridays, Saturdays, or Sundays. ",
-    );
-    expect(regularsIntro(view({ when: "week" }), today)).toStartWith(
-      "Standing series that usually run in the next 7 days. ",
-    );
-  });
-
   test("with no dated shows, a line points to the regulars", () => {
     expect(regularsNotice(1, view({ when: "tonight" }), today, true)).toBe(
       "No dated shows tonight, but see the regular weekly gig below.",
@@ -512,5 +499,114 @@ describe("stripDays", () => {
   test("makes no strip for a single day or none", () => {
     expect(stripDays([])).toEqual([]);
     expect(stripDays([group("2026-10-15", 3)])).toEqual([]);
+  });
+});
+
+describe("alreadyListed", () => {
+  const regulars = sample.regulars ?? [];
+  const today = "2026-10-15";
+  const titles = (slot: Parameters<typeof alreadyListed>[0], on = today) =>
+    alreadyListed(slot, sample.events, regulars, on).map((l) => l.title);
+
+  test("a gig: the venue's events and regulars that night", () => {
+    const thursday = { venue: "wallys", date: "2026-10-15", days: null };
+    expect(titles(thursday)).toEqual(["Jam session", "Wally's Jam Session"]);
+    const monday = { venue: "wallys", date: "2026-10-19", days: null };
+    expect(titles(monday)).toEqual([]);
+    const elsewhere = { venue: "lilypad", date: "2026-10-15", days: null };
+    expect(titles(elsewhere)).toEqual(["Nora Vance Group"]);
+  });
+
+  test("a regular: those on any of its weekdays", () => {
+    const slot = { venue: "wallys", date: null, days: ["thu" as const] };
+    expect(titles(slot)).toEqual(["Jam session", "Wally's Jam Session"]);
+    const sunday = { venue: "wallys", date: null, days: ["sun" as const] };
+    expect(titles(sunday)).toEqual([]);
+  });
+
+  test("one per title, skipping past and cancelled shows", () => {
+    const show = byId(sample.events[1].id);
+    const events = [
+      show,
+      { ...show, id: "again", start: "2026-10-22T20:15:00-04:00" },
+      {
+        ...show,
+        id: "off",
+        title: "Off",
+        start: "2026-10-29T20:15:00-04:00",
+        cancelled: true,
+      },
+    ];
+    const slot = { venue: show.venue, date: null, days: ["thu" as const] };
+    const found = alreadyListed(slot, events, [], today);
+    expect(found).toEqual([
+      { title: show.title, when: "Thursday, Oct 15, 8:15 pm" },
+    ]);
+    expect(alreadyListed(slot, events, [], "2026-10-30")).toEqual([]);
+  });
+
+  test("an unlisted venue has nothing listed", () => {
+    expect(titles({ venue: null, date: "2026-10-15", days: null })).toEqual([]);
+  });
+});
+
+describe("listedText", () => {
+  const item = (title: string) => ({ title, when: "Thursdays" });
+  test("names a few, then counts the rest", () => {
+    expect(listedText([item("A")])).toBe("“A” (Thursdays)");
+    expect(listedText(["A", "B", "C"].map(item), 2)).toBe(
+      "“A” (Thursdays), “B” (Thursdays) and 1 more",
+    );
+  });
+});
+
+describe("withRegulars", () => {
+  const week = { from: "2026-10-15", to: "2026-10-21" }; // Thu to Wed
+  const tryst = regular({
+    venue: "tryst",
+    title: "Pat Example and Friends",
+    days: ["thu"],
+  });
+  const jam = regular({
+    venue: "wallys",
+    title: "Jam session",
+    days: ["tue", "wed", "thu", "fri", "sat"],
+  });
+  const groups = groupByDay(sample.events, "2026-10-15");
+  const nights = withRegulars(groups, [tryst, jam], week);
+  const on = (day: string) =>
+    nights.find((night) => night.day === day)?.regulars.map((r) => r.title);
+
+  test("each night in range gets the regulars that usually run then", () => {
+    expect(on("2026-10-16")).toEqual(["Jam session"]); // Fri
+    expect(on("2026-10-18")).toEqual([]); // Sun: shows, no regulars
+  });
+
+  test("a regular a show that night already lists isn't repeated", () => {
+    // Thursday's "Wally's Jam Session" is the jam itself.
+    expect(on("2026-10-15")).toEqual(["Pat Example and Friends"]);
+  });
+
+  test("nights with only regulars are added, in order", () => {
+    const added = withRegulars(groups.slice(0, 1), [jam], week);
+    expect(added.map((night) => night.day)).toEqual([
+      "2026-10-15",
+      "2026-10-16",
+      "2026-10-17",
+      "2026-10-20",
+      "2026-10-21",
+    ]);
+    expect(added[1]).toEqual({
+      day: "2026-10-16",
+      events: [],
+      regulars: [jam],
+    });
+  });
+
+  test("nights past the range keep their shows only", () => {
+    const later = nights.filter((night) => night.day > week.to);
+    expect(later.length).toBeGreaterThan(0);
+    expect(later.every((night) => night.regulars.length === 0)).toBe(true);
+    expect(later.every((night) => night.events.length > 0)).toBe(true);
   });
 });

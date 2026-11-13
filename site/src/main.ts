@@ -152,7 +152,7 @@ async function load(): Promise<void> {
   results.setAttribute("aria-busy", "true");
   try {
     feed = await fetchFeed();
-    submit.setVenues([...feed.venues.values()]);
+    submit.setFeed(feed);
     controls.setVenues(feed.listed, feed.venues);
     controls.write(state);
     renderUpdated(byId("updated"), feed.generatedAt, new Date());

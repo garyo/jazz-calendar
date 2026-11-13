@@ -905,6 +905,18 @@ input::placeholder {
   color: var(--cancelled);
 }
 
+.submit-listed {
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  border-left: 3px solid var(--accent);
+  background: var(--highlight);
+  font-size: 0.875rem;
+}
+
+.submit-listed[hidden] {
+  display: none;
+}
+
 .submit-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1550,6 +1562,42 @@ a.event-link:hover {
   margin: 0.5rem 0 0.25rem;
   font-size: 0.875rem;
   color: var(--muted);
+}
+
+/* A night's regulars, under its dated shows: quieter than a show. */
+
+.night-regulars {
+  margin: 0.6rem 0 0.25rem;
+  padding: 0.45rem 0.75rem;
+  border-left: 3px solid var(--rule);
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.night-regulars-label {
+  margin: 0 0 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.night-regulars ul {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.night-regular-title {
+  color: var(--ink);
+  font-weight: 550;
+  text-decoration: none;
+}
+
+a.night-regular-title:hover {
+  text-decoration: underline;
 }
 
 .regular-row {

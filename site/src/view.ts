@@ -1,7 +1,9 @@
 /**
  * The listings area for a view state: the count, then either the list (day
- * strip, nights of shows, weekly regulars) or the month grid with the
- * chosen day's shows under it.
+ * strip, nights of shows) or the month grid with the chosen day's shows
+ * under it. The weekly regulars appear under each night they usually run,
+ * for the view's nights or, in a view of every date, the coming week; such a
+ * view, and the month grid, list them all in their own section too.
  */
 
 import { byId, h, placeChildren, reuse } from "./dom";
@@ -10,11 +12,12 @@ import {
   filterEvents,
   filterRegulars,
   groupByDay,
+  listRange,
   matchingEvents,
-  regularsIntro,
   regularsNotice,
   showCount,
   stripDays,
+  withRegulars,
 } from "./listings";
 import { buildMonth } from "./month";
 import { type MonthLinks, renderMonth } from "./month-grid";
@@ -25,13 +28,14 @@ import {
   renderRegulars,
 } from "./render";
 import {
+  addDays,
   type DayKey,
   formatDayHeading,
   formatMonth,
   monthOf,
   nightOf,
 } from "./time";
-import type { Regular } from "./types";
+import type { Regular, Venue } from "./types";
 import { serializeState, type ViewState } from "./url-state";
 
 /** A same-page link to a state; never "", which would mean "reload". */
@@ -61,7 +65,6 @@ export function listingsView(clear: () => void): ListingsView {
   const dayStrip = byId("day-strip");
   const dayStripList = byId("day-strip-list");
   const regularsSection = byId("regulars");
-  const regularsIntroText = byId("regulars-intro");
   const regularsList = byId("regulars-list");
   const clearAction = { label: "Clear filters", onClick: clear };
 
@@ -75,8 +78,8 @@ export function listingsView(clear: () => void): ListingsView {
     const shown = byKey(results.children);
     return [...fresh.children].map((night) => {
       const old = shown.get(night.getAttribute("data-key"));
-      const [heading, events] = night.children;
-      const [oldHeading, oldEvents] = old?.children ?? [];
+      const [heading, events, ...rest] = night.children;
+      const [oldHeading, oldEvents, ...oldRest] = old?.children ?? [];
       const oldShows = byKey(oldEvents?.children ?? []);
       const shows = [...events.children].map((show) =>
         reuse(oldShows.get(show.getAttribute("data-key")), show),
@@ -84,7 +87,11 @@ export function listingsView(clear: () => void): ListingsView {
       const kept = old ?? night;
       const list = oldEvents ?? events;
       kept.setAttribute("style", night.getAttribute("style") ?? "");
-      placeChildren(kept, [reuse(oldHeading, heading), list]);
+      placeChildren(kept, [
+        reuse(oldHeading, heading),
+        list,
+        ...rest.map((el, i) => reuse(oldRest[i], el)),
+      ]);
       placeChildren(list, shows);
       return kept;
     });
@@ -116,6 +123,27 @@ export function listingsView(clear: () => void): ListingsView {
     );
   }
 
+  /** The section listing every weekly regular, shown when `regulars` has any. */
+  function showRegulars(
+    regulars: readonly Regular[],
+    venues: ReadonlyMap<string, Venue>,
+  ): void {
+    regularsList.replaceChildren(...renderRegulars(regulars, venues));
+    regularsSection.hidden = regulars.length === 0;
+  }
+
+  /** "313 shows", and when the regulars section is shown, a link down to it. */
+  function showTotals(text: string, regulars: number): void {
+    const link =
+      regulars > 0 &&
+      h(
+        "a",
+        { href: "#regulars-heading", class: "count-regulars" },
+        `${regulars} weekly ${regulars === 1 ? "regular" : "regulars"}`,
+      );
+    count.replaceChildren(text, ...(link ? [" · ", link] : []));
+  }
+
   function renderList(
     state: ViewState,
     feed: Feed,
@@ -123,7 +151,6 @@ export function listingsView(clear: () => void): ListingsView {
     today: DayKey,
   ): void {
     const shown = filterEvents(feed.events, feed.venues, state, now);
-    count.textContent = showCount(shown.length);
     const banner =
       state.day &&
       h(
@@ -143,14 +170,22 @@ export function listingsView(clear: () => void): ListingsView {
     dayStripList.replaceChildren(...renderDayStrip(strip, today));
     dayStrip.hidden = strip.length === 0;
     const regulars = filterRegulars(feed.regulars, feed.venues, state, today);
+    const range = listRange(state, today);
+    const nights = withRegulars(
+      groups,
+      regulars,
+      range ?? { from: today, to: addDays(today, 6) },
+    );
+    // A view of some nights lists their regulars with them; one of every
+    // date also lists them all below.
+    const listed = range ? [] : regulars;
     const body =
-      shown.length > 0
-        ? reuseNights(renderDays(groups, feed.venues, feed.credits, now, today))
-        : [noShowsNotice(state, regulars, today)];
+      nights.length > 0
+        ? reuseNights(renderDays(nights, feed.venues, feed.credits, now, today))
+        : [noShowsNotice(state, listed, today)];
     placeChildren(results, banner ? [banner, ...body] : body);
-    regularsIntroText.textContent = regularsIntro(state, today);
-    regularsList.replaceChildren(...renderRegulars(regulars, feed.venues));
-    regularsSection.hidden = regulars.length === 0;
+    showTotals(showCount(shown.length), listed.length);
+    showRegulars(listed, feed.venues);
   }
 
   function renderMonthView(
@@ -168,19 +203,31 @@ export function listingsView(clear: () => void): ListingsView {
     const total = days
       .filter((day) => day.inMonth)
       .reduce((sum, day) => sum + day.events.length, 0);
-    count.textContent = `${showCount(total)} in ${formatMonth(month)}`;
+    const regulars = filterRegulars(
+      feed.regulars,
+      feed.venues,
+      { ...state, when: "all", day: "" },
+      today,
+    );
+    showTotals(`${showCount(total)} in ${formatMonth(month)}`, regulars.length);
     const links: MonthLinks = {
       day: (day) => stateHref({ ...state, view: "list", month: "", day }),
       month: (next) => stateHref({ ...state, month: next, day: "" }),
     };
     const grid = renderMonth(month, weeks, today, state.day, links);
     const selected = days.find((day) => day.day === state.day);
+    const nights = selected
+      ? withRegulars(selected.events.length > 0 ? [selected] : [], regulars, {
+          from: selected.day,
+          to: selected.day,
+        })
+      : [];
     const agenda =
-      selected && selected.events.length > 0
-        ? renderDays([selected], feed.venues, feed.credits, now, today)
+      nights.length > 0
+        ? renderDays(nights, feed.venues, feed.credits, now, today)
         : null;
     results.replaceChildren(grid, ...(agenda ? [agenda] : []));
-    regularsSection.hidden = true;
+    showRegulars(regulars, feed.venues);
     dayStrip.hidden = true;
   }
 

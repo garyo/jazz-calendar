@@ -49,6 +49,22 @@
   display: none;
 }
 
+.admin-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-search input {
+  width: 12rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+}
+
 .admin-help {
   margin: 0 0 0.5rem;
 }

@@ -75,9 +75,13 @@ Page URLs carry the view: `q`, `venue=lilypad,wallys`, `town=Cambridge,Somervill
 (a single old-style `town=` still works), `adjacent=0`, `when`, `view=month`,
 `month=2026-11` and `day=2026-11-12`. A listing matches the selection when it
 is at any selected venue or in any selected town; with neither selected,
-everything matches. Regulars follow the same rule; a view of some days (`when`
-or `day`) also shows only those that usually run on one of them (their `days`
-and `nth`), still in their own section and never in the month grid or feeds.
+everything matches. Regulars follow the same rule. Each appears, set apart
+from the dated shows, under every night it usually runs (its `days` and `nth`)
+among the view's nights (`when` or `day`), or in a view of every date, among
+the coming week's; nights with regulars but no shows are listed too
+(`withRegulars` in `src/listings.ts`). A view of every date, and the month
+grid, also list them all in their own section, linked from the count. They
+are never dated events: never in the month grid's cells or the feeds.
 
 ## Development
 
@@ -299,7 +303,11 @@ scraper stays the only publisher of the feed:
 1. "Submit a gig" (any link to `#submit`) opens a dialog. The form checks
    its fields with `src/submission.ts`, gets a Cloudflare Turnstile token
    (the widget's script loads only when the dialog first opens), and posts
-   JSON to `POST /api/submissions`.
+   JSON to `POST /api/submissions`. Once a venue and a night (or a regular's
+   weekdays) are chosen, it shows under the venue what the calendar already
+   lists there then (`alreadyListed` in `src/listings.ts`, from the feed the
+   page has loaded), and the button becomes "Send anyway", so a gig already
+   listed isn't sent twice.
 2. The Worker reads at most 16 KB of body, counting the bytes that arrive
    rather than trusting `Content-Length`. It validates the same way as the
    form (lengths; for a gig, a date from today to a year out; for a
@@ -325,7 +333,9 @@ scraper stays the only publisher of the feed:
    `SUBMIT_TOKEN` is unset, gets `401`.
 3. The owner reviews at `/admin` (`public/admin.html`, not linked and
    `noindex`), which shows every field, the submitter's name and email, and
-   the confirmation link. Approving saves any edits (title, how often, date
+   the confirmation link, with a search box for the tab's cards and a count
+   of what's waiting on the Pending and Acts tabs. A pending card notes what
+   the calendar already lists at its venue and nights. Approving saves any edits (title, how often, date
    or days, times, venue, price) and needs a relevance (jazz or
    jazz-adjacent) and a venue: a listed one, or for a room we don't list, a
    new one from the details on the card (an id, and how much jazz it

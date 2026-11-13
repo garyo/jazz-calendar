@@ -26,11 +26,44 @@ describe("the list view", () => {
     view.render(DEFAULT_STATE, feed, now);
     const shows = document.querySelectorAll("#results li.event").length;
     expect(shows).toBeGreaterThan(0);
-    expect($("#count")?.textContent).toBe(`${shows} shows`);
-    expect(document.querySelectorAll("#results section.day").length).toBe(
+    expect($("#count")?.textContent).toBe(`${shows} shows · 2 weekly regulars`);
+    expect($("#count a")?.getAttribute("href")).toBe("#regulars-heading");
+    const nightsWithShows = [
+      ...document.querySelectorAll("#results section.day"),
+    ].filter((night) => night.querySelector("li.event"));
+    expect(nightsWithShows.length).toBe(
       $("#day-strip-list")?.querySelectorAll("a").length ?? -1,
     );
     expect($("#regulars")?.hidden).toBe(false);
+  });
+
+  test("the coming week's nights list the regulars that usually run then", () => {
+    view.render(DEFAULT_STATE, feed, now);
+    const regularsOn = (day: string) =>
+      [
+        ...document.querySelectorAll(
+          `#results .day[data-key="${day}"] .night-regulars li`,
+        ),
+      ].map(
+        (li) =>
+          li.querySelector(".night-regular-title")?.firstChild?.textContent,
+      );
+    // Thursday's dated "Wally's Jam Session" is the jam itself.
+    expect(regularsOn("2026-10-15")).toEqual([]);
+    expect(regularsOn("2026-10-16")).toEqual(["Jam session"]);
+    expect(regularsOn("2026-10-17")).toEqual([
+      "Jam session",
+      "Saturday band sessions",
+    ]);
+    // Past the first week, nights list only their shows.
+    expect(regularsOn("2026-10-23")).toEqual([]);
+  });
+
+  test("a view of some nights lists their regulars only with them", () => {
+    view.render({ ...DEFAULT_STATE, when: "week" }, feed, now);
+    expect($("#regulars")?.hidden).toBe(true);
+    expect($("#count a")).toBeNull();
+    expect($(".night-regulars")).not.toBeNull();
   });
 
   test("a search with no matches offers to clear the filters", () => {
@@ -81,11 +114,13 @@ describe("the list view", () => {
 });
 
 describe("the month view", () => {
-  test("draws the grid and hides the list's extras", () => {
+  test("draws the grid, with the regulars below it", () => {
     view.render({ ...DEFAULT_STATE, view: "month" }, feed, now);
     expect($(".month-heading")?.textContent).toBe("October 2026");
-    expect($("#count")?.textContent).toEndWith("in October 2026");
-    expect($("#regulars")?.hidden).toBe(true);
+    expect($("#count")?.textContent).toEndWith(
+      "in October 2026 · 2 weekly regulars",
+    );
+    expect($("#regulars")?.hidden).toBe(false);
     expect($("#presets")?.hidden).toBe(true);
     const day = $("a.month-day") as HTMLAnchorElement;
     expect(day.getAttribute("href")).toStartWith("?day=2026-10-");

@@ -10,14 +10,14 @@ import {
   type DayKey,
   dayKey,
   eventNight,
+  eventTimeLabel,
   formatDayHeading,
   monthOf,
   nightOf,
-  WEEKDAY_NAMES,
   WEEKDAYS,
   weekday,
 } from "./time";
-import type { CalendarEvent, Regular, Venue } from "./types";
+import type { CalendarEvent, Regular, Venue, Weekday } from "./types";
 import type { DatePreset, ViewState } from "./url-state";
 
 /** How long an event with no end time is assumed to last. */
@@ -117,18 +117,21 @@ export function normalize(text: string): string {
     .toLowerCase();
 }
 
-function searchTerms(query: string): string[] {
+export function searchTerms(query: string): string[] {
   return normalize(query).split(/\s+/).filter(Boolean);
 }
 
-function matchesTerms(texts: readonly string[], terms: string[]): boolean {
+export function matchesTerms(
+  texts: readonly string[],
+  terms: string[],
+): boolean {
   if (terms.length === 0) return true;
   const haystack = normalize(texts.join(" "));
   return terms.every((term) => haystack.includes(term));
 }
 
-/** The list view's nights: the chosen day, else the date preset's. */
-function listRange(state: ViewState, today: DayKey): DayRange | null {
+/** The list view's nights: the chosen day, else the date preset's; null for every date. */
+export function listRange(state: ViewState, today: DayKey): DayRange | null {
   return state.day
     ? { from: state.day, to: state.day }
     : presetRange(state.when, today);
@@ -219,8 +222,6 @@ export function filterRegulars(
   });
 }
 
-const orList = new Intl.ListFormat("en", { type: "disjunction" });
-
 /** The list view's days in a sentence: "tonight", "on Saturday, Oct 17"; null for no limit. */
 function datePhrase(state: ViewState, today: DayKey): string | null {
   if (state.day) {
@@ -241,27 +242,6 @@ function datePhrase(state: ViewState, today: DayKey): string | null {
 }
 
 /**
- * When the view's regulars usually run: "on Thursdays", "on Fridays,
- * Saturdays or Sundays", or for a whole week the date phrase. Null for no
- * limit.
- */
-function regularsWhen(state: ViewState, today: DayKey): string | null {
-  const range = listRange(state, today);
-  if (!range) return null;
-  const days = daysOf(range);
-  if (days.length >= 7) return datePhrase(state, today);
-  return `on ${orList.format(days.map((day) => `${WEEKDAY_NAMES[weekday(day)]}s`))}`;
-}
-
-/** The weekly regulars' introduction, for the view's days. */
-export function regularsIntro(state: ViewState, today: DayKey): string {
-  const when = regularsWhen(state, today);
-  return when
-    ? `Standing series that usually run ${when}. The venues list them without specific dates, so check with the venue before you go.`
-    : "Standing series the venues list without specific dates. Schedules change: check with the venue before you go.";
-}
-
-/**
  * The line for a view with no dated shows but some weekly regulars, pointing
  * down to them: "No dated shows tonight, but see the regular weekly gig below."
  * Null when there are no regulars.
@@ -275,6 +255,47 @@ export function regularsNotice(
   if (count === 0) return null;
   const dates = datePhrase(state, today) ?? (filtered ? "match" : "listed");
   return `No dated shows ${dates}, but see the regular weekly ${count === 1 ? "gig" : "gigs"} below.`;
+}
+
+/** A night of shows, with the weekly regulars that usually run then. */
+export interface Night extends DayGroup {
+  regulars: Regular[];
+}
+
+/** Whether a show that night is the regular itself: same venue, and one title contains the other. */
+function listedAs(regular: Regular, events: readonly CalendarEvent[]): boolean {
+  const title = normalize(regular.title);
+  return events.some((event) => {
+    const other = normalize(event.title);
+    return (
+      event.venue === regular.venue &&
+      (other.includes(title) || title.includes(other))
+    );
+  });
+}
+
+/**
+ * The nights to list: each night of shows, and for the nights in `range`
+ * (a week at most) the regulars that usually run then, adding nights that
+ * have regulars but no shows. A regular a show that night already lists
+ * isn't repeated.
+ */
+export function withRegulars(
+  groups: readonly DayGroup[],
+  regulars: readonly Regular[],
+  range: DayRange,
+): Night[] {
+  const nights = new Map<DayKey, Night>(
+    groups.map((group) => [group.day, { ...group, regulars: [] }]),
+  );
+  for (const day of daysOf(range)) {
+    const night = nights.get(day) ?? { day, events: [], regulars: [] };
+    night.regulars = regulars.filter(
+      (regular) => runsOn(regular, day) && !listedAs(regular, night.events),
+    );
+    if (night.regulars.length > 0) nights.set(day, night);
+  }
+  return [...nights.values()].sort((a, b) => a.day.localeCompare(b.day));
 }
 
 /**
@@ -366,4 +387,74 @@ export function venuesWithListings(
   return [...venues.values()]
     .filter((venue) => ids.has(venue.id))
     .sort((a, b) => a.town.localeCompare(b.town) || byName(a.name, b.name));
+}
+
+/** A listing already on the calendar that a submission may repeat. */
+export interface Existing {
+  title: string;
+  /** "Thursday, Nov 20, 8:15 pm", or a regular's schedule. */
+  when: string;
+}
+
+/** Where and when a gig (`date`) or regular (`days`) runs. */
+interface Slot {
+  venue: string | null;
+  date: DayKey | null;
+  days: readonly Weekday[] | null;
+}
+
+/**
+ * Upcoming listings at a submission's venue that it may repeat, one per
+ * title: for a gig, the events and regulars on its night; for a regular,
+ * those on any of its weekdays.
+ */
+export function alreadyListed(
+  slot: Slot,
+  events: readonly CalendarEvent[],
+  regulars: readonly Regular[],
+  today: DayKey,
+): Existing[] {
+  const { venue, date, days } = slot;
+  if (!venue || !(date || days?.length)) return [];
+  const found = new Map<string, Existing>();
+  for (const regular of regulars) {
+    const runs = date
+      ? runsOn(regular, date)
+      : regular.days?.some((day) => days?.includes(day));
+    if (regular.venue === venue && runs) {
+      found.set(normalize(regular.title), {
+        title: regular.title,
+        when: regular.when,
+      });
+    }
+  }
+  for (const event of events) {
+    const night = eventNight(event);
+    const onNight = date
+      ? night === date
+      : days?.includes(WEEKDAYS[weekday(night)]);
+    const key = normalize(event.title);
+    if (
+      event.venue === venue &&
+      !event.cancelled &&
+      night >= today &&
+      onNight &&
+      !found.has(key)
+    ) {
+      found.set(key, {
+        title: event.title,
+        when: `${formatDayHeading(night)}, ${eventTimeLabel(event)}`,
+      });
+    }
+  }
+  return [...found.values()];
+}
+
+/** Listings in a line: “Title” (when), …, and how many more past `max`. */
+export function listedText(listed: readonly Existing[], max = 4): string {
+  const named = listed
+    .slice(0, max)
+    .map(({ title, when }) => `“${title}” (${when})`);
+  const more = listed.length - max;
+  return more > 0 ? `${named.join(", ")} and ${more} more` : named.join(", ");
 }

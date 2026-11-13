@@ -15,6 +15,7 @@ import {
   type DayGroup,
   extraArtists,
   isOnNow,
+  type Night,
   type StripDay,
   showCount,
   venueLocation,
@@ -30,6 +31,8 @@ import {
   formatShortClock,
   formatUpdated,
   isLateSet,
+  WEEKDAY_NAMES,
+  weekday,
 } from "./time";
 import type {
   CalendarEvent,
@@ -309,15 +312,50 @@ export function renderDayStrip(
   });
 }
 
+/**
+ * The weekly regulars that usually run on a night, set apart from its
+ * dated shows: a standing schedule promises no particular night.
+ */
+function renderNightRegulars(
+  day: DayKey,
+  regulars: readonly Regular[],
+  venues: ReadonlyMap<string, Venue>,
+): Child {
+  if (regulars.length === 0) return null;
+  const label = `Weekly regulars, usually on ${WEEKDAY_NAMES[weekday(day)]}s`;
+  return h(
+    "aside",
+    { class: "night-regulars", "aria-label": label },
+    h("p", { class: "night-regulars-label" }, label),
+    h(
+      "ul",
+      {},
+      ...regulars.map((regular) => {
+        const href = safeUrl(regular.url);
+        const venue = venues.get(regular.venue);
+        return h(
+          "li",
+          { class: regular.relevance },
+          href
+            ? external({ class: "night-regular-title", href }, regular.title)
+            : h("span", { class: "night-regular-title" }, regular.title),
+          ` · ${venue?.name ?? regular.venue} · ${regular.when}`,
+        );
+      }),
+    ),
+  );
+}
+
 export function renderDays(
-  groups: readonly DayGroup[],
+  groups: readonly (DayGroup | Night)[],
   venues: ReadonlyMap<string, Venue>,
   credits: Credits,
   now: Date,
   today: DayKey,
 ): DocumentFragment {
   const fragment = document.createDocumentFragment();
-  for (const { day, events } of groups) {
+  for (const group of groups) {
+    const { day, events } = group;
     const headingId = `day-${day}`;
     const section = h(
       "section",
@@ -330,6 +368,7 @@ export function renderDays(
           renderEvent(event, venues.get(event.venue), credits, now),
         ),
       ),
+      "regulars" in group && renderNightRegulars(day, group.regulars, venues),
     );
     // Sizes the placeholder of a day that hasn't been laid out yet.
     section.style.setProperty("--day-events", String(events.length));
