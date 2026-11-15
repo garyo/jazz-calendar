@@ -204,6 +204,16 @@
   jazz_level: occasional
   aliases: [Institute of Contemporary Art, ICA/Boston]
 
+- id: omni-seaport-lobby
+  name: Omni Boston Seaport Lobby
+  address: 450 Summer St
+  town: Boston
+  neighborhood: Seaport
+  url: https://www.omnihotels.com/hotels/boston-seaport
+  jazz_level: regular
+  # The hotel holds its Lobby Live! series in the lobby; some aggregators list it at Kestra.
+  aliases: [Omni Boston Hotel at the Seaport, Omni Seaport, Kestra]
+
 # --- Cambridge ------------------------------------------------------------
 
 - id: regattabar

@@ -74,6 +74,23 @@
     The same feed searched for "jazz", which also matches descriptions, for shows elsewhere
     at Harvard (e.g. ArtsThursdays at Paine Hall). The Jazz Bands aren't listed here.
 
+- id: omni-seaport
+  adapter: ics
+  url: https://www.trumba.com/calendars/bossea.ics
+  credit: {name: "Omni Boston Hotel at the Seaport’s events", url: https://www.omnihotels.com/hotels/boston-seaport/things-to-do/events/lobby-live-music-series}
+  venue: omni-seaport-lobby
+  # Drops everything but the Lobby Live! sets (a title stripped to nothing goes), and
+  # leaves the act's name.
+  title_strip: ^(?!Lobby Live!).*|^Lobby Live!\s*(Music Series)?\s*(w/|with\b|:|-)?
+  notes: >-
+    The hotel's Trumba calendar (also at bossea.json), about two weeks ahead; only its
+    Lobby Live! sets, 5–7 pm. Omni leaves the genre unsaid, but the series books jazz
+    players about three times a month, mostly on Thursdays, so the act names decide.
+    omnihotels.com's terms (2026-02-11) forbid reproducing its content and robots copying its
+    pages, but they cover content that links to them, which the Trumba feed doesn't; Trumba
+    sets no terms against reuse. The owner judged the feed fair to use (2026-11-15). Never
+    fetch omnihotels.com itself, which answers robots with a 403.
+
 - id: lizard-lounge
   adapter: ics
   url: https://lizardloungeclub.com/?post_type=tribe_events&ical=1&eventDisplay=list
