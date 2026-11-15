@@ -176,12 +176,24 @@ def uncaps(title: str) -> str:
     return re.sub(r"(?<![\w'\u2019])\w", lambda m: m[0].upper(), title.lower())
 
 
-CANCELLED = re.compile(r"\bcancel+ed\b", re.IGNORECASE)
+CANCELLED = re.compile(
+    r"""\s*[(\[]\s*cancel+ed\b[^)\]]*[)\]]   # Pat Doe (CANCELLED), [Canceled: snow]
+    | ^\W*cancel+ed\b(?:\W*$|\s*[^\w\s]+\s*)  # Cancelled: Pat Doe; just "Canceled"
+    | \s*[^\w\s]+\s*cancel+ed\W*$         # Pat Doe - Cancelled
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+"""The word "cancelled" set off as a label, not as part of a name like "The Cancelled"."""
 
 
 def is_cancelled(*texts: str) -> bool:
     """Whether any of the texts (a title, a subtitle) says the show is cancelled."""
     return any(CANCELLED.search(text) for text in texts)
+
+
+def uncancelled(title: str) -> str:
+    """The title without a cancellation label: "Pat Doe Trio (CANCELLED)" -> "Pat Doe Trio"."""
+    return " ".join(CANCELLED.sub(" ", title).split())
 
 
 def text_of(node: LexborNode, selector: str) -> str | None:

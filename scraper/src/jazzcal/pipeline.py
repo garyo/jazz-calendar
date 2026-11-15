@@ -14,7 +14,7 @@ from typing import NamedTuple
 from rapidfuzz import fuzz
 
 from jazzcal import notify
-from jazzcal.adapters import get_adapter
+from jazzcal.adapters import get_adapter, is_cancelled, uncancelled
 from jazzcal.classify import Ruling, classify, tags
 from jazzcal.config import TZ, Registry, night_of
 from jazzcal.export import site_url
@@ -109,7 +109,7 @@ def scrape(
 
 def scrape_source(source: Source, http: Http) -> tuple[list[ScrapedEvent], str | None]:
     """What a source lists, with the source's title rewrites applied, less any they leave
-    without a title; and a problem to report, if any.
+    without a title, and any titled as cancelled marked so; and a problem to report, if any.
 
     The events are its adapter's or, when the adapter finds none and the source has a
     fallback, the fallback's. The fallback finding something means the adapter has likely
@@ -132,7 +132,15 @@ def scrape_source(source: Source, http: Http) -> tuple[list[ScrapedEvent], str |
             for e in events
             if (title := source.retitle(e.title))
         ]
-    return events, problem
+    return [_cancellation(e) for e in events], problem
+
+
+def _cancellation(event: ScrapedEvent) -> ScrapedEvent:
+    """The event marked cancelled, without the label, when its title says it's cancelled."""
+    if not is_cancelled(event.title):
+        return event
+    title = uncancelled(event.title) or event.title
+    return event.model_copy(update={"title": title, "cancelled": True})
 
 
 class FallbackError(Exception):

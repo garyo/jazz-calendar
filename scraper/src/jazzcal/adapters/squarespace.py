@@ -16,7 +16,7 @@ from urllib.parse import parse_qs, urljoin, urlsplit
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 from selectolax.lexbor import LexborNode
 
-from jazzcal.adapters import adapter, clean, is_cancelled, text_of, to_local
+from jazzcal.adapters import adapter, clean, text_of, to_local
 from jazzcal.adapters.times import parse_times, schedule
 from jazzcal.http import Http
 from jazzcal.models import ScrapedEvent, Source
@@ -60,7 +60,6 @@ def parse(page: str, *, base_url: str) -> list[ScrapedEvent]:
                 price=_price(excerpt),
                 categories=[c for a in article.css(".eventlist-cats a") if (c := clean(a.text()))],
                 text=excerpt,
-                cancelled=is_cancelled(title),
             )
         )
     return events
@@ -91,7 +90,6 @@ def _parse_calendar(tree: HTMLParser, base_url: str) -> list[ScrapedEvent]:
                 all_day=all_day,
                 venue_name=next((clean(li.text()) for div in divs for li in div.css("li")), None),
                 url=url,
-                cancelled=is_cancelled(title),
             )
         )
     return events

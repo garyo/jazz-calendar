@@ -2,9 +2,20 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+import pytest
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
-from jazzcal.adapters import clean, ics, is_cancelled, json_ld, jsonld, tribe, uncaps, unique_urls
+from jazzcal.adapters import (
+    clean,
+    ics,
+    is_cancelled,
+    json_ld,
+    jsonld,
+    tribe,
+    uncancelled,
+    uncaps,
+    unique_urls,
+)
 from jazzcal.config import TZ
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -89,6 +100,28 @@ def test_is_cancelled() -> None:
     assert is_cancelled("Pat Doe Trio", "CANCELED: rescheduled to May")
     assert is_cancelled("Cancelled - Pat Doe Trio")
     assert not is_cancelled("Pat Doe Trio", "Cancellation policy: none")
+
+
+@pytest.mark.parametrize(
+    ("title", "rest"),
+    [
+        ("Pat Doe Trio (CANCELLED)", "Pat Doe Trio"),
+        ("Pat Doe Trio [Canceled - moved to May] with Sam Roe", "Pat Doe Trio with Sam Roe"),
+        ("CANCELLED: Pat Doe Trio", "Pat Doe Trio"),
+        ("**Cancelled** Pat Doe Trio", "Pat Doe Trio"),
+        ("Pat Doe Trio \u2013 cancelled!", "Pat Doe Trio"),
+        ("Pat Doe Trio - CANCELED", "Pat Doe Trio"),
+        ("Canceled", ""),
+        # Names, not labels
+        ("The Cancelled Mothers of Invention", None),
+        ("Cancelled Plans Quartet", None),
+        ("Pat Doe and the Cancelled", None),
+        ("Pat Doe: Cancellation Blues", None),
+    ],
+)
+def test_cancelled_labels(title: str, rest: str | None) -> None:
+    assert is_cancelled(title) == (rest is not None)
+    assert uncancelled(title) == (title if rest is None else rest)
 
 
 def test_json_ld_skips_bad_blocks() -> None:

@@ -205,6 +205,13 @@ def test_build_merges_a_show_one_source_lists_twice(store: Store) -> None:
     ]
 
 
+def test_a_title_labelled_cancelled_marks_the_show() -> None:
+    show = pipeline._cancellation(event("1", "Pat Doe Trio (CANCELLED)"))
+    assert (show.title, show.cancelled) == ("Pat Doe Trio", True)
+    named = event("2", "The Cancelled Mothers of Invention")
+    assert pipeline._cancellation(named) is named
+
+
 def at(text: str, **kw: object) -> ScrapedEvent:
     return ScrapedEvent.model_validate({"uid": "x", "title": "Set", "start": text, **kw})
 

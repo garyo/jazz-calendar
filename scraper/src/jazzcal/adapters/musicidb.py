@@ -53,7 +53,7 @@ def parse(page: str) -> list[ScrapedEvent]:
             ticket_url=ticket_url,
             categories=[g for part in genres.split(",") if (g := clean(part))],
             text=html_to_text(description.html or "") if description else None,
-            cancelled=is_cancelled(title, subtitle),
+            cancelled=is_cancelled(subtitle),
         )
         times = parse_times(subtitle)
         if not times:
