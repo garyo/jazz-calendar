@@ -151,7 +151,7 @@ const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 /** No whitespace, and nothing that adds recipients or headers to a mailto: link. */
 const EMAIL = /^[^\s@?&%,;<>]+@[^\s@?&%,;<>]+\.[^\s@?&%,;<>]+$/;
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 

@@ -13,6 +13,7 @@ import {
   matchesTerms,
   searchTerms,
 } from "./listings";
+import type { Run } from "./runs";
 import {
   type FieldErrors,
   type Hidden,
@@ -35,7 +36,13 @@ import {
   formatWallClock,
   TIME_ZONE,
 } from "./time";
-import type { CalendarEvent, EventsFile, Regular, Venue } from "./types";
+import type {
+  CalendarEvent,
+  EventsFile,
+  Regular,
+  StatusFile,
+  Venue,
+} from "./types";
 
 const TOKEN_KEY = "admin-token";
 const API = "/api/admin/submissions";
@@ -43,6 +50,9 @@ const VENUES_API = "/api/admin/venues";
 const HIDDEN_API = "/api/admin/hidden";
 const REVIEW_API = "/api/admin/review";
 const RULINGS_API = "/api/admin/rulings";
+const RUNS_API = "/api/admin/runs";
+/** How often the Runs tab checks on a run that's waiting or running. */
+const RUN_POLL_MS = 15_000;
 /** A regular not confirmed for this many days is due a check. */
 const RECHECK_DAYS = 90;
 
@@ -98,12 +108,14 @@ let token = readToken();
 let venues = new Map<string, Venue>();
 /** The venues added here, which this page can change. */
 let added: Venue[] = [];
+/** Each source's name for people, by id, from the feed's credits. */
+let sourceNames = new Map<string, string>();
 /** What the calendar lists now, to show what a pending submission may repeat. */
 let listings: { events: CalendarEvent[]; regulars: Regular[] } = {
   events: [],
   regulars: [],
 };
-const PAGES = ["acts", "venues", "hidden"] as const;
+const PAGES = ["acts", "venues", "hidden", "runs"] as const;
 let tab: Status | (typeof PAGES)[number] = "pending";
 
 function readToken(): string {
@@ -145,6 +157,7 @@ interface ApiResult {
     hidden?: Hidden[];
     acts?: ReviewAct[];
     rulings?: Ruling[];
+    runs?: Run[];
   };
 }
 
@@ -841,6 +854,150 @@ function renderRuling(ruling: Ruling): HTMLLIElement {
   return card(form, ruling.title, venue);
 }
 
+const RUN_KINDS: [Run["kind"], string, string][] = [
+  [
+    "full",
+    "Full run",
+    "Pulls the latest code, scrapes every source afresh and publishes. Takes several minutes; one every half hour.",
+  ],
+  [
+    "source",
+    "One source",
+    "Pulls the latest code, scrapes just this source afresh and publishes. One a source every ten minutes.",
+  ],
+  [
+    "rebuild",
+    "Rebuild",
+    "Pulls the latest code and rebuilds the calendar from what was last scraped, without fetching the venues’ pages again: for a change to the code or the rules.",
+  ],
+];
+const RUN_STATUSES: Record<Run["status"], string> = {
+  queued: "Waiting for the scraper",
+  running: "Running",
+  done: "Done",
+  failed: "Failed",
+};
+
+function sourceName(id: string): string {
+  return sourceNames.get(id) ?? id;
+}
+
+function runTitle(run: Run): string {
+  if (run.kind === "source") return `Scrape ${sourceName(run.source ?? "")}`;
+  return run.kind === "full" ? "Full run" : "Rebuild";
+}
+
+/** The card for asking for a run; `status` gives the sources and the last scrape. */
+function renderRunForm(status: StatusFile | null): HTMLLIElement {
+  const outcome = h("p", { class: "submit-status", role: "status" });
+  const sources = h(
+    "select",
+    { name: "source" },
+    h("option", { value: "" }, "Choose…"),
+    ...(status?.sources ?? [])
+      .map((s) => s.id)
+      .sort((a, b) => byName(sourceName(a), sourceName(b)))
+      .map((id) => h("option", { value: id }, sourceName(id))),
+  );
+  const kinds = RUN_KINDS.map(([kind, label, hint]) => {
+    const radio = h("input", { type: "radio", name: "kind", value: kind });
+    radio.checked = kind === "full";
+    return h(
+      "label",
+      { class: "form-check run-kind" },
+      radio,
+      h("span", {}, h("strong", {}, label), h("br", {}), hint),
+    );
+  });
+  const sourceField = field("Source", sources);
+  const sync = () =>
+    showGroup(sourceField, new FormData(form).get("kind") === "source");
+  const form = h(
+    "form",
+    { novalidate: "" },
+    h("p", { class: "review-when" }, h("strong", {}, "Run the scraper now")),
+    h(
+      "p",
+      { class: "form-hint" },
+      "The scraper checks for a request every minute. ",
+      status ? `The last scrape published ${stamp(status.generated_at)}.` : "",
+    ),
+    h(
+      "fieldset",
+      { class: "form-field form-field-wide form-choices" },
+      h("legend", { class: "form-label" }, "Run"),
+      h("div", { class: "run-kinds" }, ...kinds),
+    ),
+    h("div", { class: "review-fields" }, sourceField),
+    h(
+      "div",
+      { class: "review-actions" },
+      button("Ask for this run", "run", true),
+      outcome,
+    ),
+  );
+  sync();
+  form.addEventListener("change", sync);
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const fields = texts(new FormData(form), ["kind", "source"]);
+    void send(form, outcome, RUNS_API, fields, (result) =>
+      result.status === 201
+        ? "Asked for the run."
+        : "That run is already waiting.",
+    );
+  });
+  return h("li", { class: "review-card" }, form);
+}
+
+function renderRun(run: Run): HTMLLIElement {
+  const times = [
+    `asked ${stamp(run.requested)}`,
+    run.started && `started ${stamp(run.started)}`,
+    run.finished && `finished ${stamp(run.finished)}`,
+  ].filter(Boolean);
+  const form = h(
+    "form",
+    {},
+    h(
+      "p",
+      { class: "review-when" },
+      h("strong", {}, runTitle(run)),
+      " · ",
+      h(
+        "span",
+        { class: `run-status run-${run.status}` },
+        RUN_STATUSES[run.status],
+      ),
+    ),
+    h("p", { class: "form-hint" }, `${times.join(", ")}.`),
+    run.error && h("p", { class: "review-flag" }, run.error),
+  );
+  return card(form, runTitle(run), RUN_STATUSES[run.status], run.error);
+}
+
+let runPoll: ReturnType<typeof setTimeout> | undefined;
+
+/** The Runs tab's cards, checking back while a run is waiting or running. */
+async function runCards(): Promise<[HTMLLIElement[], string]> {
+  const [{ runs = [] }, status] = await Promise.all([
+    api(RUNS_API).then((result) => result.body),
+    fetch("/data/status.json").then(
+      (response) => response.json() as Promise<StatusFile>,
+      () => null,
+    ),
+  ]);
+  if (runs.some((run) => run.status === "queued" || run.status === "running")) {
+    runPoll = setTimeout(() => {
+      if (tab === "runs") void load();
+    }, RUN_POLL_MS);
+  }
+  return [
+    [renderRunForm(status), ...runs.map(renderRun)],
+    `${runs.length} recent ${runs.length === 1 ? "run" : "runs"}`,
+  ];
+}
+
 /** The feed's venues and those added here. */
 async function loadVenues(): Promise<void> {
   const [feed, mine] = await Promise.all([
@@ -852,6 +1009,7 @@ async function loadVenues(): Promise<void> {
   ]);
   added = (mine.body.venues ?? []).sort((a, b) => byName(a.name, b.name));
   listings = { events: feed?.events ?? [], regulars: feed?.regulars ?? [] };
+  sourceNames = new Map((feed?.sources ?? []).map((s) => [s.id, s.name]));
   venues = new Map(
     [...(feed?.venues ?? []), ...added].map((venue) => [venue.id, venue]),
   );
@@ -877,6 +1035,7 @@ async function tabCards(): Promise<[HTMLLIElement[], string]> {
       `${acts.length} awaiting a ruling, ${rulings.length} decided`,
     ];
   }
+  if (tab === "runs") return runCards();
   if (tab === "hidden") {
     const hidden = (await api(HIDDEN_API)).body.hidden ?? [];
     return [
@@ -911,6 +1070,7 @@ async function loadBadges(): Promise<void> {
  * the old once `ready` settles: a card playing out (`leave`) finishes first.
  */
 async function load(message = "", ready?: Promise<void>): Promise<void> {
+  clearTimeout(runPoll);
   reviewStatus.textContent = "Loading…";
   try {
     const [[cards, count]] = await Promise.all([

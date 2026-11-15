@@ -351,7 +351,14 @@ scraper stays the only publisher of the feed:
    of, from the `review.json` each run uploads, less those already ruled on.
    A ruling (jazz, jazz-adjacent or not jazz) settles that title at that
    venue for good, over the scraper's rules and classifier, and Undo takes
-   it back (`src/worker-rulings.ts`). Every change to what the feed shows
+   it back (`src/worker-rulings.ts`). The Runs tab asks the scraper to run
+   now: a full run, one source, or a rebuild from what was last scraped
+   (`src/worker-runs.ts`). The scraper's one-minute refresh finds the oldest
+   queued run in `/api/registry`, pulls the latest code, carries it out and
+   reports its progress to `POST /api/runs/:id` (publish token); the tab
+   checks back every 15 seconds while one is waiting or running. Runs that
+   scrape are spaced out: a full run every half hour, a source every ten
+   minutes. Every change to what the feed shows
    (an approval, unpublishing, confirming a regular, a venue added, edited
    or deleted, a listing hidden or shown again, a ruling) bumps the feed's revision (`src/worker-revision.ts`) in
    the same batch.

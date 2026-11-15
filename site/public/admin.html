@@ -50,6 +50,7 @@
             <label><input type="radio" name="status" value="acts" /><span>Acts <b class="tab-badge" data-badge="acts" hidden></b></span></label>
             <label><input type="radio" name="status" value="venues" /><span>Venues</span></label>
             <label><input type="radio" name="status" value="hidden" /><span>Hidden</span></label>
+            <label><input type="radio" name="status" value="runs" /><span>Runs</span></label>
           </fieldset>
           <label class="admin-search">
             <span class="sr-only">Search this tab</span>
@@ -65,7 +66,8 @@
           new venue’s details on its card; Venues lists the ones added here.
           Venues in <code>data/venues.yaml</code> are edited there. Acts lists
           the shows the classifier wasn’t sure of; your call settles that act at
-          that venue for good.
+          that venue for good. Runs asks the scraper to run now rather than
+          wait for its daily run.
         </p>
         <p id="review-status" class="count" role="status" aria-live="polite"></p>
         <ol id="review-list" class="review-list"></ol>

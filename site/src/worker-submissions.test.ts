@@ -905,6 +905,7 @@ describe("GET /api/registry", () => {
       ],
       hidden: [],
       rulings: [],
+      run: null,
     });
 
     // Regulars stay out of the dated gigs.
@@ -966,6 +967,93 @@ describe("the feed's revision", () => {
     expect(taken.status).toBe(400);
     await post("/api/admin/venues", { ...venue, venue_id: "Bad Id" }, ADMIN);
     expect(revision()).toBe(0);
+  });
+});
+
+describe("runs asked for on the review page", () => {
+  const ask = (body: object) => post("/api/admin/runs", body, ADMIN);
+  const report = (id: number, body: object, token = PUBLISH) =>
+    post(`/api/runs/${id}`, body, token);
+  const queued = async () => {
+    const res = await call("/api/registry", {
+      headers: { authorization: `Bearer ${PUBLISH}` },
+    });
+    return ((await res.json()) as { run: unknown }).run;
+  };
+  const runOf = async (res: Response) =>
+    ((await res.json()) as { run: { id: number; status: string } }).run;
+
+  test("the scraper finds the oldest queued run and reports its progress", async () => {
+    const full = await ask({ kind: "full" });
+    expect(full.status).toBe(201);
+    const { id } = await runOf(full);
+    const source = await runOf(
+      await ask({ kind: "source", source: "mad-monkfish" }),
+    );
+    expect(await queued()).toEqual({ id, kind: "full", source: null });
+
+    expect((await report(id, { status: "done" })).status).toBe(409);
+    expect((await runOf(await report(id, { status: "running" }))).status).toBe(
+      "running",
+    );
+    expect((await report(id, { status: "running" })).status).toBe(409);
+    expect(await queued()).toEqual({
+      id: source.id,
+      kind: "source",
+      source: "mad-monkfish",
+    });
+    await report(id, { status: "failed", error: "Boom" });
+    await report(source.id, { status: "running" });
+    expect(await queued()).toBeNull();
+
+    const listed = await call("/api/admin/runs", { headers: ADMIN_HEADERS });
+    const { runs } = (await listed.json()) as {
+      runs: { id: number; status: string; error: string | null }[];
+    };
+    expect(runs.map((r) => [r.id, r.status, r.error])).toEqual([
+      [source.id, "running", null],
+      [id, "failed", "Boom"],
+    ]);
+  });
+
+  test("spaces out the runs that scrape, and doesn't queue one twice", async () => {
+    const first = await runOf(await ask({ kind: "full" }));
+    const again = await ask({ kind: "full" });
+    expect(again.status).toBe(200);
+    expect((await runOf(again)).id).toBe(first.id);
+
+    await report(first.id, { status: "running" });
+    const soon = await ask({ kind: "full" });
+    expect(soon.status).toBe(429);
+    expect(((await soon.json()) as { error: string }).error).toContain(
+      "30 min",
+    );
+    // Another source, or a rebuild, can go ahead.
+    expect((await ask({ kind: "source", source: "beehive" })).status).toBe(201);
+    const rebuild = await runOf(await ask({ kind: "rebuild" }));
+    await report(rebuild.id, { status: "running" });
+    expect((await ask({ kind: "rebuild" })).status).toBe(201);
+
+    // A failed run doesn't hold up the next.
+    await report(first.id, { status: "failed" });
+    expect((await ask({ kind: "full" })).status).toBe(201);
+  });
+
+  test("checks what's asked for, and who asks", async () => {
+    for (const [body, fields] of [
+      [{ kind: "everything" }, ["kind"]],
+      [{ kind: "source" }, ["source"]],
+      [{ kind: "source", source: "Bad Id" }, ["source"]],
+    ] as const) {
+      expect(await errors(await ask(body))).toEqual([...fields]);
+    }
+    expect((await call("/api/admin/runs")).status).toBe(401);
+    expect(
+      (await post("/api/admin/runs", { kind: "full" }, PUBLISH)).status,
+    ).toBe(401);
+    const { id } = await runOf(await ask({ kind: "full" }));
+    expect((await report(id, { status: "running" }, ADMIN)).status).toBe(401);
+    expect((await report(id, { status: "queued" })).status).toBe(400);
   });
 });
 

@@ -8,12 +8,14 @@
  *   GET  /api/submissions/approved       upcoming approved gigs for the
  *                                        scraper (PUBLISH_TOKEN)
  *   GET  /api/registry                   approved regulars, added venues,
- *                                        hidden listings, rulings and the
- *                                        feed's revision, for the scraper
+ *                                        hidden listings, rulings, the
+ *                                        feed's revision and the next run
+ *                                        asked for, for the scraper
  *                                        (PUBLISH_TOKEN)
  *
  * The admin venue routes are in worker-venues.ts, the hidden listings' in
- * worker-hidden.ts, the rulings' in worker-rulings.ts. Submitters' names,
+ * worker-hidden.ts, the rulings' in worker-rulings.ts, the runs' in
+ * worker-runs.ts. Submitters' names,
  * emails and notes leave D1 only through the admin API. A new submission pings the
  * owner's ntfy topic with just the listing's title, time and venue.
  */
@@ -48,6 +50,13 @@ import {
   adminRulings,
   selectRulings,
 } from "./worker-rulings";
+import {
+  ADMIN_RUNS_PATH,
+  adminRuns,
+  RUNS_PATH,
+  scraperRuns,
+  selectQueuedRun,
+} from "./worker-runs";
 import {
   ADMIN_VENUES_PATH,
   adminVenues,
@@ -266,8 +275,8 @@ async function registry(
   if (!(await hasBearer(request, env.PUBLISH_TOKEN))) {
     return unauthorized("publish");
   }
-  const [revision, venues, regulars, hidden, rulings] = await env.DB.batch<Row>(
-    [
+  const [revision, venues, regulars, hidden, rulings, run] =
+    await env.DB.batch<Row>([
       readRevision(env.DB),
       selectVenues(env),
       env.DB.prepare(
@@ -277,14 +286,15 @@ async function registry(
       ),
       selectHidden(env.DB),
       selectRulings(env.DB),
-    ],
-  );
+      selectQueuedRun(env.DB),
+    ]);
   return jsonResponse(200, {
     revision: revision.results[0].n,
     venues: venues.results,
     regulars: regulars.results.map((row) => regularOf(fromRow(row))),
     hidden: hidden.results,
     rulings: rulings.results,
+    run: run.results[0] ?? null,
   });
 }
 
@@ -415,6 +425,9 @@ async function admin(
   if (!(await hasBearer(request, env.ADMIN_TOKEN)))
     return unauthorized("admin");
   const { pathname } = url;
+  if (under(pathname, ADMIN_RUNS_PATH)) {
+    return adminRuns(request, env, pathname.slice(ADMIN_RUNS_PATH.length));
+  }
   if (under(pathname, ADMIN_HIDDEN_PATH)) {
     return adminHidden(request, env, pathname.slice(ADMIN_HIDDEN_PATH.length));
   }
@@ -429,6 +442,17 @@ async function admin(
     return request.method === "GET" ? list(url, env) : methodNotAllowed("GET");
   }
   return review(request, env, rest.slice(1));
+}
+
+async function runReport(
+  request: Request,
+  env: SubmissionsEnv,
+  pathname: string,
+): Promise<Response> {
+  if (!(await hasBearer(request, env.PUBLISH_TOKEN))) {
+    return unauthorized("publish");
+  }
+  return scraperRuns(request, env, pathname.slice(RUNS_PATH.length));
 }
 
 function under(pathname: string, prefix: string): boolean {
@@ -446,6 +470,7 @@ export function routeSubmissions(
   if (pathname === SUBMIT_PATH) return submit(request, env, ctx);
   if (pathname === APPROVED_PATH) return approvedFeed(request, env);
   if (pathname === REGISTRY_PATH) return registry(request, env);
+  if (under(pathname, RUNS_PATH)) return runReport(request, env, pathname);
   if (
     [
       ADMIN_PATH,
@@ -453,6 +478,7 @@ export function routeSubmissions(
       ADMIN_HIDDEN_PATH,
       ADMIN_REVIEW_PATH,
       ADMIN_RULINGS_PATH,
+      ADMIN_RUNS_PATH,
     ].some((p) => under(pathname, p))
   ) {
     return admin(request, env, url);

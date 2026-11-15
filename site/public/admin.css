@@ -187,3 +187,33 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+
+.run-kinds {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.run-kind {
+  align-items: start;
+}
+
+.run-kind input {
+  margin-top: 0.15rem;
+}
+
+.run-status {
+  font-weight: 600;
+}
+
+.run-queued,
+.run-done {
+  color: var(--muted);
+}
+
+.run-running {
+  color: var(--accent);
+}
+
+.run-failed {
+  color: var(--cancelled);
+}
