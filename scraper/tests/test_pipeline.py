@@ -184,6 +184,27 @@ def test_build_dedups_and_prefers_earlier_source(store: Store) -> None:
     assert [s.id for s in status.sources] == ["venue-site", "aggregator"]
 
 
+def test_build_merges_a_show_one_source_lists_twice(store: Store) -> None:
+    sources = [Source(id="venue-site", adapter="ics", url="https://a", venue="club")]
+    registry = Registry({"club": venue("club", "dedicated")}, sources)
+    store.record_success(
+        "venue-site",
+        [
+            event("a1", "Pat Doe Trio", hours=2),
+            event("a2", "Pat Doe Brunch Trio", hours=2),
+            event("a3", "Pat Doe Trio", hours=4),  # the second set
+            event("a4", "Pat Doe Trio", hours=5),
+        ],
+    )
+    feed, _, _ = pipeline.build(registry, store, NOW)
+    shows = [(e.title, e.tags, e.sources) for e in feed.events]
+    assert shows == [
+        ("Pat Doe Trio", ["brunch"], ["venue-site"]),
+        ("Pat Doe Trio", [], ["venue-site"]),
+        ("Pat Doe Trio", [], ["venue-site"]),
+    ]
+
+
 def at(text: str, **kw: object) -> ScrapedEvent:
     return ScrapedEvent.model_validate({"uid": "x", "title": "Set", "start": text, **kw})
 

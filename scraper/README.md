@@ -65,9 +65,9 @@ Checks: `uv run ruff format . && uv run ruff check . && uvx ty check && uv run p
 - **`pipeline.build`**:
   1. Resolves venues (by id, name, alias or street address).
   2. Classifies each event as jazz, adjacent or other (`classify.py`).
-  3. Merges duplicates across sources (same venue and night, start within an hour, similar
-     title). A set starting before 4 am belongs to the previous night (`config.night_of`), as
-     on the site.
+  3. Merges duplicates (same venue and night, similar title, and a start within an hour, or
+     the same start when one source lists a show twice). A set starting before 4 am belongs
+     to the previous night (`config.night_of`), as on the site.
   4. Drops past events.
   5. Gives each event a stable id, which is also its calendar UID. A new event's id derives
      from its leading listing (`sha1(source|uid)`). Each listing remembers the id it was

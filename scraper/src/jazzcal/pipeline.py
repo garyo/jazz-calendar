@@ -183,7 +183,7 @@ class Candidate:
 
     @property
     def sources(self) -> list[str]:
-        return [self.source.id, *(m.source.id for m in self.merged)]
+        return list(dict.fromkeys([self.source.id, *(m.source.id for m in self.merged)]))
 
 
 class Built(NamedTuple):
@@ -430,9 +430,12 @@ def _dedup(candidates: list[Candidate]) -> list[Candidate]:
 
 
 def _same_event(a: Candidate, b: Candidate) -> bool:
+    """Whether two listings at one venue on one night are one show. Sources' clocks differ, so
+    any two may start a little apart; one source listing a show twice gives both the same
+    start, where its early and late sets don't."""
+    window = timedelta(0) if b.source.id in a.sources else SAME_EVENT_WINDOW
     return (
-        b.source.id not in a.sources
-        and abs(a.scraped.start - b.scraped.start) <= SAME_EVENT_WINDOW
+        abs(a.scraped.start - b.scraped.start) <= window
         and fuzz.token_set_ratio(_norm(a.scraped.title), _norm(b.scraped.title)) >= SAME_TITLE_SCORE
     )
 
@@ -489,7 +492,7 @@ def _publish(c: Candidate, registry: Registry) -> Event:
         relevance="jazz"
         if "jazz" in (c.ruling.relevance, *(m.ruling.relevance for m in c.merged))
         else "adjacent",
-        tags=tags(s),
+        tags=list(dict.fromkeys(t for e in (s, *others) for t in tags(e))),
         cancelled=s.cancelled,
         sources=c.sources,
     )
