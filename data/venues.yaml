@@ -210,7 +210,7 @@
   town: Boston
   neighborhood: Seaport
   url: https://www.omnihotels.com/hotels/boston-seaport
-  jazz_level: regular
+  jazz_level: occasional
   # The hotel holds its Lobby Live! series in the lobby; some aggregators list it at Kestra.
   aliases: [Omni Boston Hotel at the Seaport, Omni Seaport, Kestra]
 
