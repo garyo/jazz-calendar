@@ -9,7 +9,7 @@
 
 import { byId, h } from "./dom";
 import type { Feed } from "./feed";
-import { alreadyListed, listedText } from "./listings";
+import { alreadyListed, byName, listedText } from "./listings";
 import {
   type FieldErrors,
   MAX_DAYS_AHEAD,
@@ -68,7 +68,7 @@ export function venueOptions(venues: Iterable<Venue>): HTMLOptGroupElement[] {
         "optgroup",
         { label: town },
         ...(towns.get(town) ?? [])
-          .sort((a, b) => a.name.localeCompare(b.name))
+          .sort((a, b) => byName(a.name, b.name))
           .map((venue) => h("option", { value: venue.id }, venue.name)),
       ),
     );

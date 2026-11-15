@@ -8,6 +8,7 @@
 import { byId, h, safeUrl } from "./dom";
 import {
   alreadyListed,
+  byName,
   listedText,
   matchesTerms,
   searchTerms,
@@ -849,7 +850,7 @@ async function loadVenues(): Promise<void> {
     ),
     api(VENUES_API),
   ]);
-  added = mine.body.venues ?? [];
+  added = (mine.body.venues ?? []).sort((a, b) => byName(a.name, b.name));
   listings = { events: feed?.events ?? [], regulars: feed?.regulars ?? [] };
   venues = new Map(
     [...(feed?.venues ?? []), ...added].map((venue) => [venue.id, venue]),
