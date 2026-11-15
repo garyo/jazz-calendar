@@ -5,7 +5,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from jazzcal import cli, export, runlock
+from jazzcal import cli, export, runlock, site_registry
 from jazzcal import http as http_module
 from jazzcal.config import TZ
 from jazzcal.http import Http
@@ -20,6 +20,7 @@ class Site:
 
     def __init__(self) -> None:
         self.revision: int | None = 3
+        self.run: dict[str, object] | None = None
         self.requests: list[str] = []
 
     def handle(self, request: httpx.Request) -> httpx.Response:
@@ -30,7 +31,7 @@ class Site:
         if path == "/api/registry":
             if self.revision is None:
                 return httpx.Response(401)
-            return httpx.Response(200, json={"revision": self.revision})
+            return httpx.Response(200, json={"revision": self.revision, "run": self.run})
         gig = {
             "id": "0b6f2d1e-8a3c-4f5e-9d7a-1c2b3a4d5e6f",
             "title": "The Fictional Quartet",
@@ -70,14 +71,34 @@ def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[list[str], bool]]:
     return calls
 
 
-def refresh(site: Site, tmp_path: Path) -> None:
-    with Http(
+def mock_http(site: Site, tmp_path: Path) -> Http:
+    return Http(
         tmp_path / "cache",
         max_age=timedelta(hours=6),
         trusted_hosts={"jazz.test"},
         transport=httpx.MockTransport(site.handle),
-    ) as http:
-        cli.refresh(http, classifier=None, lookup=None)
+    )
+
+
+def refresh(site: Site, tmp_path: Path) -> bool:
+    with mock_http(site, tmp_path) as http:
+        return cli.refresh(http, classifier=None, lookup=None)
+
+
+@pytest.fixture
+def reports(
+    site: Site, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> list[tuple[int, str, str | None]]:
+    """What `jazzcal requested` tells the site, which says the run is its to take."""
+    calls: list[tuple[int, str, str | None]] = []
+
+    def report(run: site_registry.RunRequest, status: str, error: str | None = None) -> bool:
+        calls.append((run.id, status, error))
+        return True
+
+    monkeypatch.setattr(site_registry, "report", report)
+    monkeypatch.setattr(cli, "_http", lambda offline, max_age_hours: mock_http(site, tmp_path))
+    return calls
 
 
 def test_refresh_publishes_each_revision_once(
@@ -137,3 +158,55 @@ def test_a_second_run_waits_for_the_lock(tmp_path: Path) -> None:
         order.append("first")
     thread.join(timeout=5)
     assert order == ["first", "second"]
+
+
+def test_refresh_leaves_a_requested_run_to_jazzcal_requested(
+    site: Site, published: list[tuple[list[str], bool]], tmp_path: Path
+) -> None:
+    site.run = {"id": 7, "kind": "rebuild", "source": None}
+    assert refresh(site, tmp_path)
+    assert published == []
+    assert not cli.PUBLISHED.exists()
+
+
+def test_a_requested_rebuild_republishes_and_reports(
+    site: Site,
+    published: list[tuple[list[str], bool]],
+    reports: list[tuple[int, str, str | None]],
+    tmp_path: Path,
+) -> None:
+    site.revision = 3
+    cli.PUBLISHED.write_text("3\n")  # nothing new: a rebuild republishes all the same
+    site.run = {"id": 7, "kind": "rebuild", "source": None}
+    refresh(site, tmp_path)
+    site.run = None
+    cli.requested(classifier=None, lookup=None)
+    assert reports == [(7, "running", None), (7, "done", None)]
+    assert published == [(["events.json"], False)]
+
+
+def test_a_requested_run_that_fails_says_why(
+    site: Site,
+    published: list[tuple[list[str], bool]],
+    reports: list[tuple[int, str, str | None]],
+    tmp_path: Path,
+) -> None:
+    site.run = {"id": 8, "kind": "source", "source": "nowhere"}
+    refresh(site, tmp_path)
+    with pytest.raises(KeyError):
+        cli.requested(classifier=None, lookup=None)
+    assert reports == [(8, "running", None), (8, "failed", "KeyError: \"no source 'nowhere'\"")]
+    assert published == []
+
+
+def test_a_run_another_process_took_is_left_alone(
+    site: Site,
+    published: list[tuple[list[str], bool]],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    site.run = {"id": 9, "kind": "full", "source": None}
+    refresh(site, tmp_path)
+    monkeypatch.setattr(site_registry, "report", lambda run, status, error=None: False)
+    cli.requested(classifier=None, lookup=None)
+    assert published == []

@@ -1,5 +1,6 @@
 """Command line: `jazzcal run` does a full scrape, build and (with --publish) upload;
-`jazzcal refresh` republishes approved submissions when the site has changes."""
+`jazzcal refresh` republishes approved submissions when the site has changes, and `jazzcal
+requested` carries out a run asked for on the site's review page."""
 
 import argparse
 import json
@@ -28,6 +29,9 @@ PUBLISHED = VAR_DIR / "published-revision"
 LOCK = VAR_DIR / "jazzcal.lock"
 MAX_AGE_HOURS = 6.0
 """Reuse pages fetched within this many hours."""
+RUN_REQUESTED = 10
+"""`jazzcal refresh` exits with this when the review page has asked for a run, so deploy/run.sh
+can pull the latest code and then carry it out with `jazzcal requested`."""
 
 
 def main() -> None:
@@ -50,9 +54,14 @@ def main() -> None:
     build = commands.add_parser("build", help="build the published files from the store")
     evaluation = commands.add_parser("eval", help="score classification against eval/labels.yaml")
     republish = commands.add_parser(
-        "refresh", help="republish approved submissions if the site changed since the last publish"
+        "refresh",
+        help="republish approved submissions if the site changed since the last publish; "
+        f"exit {RUN_REQUESTED} if the site asked for a run",
     )
-    for p in (run, build, evaluation, republish):
+    asked = commands.add_parser(
+        "requested", help="carry out the run asked for on the site, as the last refresh found it"
+    )
+    for p in (run, build, evaluation, republish, asked):
         p.add_argument(
             "--classifier",
             default=os.environ.get("JAZZCAL_CLASSIFIER"),
@@ -86,10 +95,20 @@ def main() -> None:
     match args.command:
         case "run" | "scrape":
             with runlock.held(LOCK):
-                _run(args)
+                _run(
+                    set(args.source or []) or None,
+                    offline=args.offline,
+                    max_age=args.max_age,
+                    classifiers=_classifiers(args) if args.command == "run" else None,
+                    publish=args.command == "run" and args.publish,
+                )
         case "refresh":
             with runlock.held(LOCK), _http(offline=False, max_age_hours=MAX_AGE_HOURS) as http:
-                refresh(http, *_classifiers(args))
+                if refresh(http, *_classifiers(args)):
+                    raise SystemExit(RUN_REQUESTED)
+        case "requested":
+            with runlock.held(LOCK):
+                requested(*_classifiers(args))
         case "build":
             with runlock.held(LOCK):
                 _build(_registry(), Store(DB), *_classifiers(args))
@@ -114,38 +133,86 @@ def main() -> None:
             print(_describe_adapters())
 
 
-def _run(args: argparse.Namespace) -> None:
+def _run(
+    sources: set[str] | None,
+    *,
+    offline: bool = False,
+    max_age: float = MAX_AGE_HOURS,
+    classifiers: tuple[Classifier | None, Classifier | None] | None = None,
+    publish: bool = False,
+) -> None:
+    """Scrape the sources (None: every one) into the store; then, given the classifiers, build,
+    and with `publish`, upload."""
     store = Store(DB)
-    with _http(args.offline, args.max_age) as http:
-        added = None if args.offline else site_registry.sync(http, SITE_REGISTRY)
+    with _http(offline, max_age) as http:
+        added = None if offline else site_registry.sync(http, SITE_REGISTRY)
         registry = _registry()
-        pipeline.scrape(registry, store, http, set(args.source or []) or None)
-    if not args.offline:
+        pipeline.scrape(registry, store, http, sources)
+    if not offline:
         pipeline.alert_failing(registry, store, datetime.now(TZ))
-    if args.command == "run":
-        built = _build(registry, store, *_classifiers(args))
-        if args.publish:
-            export.publish(OUT_DIR)
-            # Only a full run is sure to have read the approved submissions.
-            if not args.source:
-                _record_published(added)
-                pipeline.remind_review(built.review, store, datetime.now(TZ))
+    if classifiers is None:
+        return
+    built = _build(registry, store, *classifiers)
+    if publish:
+        export.publish(OUT_DIR)
+        # Only a full run is sure to have read the approved submissions.
+        if sources is None:
+            _record_published(added)
+            pipeline.remind_review(built.review, store, datetime.now(TZ))
 
 
-def refresh(http: Http, classifier: Classifier | None, lookup: Classifier | None) -> None:
-    """Republish when the site's revision has moved on from the last publish: scrape only the
-    approved submissions, rebuild with everything else as last scraped, and upload events.json.
+def refresh(http: Http, classifier: Classifier | None, lookup: Classifier | None) -> bool:
+    """Republish when the site's revision has moved on from the last publish (`_republish`).
+    When the review page has asked for a run, does nothing and returns True instead, leaving it
+    to `jazzcal requested` on the latest code."""
+    added = site_registry.sync(http, SITE_REGISTRY)
+    if added is None or added.revision is None:
+        return False
+    if added.run:
+        logging.info("the site asked for a run: %s", added.run.kind)
+        return True
+    if added.revision == _published_revision():
+        logging.info("nothing new on the site since the last publish")
+        return False
+    _republish(http, added, classifier, lookup)
+    return False
+
+
+def requested(classifier: Classifier | None, lookup: Classifier | None) -> None:
+    """Carry out the run the review page asked for, as the last refresh saved it, telling the
+    site when it starts and how it ends. Its scraping fetches the pages afresh, since the site
+    spaces these runs out; a rebuild fetches only the approved submissions."""
+    run = site_registry.load(SITE_REGISTRY).run
+    if run is None or not site_registry.report(run, "running"):
+        logging.info("no run waiting")
+        return
+    logging.info("carrying out the run the site asked for: %s %s", run.kind, run.source or "")
+    try:
+        if run.kind == "rebuild":
+            with _http(offline=False, max_age_hours=MAX_AGE_HOURS) as http:
+                added = site_registry.sync(http, SITE_REGISTRY)
+                if added is None:
+                    raise RuntimeError("couldn't reach the site")
+                _republish(http, added, classifier, lookup)
+        else:
+            sources = {_registry().source(run.source).id} if run.source else None
+            _run(sources, max_age=0, classifiers=(classifier, lookup), publish=True)
+    except BaseException as e:
+        site_registry.report(run, "failed", f"{type(e).__name__}: {e}")
+        raise
+    site_registry.report(run, "done")
+
+
+def _republish(
+    http: Http, added: SiteRegistry, classifier: Classifier | None, lookup: Classifier | None
+) -> None:
+    """Scrape only the approved submissions, rebuild with everything else as last scraped, and
+    upload events.json.
 
     Leaves the rest to the daily run: status.json (the site's dead-man's switch watches it),
     the healthcheck ping, and the feed's generated_at, which stays the last full build's, since
     that's when the listings were last checked.
     """
-    added = site_registry.sync(http, SITE_REGISTRY)
-    if added is None or added.revision is None:
-        return
-    if added.revision == _published_revision():
-        logging.info("nothing new on the site since the last publish")
-        return
     registry = _registry()
     submissions = {s.id for s in registry.sources if s.adapter == "submissions" and s.enabled}
     if not submissions:

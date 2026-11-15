@@ -148,6 +148,18 @@ feed's `generated_at`, which stays the last full build's. Whichever of the two r
 refresh after it does nothing. Every command that changes `var/` holds a lock
 (`var/jazzcal.lock`, `runlock.py`), so the two never overlap; the second waits.
 
+### Runs asked for on the review page
+
+The review page's Runs tab asks the scraper to run now rather than wait for the daily run: a
+full run, one source, or a rebuild (no scraping: the feed rebuilt from the store with the latest
+code, for a change to the code or the rules, then `events.json` uploaded as a refresh does). The
+site keeps the requests in D1 and serves the oldest queued one in `/api/registry`. When
+`jazzcal refresh` finds one, it does nothing else and exits 10; `deploy/run.sh` then pulls main
+and runs `jazzcal requested`, which tells the site the run has started (`POST /api/runs/:id`),
+carries it out and reports how it ended, with the error if it failed. Its scraping ignores the
+page cache (`--max-age 0`), so the site spaces these runs out: a full run every half hour, one
+source every ten minutes.
+
 The `submissions` source is `exact`: it lists exactly what's approved, so a gig it stops listing
 leaves the feed at once, rather than after the two missed runs other sources get.
 
@@ -260,10 +272,11 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.bostonjazzcalendar.re
 
 `deploy/run.sh` with no arguments pulls main and does the daily run; `deploy/run.sh refresh`
 runs `jazzcal refresh` on the code already checked out, so the refresh doesn't pull every
-minute and picks up new code after the next daily run.
+minute and picks up new code after the next daily run, or with a run asked for on the review
+page, which pulls first.
 
 Day to day:
-- Run now: `sudo launchctl kickstart system/com.bostonjazzcalendar.scraper`
+- Run now: the review page's Runs tab, or `sudo launchctl kickstart system/com.bostonjazzcalendar.scraper`
 - Logs: `~/Library/Logs/jazzcal.log`, and `~/Library/Logs/jazzcal-refresh.log` for the refresh
 - Update: push to main. Each run pulls first (fast-forward only), so it takes effect on the
   next run; to deploy sooner, `git pull` on the machine and run it now.

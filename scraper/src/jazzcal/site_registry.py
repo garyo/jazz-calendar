@@ -6,7 +6,8 @@ with (JAZZCAL_PUBLISH_TOKEN), with the feed's revision: a count of the changes t
 shows, so a run can tell whether anything changed since the last publish. Each scrape saves a
 copy (`sync`), so builds and offline runs use the last one, and a run that can't reach the site
 keeps it. `Registry.load` lists them after data/venues.yaml and data/regulars.yaml, whose
-entries win on a shared venue id.
+entries win on a shared venue id. The site also serves the next run asked for on the review
+page, which the scraper reports on as it goes (`report`).
 """
 
 import logging
@@ -15,7 +16,9 @@ import re
 from datetime import date, timedelta
 from functools import cache
 from pathlib import Path
+from typing import Literal
 
+import httpx
 from pydantic import BaseModel, Field, ValidationError, model_validator
 
 from jazzcal.export import site_url
@@ -75,6 +78,15 @@ def act_key(venue: str, title: str) -> tuple[str, str]:
     return venue, " ".join(title.split()).casefold()
 
 
+class RunRequest(BaseModel):
+    """A run asked for on the review page: `Run` in site/src/runs.ts. A full run scrapes every
+    source, a source run one, and a rebuild none, just rebuilding from the store."""
+
+    id: int
+    kind: Literal["full", "source", "rebuild"]
+    source: str | None = None
+
+
 class SiteRegistry(BaseModel):
     """What /api/registry serves: in site/src/worker-submissions.ts."""
 
@@ -83,6 +95,8 @@ class SiteRegistry(BaseModel):
     regulars: list[Regular] = Field(default_factory=list)
     hidden: list[Hidden] = Field(default_factory=list)
     rulings: list[Ruling] = Field(default_factory=list)
+    run: RunRequest | None = None
+    """The oldest run asked for and not yet started."""
 
 
 def load(path: Path) -> SiteRegistry:
@@ -115,3 +129,27 @@ def sync(http: Http, path: Path) -> SiteRegistry | None:
     partial.write_text(added.model_dump_json(indent=2))
     partial.replace(path)
     return added
+
+
+def report(
+    run: RunRequest,
+    status: Literal["running", "done", "failed"],
+    error: str | None = None,
+    *,
+    transport: httpx.BaseTransport | None = None,
+) -> bool:
+    """Tell the site how a run it asked for is going. False when the site says the run isn't
+    in the state this moves it on from: another scraper process has it, or it's finished."""
+    token = os.environ.get("JAZZCAL_PUBLISH_TOKEN")
+    if not token:
+        raise SystemExit("set JAZZCAL_PUBLISH_TOKEN to carry out runs asked for on the site")
+    with httpx.Client(timeout=30, transport=transport) as client:
+        resp = client.post(
+            f"{site_url()}/api/runs/{run.id}",
+            json={"status": status, "error": error},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+    if resp.status_code == httpx.codes.CONFLICT:
+        return False
+    resp.raise_for_status()
+    return True

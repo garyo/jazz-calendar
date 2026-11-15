@@ -138,3 +138,23 @@ def test_sync_needs_the_token(
     with http(tmp_path, serve(site, httpx.Response(200, json=ADDED))) as client:
         site_registry.sync(client, tmp_path / "site-registry.json")
     assert site == []
+
+
+def test_report_tells_the_site_how_a_run_goes(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("JAZZCAL_SITE", "https://jazz.test")
+    monkeypatch.setenv("JAZZCAL_PUBLISH_TOKEN", "t0k")
+    sent: list[tuple[str, str | None, dict[str, object]]] = []
+    taken = {"status": 200}
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        sent.append(
+            (request.url.path, request.headers.get("authorization"), json.loads(request.content))
+        )
+        return httpx.Response(taken["status"], json={})
+
+    run = site_registry.RunRequest(id=4, kind="full")
+    transport = httpx.MockTransport(handle)
+    assert site_registry.report(run, "failed", "Boom", transport=transport)
+    assert sent == [("/api/runs/4", "Bearer t0k", {"status": "failed", "error": "Boom"})]
+    taken["status"] = 409
+    assert not site_registry.report(run, "running", transport=transport)

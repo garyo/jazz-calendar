@@ -2,8 +2,9 @@
 # The scraper's launchd (macOS) jobs. With no arguments, the daily scrape-and-publish: pulls
 # the latest main first (uv run then syncs dependencies; if the pull fails, scrapes with the
 # code already here), then runs `jazzcal run --publish`. With arguments, runs that jazzcal
-# command on the code already here: `run.sh refresh` every few minutes republishes approved
-# submissions. Reads secrets from an env file kept outside the repo, so the plists hold no
+# command on the code already here: `run.sh refresh` every minute republishes approved
+# submissions, and when the site's review page has asked for a run (refresh exits 10), pulls
+# the latest main and carries it out with `jazzcal requested`. Reads secrets from an env file kept outside the repo, so the plists hold no
 # secrets. With NTFY_USER/NTFY_PASS set, the first failure of a command in a row posts the end
 # of its output to the ntfy topic, and its next success says it recovered; failures between
 # stay quiet, so a broken commit can't alert every minute.
@@ -13,8 +14,14 @@ set -a
 . "$ENV_FILE"
 set +a
 cd "$(dirname "$0")/.."
-if [ "$#" -eq 0 ]; then
+RUN_REQUESTED=10 # jazzcal.cli.RUN_REQUESTED
+
+pull() {
   git pull --ff-only --quiet || echo "git pull failed; running the code already checked out" >&2
+}
+
+if [ "$#" -eq 0 ]; then
+  pull
   set -- run --publish
 fi
 
@@ -22,6 +29,12 @@ output=$(mktemp)
 trap 'rm -f "$output"' EXIT
 status=0
 "$HOME/.local/bin/uv" run --frozen jazzcal "$@" >"$output" 2>&1 || status=$?
+if [ "$1" = refresh ] && [ "$status" -eq "$RUN_REQUESTED" ]; then
+  pull
+  set -- requested
+  status=0
+  "$HOME/.local/bin/uv" run --frozen jazzcal "$@" >>"$output" 2>&1 || status=$?
+fi
 cat "$output"
 
 # notify TITLE PRIORITY TAG: posts stdin to the ntfy topic, when it's configured.

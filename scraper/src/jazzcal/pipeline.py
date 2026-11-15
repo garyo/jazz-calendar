@@ -109,7 +109,7 @@ def scrape(
 
 def scrape_source(source: Source, http: Http) -> tuple[list[ScrapedEvent], str | None]:
     """What a source lists, with the source's title rewrites applied, less any they leave
-    without a title, and any titled as cancelled marked so; and a problem to report, if any.
+    without a title; and a problem to report, if any.
 
     The events are its adapter's or, when the adapter finds none and the source has a
     fallback, the fallback's. The fallback finding something means the adapter has likely
@@ -132,7 +132,7 @@ def scrape_source(source: Source, http: Http) -> tuple[list[ScrapedEvent], str |
             for e in events
             if (title := source.retitle(e.title))
         ]
-    return [_cancellation(e) for e in events], problem
+    return events, problem
 
 
 def _cancellation(event: ScrapedEvent) -> ScrapedEvent:
@@ -221,7 +221,8 @@ def build(
             log.warning("source %s stale since %s; skipping it", source.id, status.last_success)
             continue
         published_ids = store.published_ids(source.id)
-        for scraped in store.current(source.id, 1 if source.exact else MAX_MISSES):
+        for listing in store.current(source.id, 1 if source.exact else MAX_MISSES):
+            scraped = _cancellation(listing)
             if _past(scraped, now):
                 continue
             venue_id = registry.venue_for(source, scraped)
