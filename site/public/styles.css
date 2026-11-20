@@ -665,6 +665,46 @@ input::placeholder {
     monospace;
 }
 
+/* Share: a QR code for the address on screen. */
+
+.share {
+  display: inline-block;
+}
+
+/* The icon stands in for the label on phones, where the title needs the room. */
+.share-icon {
+  display: none;
+}
+
+.share-panel {
+  width: 15rem;
+}
+
+.share-panel > * {
+  margin: 0 0 0.75rem;
+}
+
+.share-panel > :last-child {
+  margin-bottom: 0;
+}
+
+.share-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+.share-help,
+.share-url {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.share-url {
+  overflow-wrap: anywhere;
+}
+
 /* Submit a gig: the header link and the dialog's form. */
 
 .submit-link {
@@ -1737,6 +1777,7 @@ a.event-link:hover {
   }
 
   .picker-anchor,
+  .share,
   .subscribe {
     position: relative;
   }
@@ -1758,9 +1799,32 @@ a.event-link:hover {
 }
 
 @media (max-width: 39.99rem) {
+  .share-panel,
   .subscribe-panel {
     left: var(--gutter);
     right: var(--gutter);
+  }
+
+  .share-panel {
+    width: auto;
+    max-width: 16rem;
+  }
+
+  .share-toggle {
+    padding-inline: 0.6rem;
+  }
+
+  .share-icon {
+    display: block;
+  }
+
+  .share-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .submit-dialog {

@@ -10,6 +10,7 @@ import { byId } from "./dom";
 import { type Feed, fetchFeed } from "./feed";
 import { nextShowChange } from "./listings";
 import { renderNotice, renderSourceList, renderUpdated } from "./render";
+import { sharePanel } from "./share";
 import { trackStickyTop } from "./sticky";
 import { submitDialog } from "./submit";
 import { subscribePanel } from "./subscribe";
@@ -40,6 +41,7 @@ let changeTimer: ReturnType<typeof setTimeout> | undefined;
 
 const submit = submitDialog();
 const subscribe = subscribePanel();
+sharePanel();
 const controls = filterControls({ state: () => state, onChange: applyState });
 const view = listingsView(() => controls.reset());
 

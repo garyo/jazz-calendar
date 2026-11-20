@@ -71,6 +71,20 @@
         <p id="updated" class="updated"></p>
         <div class="subscribe">
           <a class="submit-link" href="#submit">Submit a gig</a>
+          <div class="share">
+            <button id="share-toggle" type="button" class="button share-toggle">
+              <svg class="share-icon" viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true" focusable="false">
+                <path fill-rule="evenodd" d="M1 1h5.5v5.5H1zM2.5 2.5v2.5H5V2.5zM9.5 1H15v5.5H9.5zM11 2.5V5h2.5V2.5zM1 9.5h5.5V15H1zM2.5 11v2.5H5V11zM9.5 9.5h2v2h-2zM13 9.5h2v2h-2zM11.5 11.5h2v2h-2zM9.5 13.5h2V15h-2zM13 13.5h2V15h-2z" />
+              </svg>
+              <span class="share-label">Share</span>
+            </button>
+            <div id="share-panel" class="popover share-panel" hidden>
+              <p class="popover-title">Share this page</p>
+              <div id="share-qr" class="share-qr"></div>
+              <p class="share-help">Scan with a phone camera to open this view.</p>
+              <p id="share-url" class="share-url"></p>
+            </div>
+          </div>
           <button id="subscribe-toggle" type="button" class="button button-primary subscribe-toggle">
             Subscribe<span class="subscribe-toggle-more">&nbsp;to this view</span>
           </button>
