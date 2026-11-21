@@ -34,10 +34,15 @@
   credit: {name: "New England Conservatory’s calendar", url: https://necmusic.edu}
   venue: nec
   include: \b(Jazz|Contemporary Musical Arts)\b
-  exclude: \b(Master class|Workshop|Prep)\b
-  enabled: false
+  # The Workshop/Class category, not titles: the Jazz Composers Workshop Orchestra is a concert.
+  exclude: \b(Master class|Workshop/Class|Prep)\b|^POSTPONED\b
   notes: >-
-    Disabled 2026-10-15 for terms of use: NEC's site terms say use of its Content on any other website is prohibited. The Trumba feed's own terms allow republishing, but we hold to the stricter reading until NEC agrees. Ask NEC communications or the box office.
+    NEC's website terms (the top of necmusic.edu/policies/privacy-policy/) ask for written
+    consent to use its content on another site, but they cover necmusic.edu, not this Trumba
+    feed, whose terms allow republishing; and nothing in them or robots.txt forbids automated
+    reading. We publish only titles, times and links, never descriptions or images. Asked
+    2026-10-31 with no reply; the owner enabled it on that reading (2026-11-21). Stop if NEC
+    objects.
 
 - id: longy
   adapter: tribe
