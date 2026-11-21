@@ -34,6 +34,8 @@ src/url-state.ts view state <-> query string
 src/types.ts     TS mirror of ../schema/events.schema.json
 src/worker.ts    the Worker: R2-backed data routes, the publish API
 src/worker-calendar.ts     the Worker's /calendar.ics feeds (cached, gzipped, ETags)
+src/worker-page.ts         the home page with the next two weeks' shows written in, as
+                           HTML for crawlers and no-JS readers and as schema.org MusicEvents
 src/worker-submissions.ts  the Worker's gig submission and review API (D1)
 src/worker-freshness.ts    the hourly cron: alerts when status.json goes stale
 src/worker-http.ts         response and bearer-token helpers for the Worker

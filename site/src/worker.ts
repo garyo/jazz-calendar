@@ -6,7 +6,8 @@
  * review.json for the review page. The
  * /calendar.ics feeds are built from events.json in worker-calendar.ts, gig
  * submissions and their review live in worker-submissions.ts, and the
- * hourly cron's stale-data check in worker-freshness.ts.
+ * hourly cron's stale-data check in worker-freshness.ts. The home page gets
+ * the coming shows written into it (worker-page.ts).
  * Static assets never reach this code unless a run_worker_first path falls
  * through (see wrangler.toml).
  */
@@ -19,6 +20,7 @@ import {
   textResponse,
   unauthorized,
 } from "./worker-http";
+import { PAGE_PATH, servePage } from "./worker-page";
 import { routeSubmissions, type SubmissionsEnv } from "./worker-submissions";
 
 export interface Env extends SubmissionsEnv {
@@ -137,6 +139,9 @@ export default {
     const url = new URL(request.url);
     const { pathname } = url;
     if (pathname === FEED_PATH) return serveCalendar(request, env, ctx, url);
+    if (pathname === PAGE_PATH && isReadMethod(request)) {
+      return servePage(request, env);
+    }
     const key = PUBLIC_PATHS.get(pathname);
     if (key) return serveData(request, env, key);
     if (pathname.startsWith(PUBLISH_PREFIX)) {

@@ -146,9 +146,13 @@ document.addEventListener("visibilitychange", followClock);
 
 async function load(): Promise<void> {
   count.textContent = "";
-  results.replaceChildren(
-    renderNotice("Tuning up…", "Loading this week’s listings."),
-  );
+  // The page comes with the coming shows written in (src/worker-page.ts);
+  // they stay up until the feed replaces them.
+  if (!results.querySelector(".day")) {
+    results.replaceChildren(
+      renderNotice("Tuning up…", "Loading this week’s listings."),
+    );
+  }
   results.setAttribute("aria-busy", "true");
   try {
     feed = await fetchFeed();

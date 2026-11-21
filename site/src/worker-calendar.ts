@@ -58,7 +58,8 @@ interface FeedKey {
 /** The isolate's last-read events.json, reused while its ETag is current. */
 let loaded: Feed | undefined;
 
-async function loadFeed(env: CalendarEnv): Promise<Feed | undefined> {
+/** events.json, parsed and indexed; undefined when there is none. */
+export async function loadFeed(env: CalendarEnv): Promise<Feed | undefined> {
   const object = await env.DATA.get(
     "events.json",
     loaded ? { onlyIf: { etagDoesNotMatch: loaded.etag } } : {},
