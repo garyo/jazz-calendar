@@ -1,5 +1,8 @@
 from datetime import datetime
 
+import pytest
+from pydantic import ValidationError
+
 from jazzcal.adapters import ticketmaster
 from jazzcal.config import TZ
 
@@ -44,3 +47,10 @@ def test_parse() -> None:
     assert quartet.venue_name == "The Club"
     assert brunch.start == datetime(2026, 11, 8, 11, 0, tzinfo=TZ)
     assert brunch.cancelled
+
+
+def test_options_need_a_filter() -> None:
+    with pytest.raises(ValidationError):
+        ticketmaster.TicketmasterOptions()
+    search = ticketmaster.TicketmasterOptions(params={"classificationName": "Jazz"})
+    assert search.venue_id is None

@@ -1,5 +1,8 @@
 """Ticketmaster Discovery API, which also carries TicketWeb venues (Regattabar, Scullers).
 
+A source reads one venue's shows (`venue_id`), or a search across venues (`params`, e.g. a
+genre within a radius), whose venues resolve by name against the registry.
+
 This is Ticketmaster's sanctioned route to its listings; TicketWeb's own pages forbid robots.
 Needs TICKETMASTER_API_KEY (a free developer key).
 
@@ -10,9 +13,10 @@ credits the listing "via Ticketmaster" (the source's credit in sources.yaml).
 
 import os
 from datetime import datetime
+from typing import Self
 from urllib.parse import urlencode
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from jazzcal.adapters import HORIZON, Options, adapter, clean, to_local, uncaps
 from jazzcal.config import TZ
@@ -25,9 +29,22 @@ MAX_PAGES = 5
 
 
 class TicketmasterOptions(Options):
-    venue_id: str = Field(
-        description="Discovery venue id (find it with /discovery/v2/venues.json?keyword=...)"
+    venue_id: str | None = Field(
+        None,
+        description="Discovery venue id, for one venue's shows "
+        "(find it with /discovery/v2/venues.json?keyword=...)",
     )
+    params: dict[str, str | int] = Field(
+        default_factory=dict,
+        description='Other event-search parameters, e.g. {"classificationName": "Jazz", '
+        '"geoPoint": "drt2yy", "radius": 30, "unit": "miles"} for shows across venues',
+    )
+
+    @model_validator(mode="after")
+    def _filtered(self) -> Self:
+        if not (self.venue_id or self.params):
+            raise ValueError("give venue_id or params; unfiltered, the search covers the world")
+        return self
 
 
 @adapter("ticketmaster", options=TicketmasterOptions)
@@ -39,7 +56,8 @@ def scrape(source: Source, http: Http, options: TicketmasterOptions) -> list[Scr
     events = []
     for page in range(MAX_PAGES):
         query = urlencode({
-            "venueId": options.venue_id,
+            **({"venueId": options.venue_id} if options.venue_id else {}),
+            **options.params,
             "size": PAGE_SIZE,
             "page": page,
             "sort": "date,asc",

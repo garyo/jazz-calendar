@@ -349,6 +349,25 @@
     a week or two ahead. Its layout changed in November 2026 and textschedule found nothing
     until it learned the new one, hence the fallback.
 
+- id: long-live-roxbury
+  adapter: textschedule
+  url: https://www.longlivebeerworks.com/boston
+  credit: {name: "Long Live Roxbury’s Jazz Night schedule", url: https://www.longlivebeerworks.com/boston}
+  venue: long-live-roxbury
+  relevance: jazz
+  options:
+    # The Jazz Night block alone: the page's other paragraphs may hold dated pop-ups, which
+    # relevance: jazz would list as jazz. If the block is rebuilt, the source finds nothing
+    # and the run fails, which alerts; find the new block's id and update this.
+    selector: "#block-yui_3_17_2_1_1723305228373_3481 p"
+    time: 6–9 pm
+  notes: >-
+    Thursday Jazz Night, free; the dated lineup is hand-typed on the brewery's Boston page.
+    Its robots.txt shuts out AI crawlers (ClaudeBot, GPTBot and others) though not other
+    bots, so never give this source an llmtext fallback or let a model read it; relevance:
+    jazz keeps its titles from the model classifier too. Lines with typos ("Fed 11") are
+    skipped.
+
 - id: groton-hill
   adapter: jsonld
   url: https://grotonhill.org/event_listing_category/jazz,vocal-jazz/
@@ -379,6 +398,19 @@
     the editor's venue and relevance.
 
 # --- Aggregators ---------------------------------------------------------
+
+- id: ticketmaster-jazz
+  adapter: ticketmaster
+  url: https://app.ticketmaster.com/discovery/v2/events.json
+  credit: {name: "Ticketmaster", url: https://www.ticketmaster.com, via: true}
+  options:
+    # Within 30 miles of Boston Common: about Route 495.
+    params: {classificationName: Jazz, geoPoint: drt2yy, radius: 30, unit: miles}
+  notes: >-
+    Touring jazz at any venue Ticketmaster sells for (the Wilbur, the Boch Center, ...),
+    by Ticketmaster's genre. Shows at venues not in venues.yaml are logged as unknown and
+    left out; add the venue to list them. Below the venue sources, so Regattabar's and
+    Scullers' own entries win.
 
 - id: artsboston
   adapter: ics

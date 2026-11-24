@@ -759,6 +759,14 @@ const VERDICTS: Record<Ruled | "unknown", string> = {
   unknown: "Can’t tell",
 };
 
+/** The ruling a ruling button submitted, if one did. */
+function ruled(event: SubmitEvent): Ruled | null {
+  const value = (event.submitter as HTMLButtonElement | null)?.value;
+  return value === "jazz" || value === "adjacent" || value === "other"
+    ? value
+    : null;
+}
+
 /** A card for an act awaiting a ruling. */
 function renderAct(act: ReviewAct): HTMLLIElement {
   const outcome = h("p", { class: "submit-status", role: "status" });
@@ -799,13 +807,8 @@ function renderAct(act: ReviewAct): HTMLLIElement {
   );
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    const relevance = (event.submitter as HTMLButtonElement | null)?.value;
-    if (
-      relevance !== "jazz" &&
-      relevance !== "adjacent" &&
-      relevance !== "other"
-    )
-      return;
+    const relevance = ruled(event);
+    if (!relevance) return;
     const body = { venue: act.venue, title: act.title, relevance };
     void send(
       form,
@@ -852,6 +855,66 @@ function renderRuling(ruling: Ruling): HTMLLIElement {
     );
   });
   return card(form, ruling.title, venue);
+}
+
+/** A card for ruling on any listed act, including one its source settles. */
+function renderNewRuling(): HTMLLIElement {
+  const outcome = h("p", { class: "submit-status", role: "status" });
+  const titles = [...new Set(listings.events.map((e) => e.title))].sort(byName);
+  const form = h(
+    "form",
+    { novalidate: "" },
+    h("p", { class: "review-when" }, h("strong", {}, "Rule on an act")),
+    h(
+      "p",
+      { class: "form-hint" },
+      "For an act that never comes up for review, such as one at a source listed as all jazz. Give the title as listed: the ruling covers every listing with that title at the venue.",
+    ),
+    h(
+      "div",
+      { class: "review-fields" },
+      field(
+        "Title",
+        h("input", {
+          name: "title",
+          list: "listed-titles",
+          autocomplete: "off",
+        }),
+        true,
+      ),
+      h(
+        "datalist",
+        { id: "listed-titles" },
+        ...titles.map((title) => h("option", { value: title })),
+      ),
+      field(
+        "Venue",
+        h("select", { name: "venue" }, ...venueOptions(venues.values())),
+      ),
+    ),
+    h(
+      "div",
+      { class: "review-actions" },
+      button("Jazz", "jazz"),
+      button("Jazz-adjacent", "adjacent"),
+      button("Not jazz", "other"),
+      outcome,
+    ),
+  );
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const relevance = ruled(event);
+    if (!relevance) return;
+    const fields = texts(new FormData(form), ["title", "venue"]);
+    void send(
+      form,
+      outcome,
+      RULINGS_API,
+      { ...fields, relevance },
+      () => `“${fields.title}”: ${VERDICTS[relevance].toLowerCase()}.`,
+    );
+  });
+  return h("li", { class: "review-card" }, form);
 }
 
 const RUN_KINDS: [Run["kind"], string, string][] = [
@@ -1031,7 +1094,7 @@ async function tabCards(): Promise<[HTMLLIElement[], string]> {
         ]
       : [];
     return [
-      [...acts.map(renderAct), ...decided],
+      [renderNewRuling(), ...acts.map(renderAct), ...decided],
       `${acts.length} awaiting a ruling, ${rulings.length} decided`,
     ];
   }

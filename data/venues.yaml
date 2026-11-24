@@ -164,6 +164,15 @@
   jazz_level: occasional
   aliases: [Cutler Majestic Theatre]
 
+- id: the-wilbur
+  name: The Wilbur
+  address: 246 Tremont St
+  town: Boston
+  neighborhood: Theatre District
+  url: https://thewilbur.com
+  jazz_level: occasional
+  aliases: [Wilbur Theatre]
+
 - id: union-church
   name: Union Church in Boston
   address: 485 Columbus Ave
@@ -538,3 +547,11 @@
   url: https://grotonhill.org
   jazz_level: regular
   aliases: [Groton Hill]
+
+- id: roma-haverhill
+  name: Roma Ristorante
+  address: 29 Middlesex St
+  town: Haverhill
+  neighborhood: Bradford
+  jazz_level: regular
+  aliases: [The Roma Ristorante, Roma Restaurant]

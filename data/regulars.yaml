@@ -128,3 +128,13 @@
   relevance: adjacent
   url: https://www.thewellingtonbelmont.com/live-music/
   checked: 2026-10-15
+
+# The restaurant's own ArtsBoston listing; artists are on its Facebook page. Listed for
+# Nov 6 to Dec 18, 2026, so recheck then.
+- venue: roma-haverhill
+  title: Friday Night Jazz
+  when: Fridays, 6–9 pm, no cover
+  days: [fri]
+  relevance: jazz
+  url: https://bostix.org/event/live-jazz-the-roma-ristorante/
+  checked: 2026-11-24

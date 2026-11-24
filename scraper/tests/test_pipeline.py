@@ -514,6 +514,22 @@ def test_the_owners_ruling_beats_rules_and_classifier(store: Store) -> None:
     assert classifier.asked == []
 
 
+def test_the_owners_ruling_beats_the_sources_relevance(store: Store) -> None:
+    source = Source(id="s", adapter="ics", url="https://a", venue="room", relevance="jazz")
+    registry = Registry({"room": venue("room", "regular")}, [source])
+    registry.rulings[act_key("room", "Lee Roe y la Banda")] = "adjacent"
+    store.record_success(
+        "s", [event("1", "Pat Doe", hours=1), event("2", "Lee Roe y la Banda", hours=2)]
+    )
+    classifier = FakeClassifier({})
+    feed = pipeline.build(registry, store, NOW, classifier).feed
+    assert [(e.title, e.relevance) for e in feed.events] == [
+        ("Pat Doe", "jazz"),
+        ("Lee Roe y la Banda", "adjacent"),
+    ]
+    assert classifier.asked == []
+
+
 def test_review_lists_the_classifiers_doubts(store: Store) -> None:
     sources = [
         Source(id="r", adapter="ics", url="https://a", venue="room"),
@@ -695,7 +711,7 @@ def test_enabled_sources_need_a_credit(tmp_path: Path) -> None:
         ({"adapter": "jsonld", "options": {"folow": "a"}}, "folow\n  Extra inputs"),
         ({"adapter": "jsonld", "options": {"follow": "a[["}}, "bad CSS selector"),
         ({"adapter": "jsonld", "options": {"max_follow": "many"}}, "max_follow\n"),
-        ({"adapter": "ticketmaster"}, "venue_id\n  Field required"),
+        ({"adapter": "ticketmaster"}, "give venue_id or params"),
         ({"adapter": "ics", "options": {"include": "Jazz"}}, "include\n  Extra inputs"),
         ({"adapter": "ics", "exclude": "(Jazz"}, "bad regular expression '(Jazz'"),
         ({"adapter": "ics", "unknown": "maybe"}, "unknown\n"),
