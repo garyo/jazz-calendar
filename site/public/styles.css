@@ -45,6 +45,16 @@ html {
   text-size-adjust: 100%;
 }
 
+/* On iPhones and iPads, follow the reader's text size (Settings › Display &
+   Brightness › Text Size); everything is sized in rem. The touch test leaves
+   out Safari on the Mac, whose system body text is 13px. */
+@supports (font: -apple-system-body) and (-webkit-touch-callout: none) {
+  html {
+    /* biome-ignore lint/a11y/useGenericFontNames: a system font keyword; body sets the family. */
+    font: -apple-system-body;
+  }
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -271,6 +281,39 @@ select {
 input[type="search"]:hover,
 input[type="search"]:focus {
   border-color: var(--ink);
+}
+
+/* On a phone the keyboard covers the count, so while a search is typed the
+   field shows it at its right end. */
+@media (max-width: 39.99rem) {
+  .field-search {
+    position: relative;
+  }
+
+  .field-search:focus-within:has(input:not(:placeholder-shown)) {
+    & input {
+      padding-right: 6.5rem;
+    }
+
+    &::after {
+      position: absolute;
+      right: 0.75rem;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      /* The field's height, as input[type="search"] sets it. */
+      height: 2.5rem;
+      content: attr(data-count);
+      /* Not part of the field's accessible name; #count announces it. */
+      /* biome-ignore lint/suspicious/noDuplicateProperties: the line above is the fallback. */
+      content: attr(data-count) / "";
+      font-family: var(--font-time);
+      font-size: 0.8125rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+      pointer-events: none;
+    }
+  }
 }
 
 input::placeholder {
@@ -947,6 +990,8 @@ input::placeholder {
 }
 
 .day-strip-list {
+  /* Holds the days' .sr-only text, which would otherwise widen the page. */
+  position: relative;
   display: flex;
   gap: 0.25rem;
   margin: 0;

@@ -102,10 +102,6 @@
     </header>
 
     <main id="listings" class="wrap" tabindex="-1">
-      <nav id="day-strip" class="day-strip" aria-label="Jump to a day" hidden>
-        <ol id="day-strip-list" class="day-strip-list"></ol>
-      </nav>
-
       <search class="filter-bar" aria-label="Filter listings">
         <form id="filters" class="filters">
           <div class="filter-row filter-row-main">
@@ -142,6 +138,11 @@
           <label><input type="radio" name="view" value="month" /><span>Month</span></label>
         </fieldset>
       </div>
+
+      <!-- Below the filters, so its coming and going never moves the search box. -->
+      <nav id="day-strip" class="day-strip" aria-label="Jump to a day" hidden>
+        <ol id="day-strip-list" class="day-strip-list"></ol>
+      </nav>
 
       <div id="results" class="results">
         <noscript>

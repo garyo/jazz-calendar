@@ -62,6 +62,7 @@ export function listingsView(clear: () => void): ListingsView {
   const presets = byId("presets");
   const results = byId("results");
   const count = byId("count");
+  const searchField = byId("q-field");
   const dayStrip = byId("day-strip");
   const dayStripList = byId("day-strip-list");
   const regularsSection = byId("regulars");
@@ -132,8 +133,12 @@ export function listingsView(clear: () => void): ListingsView {
     regularsSection.hidden = regulars.length === 0;
   }
 
-  /** "313 shows", and when the regulars section is shown, a link down to it. */
+  /**
+   * "313 shows", and when the regulars section is shown, a link down to it.
+   * The search field repeats the count for phones, whose keyboard covers it.
+   */
   function showTotals(text: string, regulars: number): void {
+    searchField.dataset.count = text;
     const link =
       regulars > 0 &&
       h(
