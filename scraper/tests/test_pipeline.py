@@ -128,6 +128,16 @@ def test_classify_certainty() -> None:
     assert not classify(event("5", "Funk Night"), source, venue("v")).certain
 
 
+def test_untrusted_categories_are_a_guess() -> None:
+    trusted = Source(id="s", adapter="ticketmaster", url="https://x")
+    loose = Source(id="t", adapter="ticketmaster", url="https://x", trust_categories=False)
+    tagged = event("1", "Mountain String Band", categories=["Blues", "Jazz Blues"])
+    assert classify(tagged, trusted, venue("v")) == Ruling("jazz", True)
+    assert classify(tagged, loose, venue("v")) == Ruling("jazz", False)
+    titled = event("2", "Lee Poe Jazz Trio", categories=["Pop"])
+    assert classify(titled, loose, venue("v")) == Ruling("jazz", True)
+
+
 def test_event_relevance_outranks_rules() -> None:
     source = Source(id="s", adapter="submissions", url="https://x")
     reviewed = event("1", "Karaoke Night", relevance="adjacent")

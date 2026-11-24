@@ -21,6 +21,8 @@
 # include:       a regex; only listings whose title or categories match are kept
 # exclude:       a regex; listings whose title or categories match are dropped
 # trust_text:    true to let a description mentioning jazz count at any venue
+# trust_categories: false when the source's genre tags are often wrong: a jazz tag is then a
+#                guess the classifier's model checks, not a ruling
 # unknown:       jazz | adjacent for listings nothing else settles (default: other)
 # title_strip:   a regex removed from every title (dates, ticket blurbs)
 # title_replace: [{pattern: ..., with: ...}, ...] substitutions on every title, after the strip
@@ -403,6 +405,7 @@
   adapter: ticketmaster
   url: https://app.ticketmaster.com/discovery/v2/events.json
   credit: {name: "Ticketmaster", url: https://www.ticketmaster.com, via: true}
+  trust_categories: false  # it tags bluegrass and pop-punk nights "Jazz"
   options:
     # Within 30 miles of Boston Common: about Route 495.
     params: {classificationName: Jazz, geoPoint: drt2yy, radius: 30, unit: miles}

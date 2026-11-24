@@ -9,7 +9,8 @@ trio, quartet, etc. or a jam is jazz too.
 
 A ruling is *certain* when it rests on something decisive: the event's or source's word, an
 include or exclude pattern, an explicit jazz genre in the title or tags, or a dedicated jazz
-room. The rest are best guesses that a language model may overrule (see llm.py). A source's
+room (a source with `trust_categories: false` tags too freely for its genres to be decisive).
+The rest are best guesses that a language model may overrule (see llm.py). A source's
 `unknown` setting gives the guess for listings nothing else settles, for rooms where
 unfamiliar acts are usually jazz.
 """
@@ -77,8 +78,10 @@ def classify(event: ScrapedEvent, source: Source, venue: VenueConfig) -> Ruling:
         return Ruling("other", True)
     if NOT_MUSIC.search(labels):
         return Ruling("other", True)
-    if JAZZ.search(labels):
+    if JAZZ.search(labels if source.trust_categories else event.title):
         return Ruling("jazz", True)
+    if JAZZ.search(labels):
+        return Ruling("jazz", False)
     if ADJACENT.search(labels):
         return Ruling("adjacent", False)
     if source.include or venue.jazz_level == "dedicated":

@@ -116,6 +116,11 @@ class Source(Model):
     )
     exclude: Regex | None = Field(None, description="Drop listings whose title or categories match")
     trust_text: bool = Field(False, description="A description mentioning jazz counts anywhere")
+    trust_categories: bool = Field(
+        True,
+        description="A jazz genre in the categories settles a listing; false when the source's "
+        "tags are often wrong, so the classifier's model checks them",
+    )
     unknown: Relevance = Field("other", description="The ruling when nothing else settles one")
     title_strip: Regex | None = Field(None, description="Removed from every title")
     title_replace: list[TitleReplace] = Field(
