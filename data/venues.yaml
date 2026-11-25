@@ -118,7 +118,7 @@
   neighborhood: Back Bay
   url: https://www.berklee.edu/bpc
   jazz_level: regular
-  aliases: [BPC]
+  aliases: [BPC, Berklee Performing Arts Center]
 
 - id: berklee-red-room
   name: Red Room @ Café 939
@@ -172,6 +172,15 @@
   url: https://thewilbur.com
   jazz_level: occasional
   aliases: [Wilbur Theatre]
+
+- id: paradise-rock-club
+  name: Paradise Rock Club
+  address: 967 Commonwealth Ave
+  town: Boston
+  neighborhood: Allston
+  url: https://crossroadspresents.com/pages/paradise-rock-club
+  jazz_level: occasional
+  aliases: [The Paradise]
 
 - id: union-church
   name: Union Church in Boston
@@ -426,6 +435,13 @@
   url: https://as.tufts.edu/music
   jazz_level: occasional
   aliases: [Perry and Marty Granoff Music Center, Medford/Somerville campus]
+
+- id: chevalier-theatre
+  name: Chevalier Theatre
+  address: 30 Forest St
+  town: Medford
+  url: https://chevaliertheatre.com
+  jazz_level: occasional
 
 # --- Suburbs -----------------------------------------------------------
 
