@@ -36,6 +36,7 @@
   credit: {name: "New England Conservatory’s calendar", url: https://necmusic.edu}
   venue: nec
   include: \b(Jazz|Contemporary Musical Arts)\b
+  unknown: adjacent  # CMA concerts cross genres: the model rules on each, adjacent if unsure
   # The Workshop/Class category, not titles: the Jazz Composers Workshop Orchestra is a concert.
   exclude: \b(Master class|Workshop/Class|Prep)\b|^POSTPONED\b
   notes: >-

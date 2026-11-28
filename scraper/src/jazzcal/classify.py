@@ -8,8 +8,10 @@ blurbs are about the act), since bios elsewhere mention jazz in passing. At regu
 trio, quartet, etc. or a jam is jazz too.
 
 A ruling is *certain* when it rests on something decisive: the event's or source's word, an
-include or exclude pattern, an explicit jazz genre in the title or tags, or a dedicated jazz
-room (a source with `trust_categories: false` tags too freely for its genres to be decisive).
+exclude pattern or a missed include pattern, an explicit jazz genre in the title or tags, or a
+dedicated jazz room (a source with `trust_categories: false` tags too freely for its genres to
+be decisive). Matching an include pattern only keeps a listing: one that matched for a word
+other than jazz, such as a department's name, is left to the rest.
 The rest are best guesses that a language model may overrule (see llm.py). A source's
 `unknown` setting gives the guess for listings nothing else settles, for rooms where
 unfamiliar acts are usually jazz.
@@ -84,7 +86,7 @@ def classify(event: ScrapedEvent, source: Source, venue: VenueConfig) -> Ruling:
         return Ruling("jazz", False)
     if ADJACENT.search(labels):
         return Ruling("adjacent", False)
-    if source.include or venue.jazz_level == "dedicated":
+    if venue.jazz_level == "dedicated":
         return Ruling("jazz", True)
     text = event.text or ""
     # Descriptions count at rooms with regular jazz, or where a source vouches for them.

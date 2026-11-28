@@ -96,6 +96,16 @@ def test_classify_include_pattern() -> None:
     assert classify(event("2", "Recital", categories=["Jazz"]), source, v).relevance == "jazz"
 
 
+def test_an_include_match_alone_is_a_guess() -> None:
+    source = Source(
+        id="s", adapter="ics", url="https://x", include="Jazz|Crossover Dept", unknown="adjacent"
+    )
+    ruling = classify(
+        event("1", "Ensemble Concert", categories=["Crossover Dept"]), source, venue("v")
+    )
+    assert ruling == Ruling("adjacent", False)
+
+
 def test_classify_descriptions() -> None:
     source = Source(id="s", adapter="ics", url="https://x")
     trusting = Source(id="t", adapter="ics", url="https://x", trust_text=True)
