@@ -571,3 +571,11 @@
   neighborhood: Bradford
   jazz_level: regular
   aliases: [The Roma Ristorante, Roma Restaurant]
+
+- id: backbeat-brewing
+  name: Backbeat Brewing Company
+  address: 31A Park St
+  town: Beverly
+  url: https://backbeatbrewing.com
+  jazz_level: regular
+  aliases: [Backbeat Brewing, Backbeat]

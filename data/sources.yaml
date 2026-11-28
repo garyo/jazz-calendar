@@ -386,6 +386,18 @@
     category archive pages three concerts at a time and keeps past ones, which have no JSON-LD
     and so drop out.
 
+- id: backbeat-brewing
+  adapter: llmtext
+  url: https://backbeatbrewing.com/events/
+  credit: {name: "Backbeat Brewing’s events", url: https://backbeatbrewing.com/events/}
+  venue: backbeat-brewing
+  exclude: \b(Trivia|Dart|Run Club|Bingo|Breakfast|Closed|Irish|Bluegrass)\b
+  notes: >-
+    Hand-edited WordPress (Divi) page of dated cards: a date, a heading, then lines like
+    "Irish Session (Noon-3 PM); Jazz Jam (4-8 PM)", with no year and the odd stale date, so a
+    model reads it. robots.txt allows everything; no site terms. Jazz: the Monday big band
+    series, Thursday's Dexter Handy Organ Trio and the Saturday jazz jam.
+
 # --- Submitted gigs ------------------------------------------------------
 # Below the venues' own sources, so a venue's listing of the same show wins.
 
